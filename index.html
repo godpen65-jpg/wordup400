@@ -458,29 +458,45 @@ const EMOJI_EXTRA = {
  soup:"🍲",salad:"🥗",meat:"🥩",noodle:"🍜",snack:"🍿",tea:"🍵",coffee:"☕",cheese:"🧀",
  hotdog:"🌭",sandwich:"🥪",cucumber:"🥒",carrot:"🥕",potato:"🥔",onion:"🧅",corn:"🌽",
  day:"☀️",week:"📅",month:"📅",hour:"⏰",birthdaycake:"🎂",holiday:"🎉",trip:"🧳",
- street:"🛣️",downtown:"🏙️",avenue:"🛣️",corner:"🚏",crosswalk:"🚸",sidewalk:"🚶"
+ street:"🛣️",downtown:"🏙️",avenue:"🛣️",corner:"🚏",crosswalk:"🚸",sidewalk:"🚶",
+ homework:"📝",vocabulary:"📖",word:"🔤",sentence:"✍️",exam:"📝",test:"📝",quiz:"❓",grade:"💯",
+ classroom:"🏫",class:"🏫",lesson:"📖",notebook:"📓",textbook:"📘",dictionary:"📖",diary:"📔",
+ stretch:"🤸",exercise:"🏋️",breakfast:"🍳",lunch:"🍱",dinner:"🍽️",meal:"🍽️",
+ weekend:"🎉",tomorrow:"🌅",yesterday:"🌙",everyone:"🧑‍🤝‍🧑",everything:"🌍",something:"📦",nothing:"⚪"
 };
 const EMOJI_MAP = {};
 for(const u of Object.values(BUILTIN)) for(const [w,,e] of u.words) EMOJI_MAP[w] = e;
 Object.assign(EMOJI_MAP, EMOJI_EXTRA);
 function suggestEmoji(word){
+  // 붙인 것("citycenter") → 마지막 낱말부터 앞으로("center","city") 순서로 찾기
+  const toks = word.toLowerCase().split(/\s+/).map(t=>t.replace(/[^a-z]/g,"")).filter(Boolean);
+  const cands = [toks.join(""), ...toks.slice().reverse()];
   const keys = [];
-  const joined = word.toLowerCase().replace(/[^a-z]/g,"");   // "ice cream" → "icecream"
-  const last = word.toLowerCase().split(/\s+/).pop().replace(/[^a-z]/g,"");
-  keys.push(joined, last);
-  // 복수형: legs → leg, boxes → box, babies → baby
-  for(const k of [joined, last]){
+  for(const k of cands){
+    if(!k) continue;
+    keys.push(k);
+    // 변형: legs→leg, boxes→box, babies→baby, running→run
     if(k.endsWith("ies")) keys.push(k.slice(0,-3)+"y");
     else if(k.endsWith("es")) keys.push(k.slice(0,-2));
     if(k.endsWith("s")) keys.push(k.slice(0,-1));
+    if(k.endsWith("ing")) keys.push(k.slice(0,-3));
   }
-  for(const k of keys) if(k && EMOJI_MAP[k]) return EMOJI_MAP[k];
-  // 큰 사전(OpenMoji 공식 단어 2,600개)에서 찾기
-  if(typeof EMOJI_INDEX !== "undefined"){
-    for(const k of keys){
-      if(k && EMOJI_INDEX[k]){
-        return EMOJI_INDEX[k].split("-").map(h=>String.fromCodePoint(parseInt(h,16))).join("");
-      }
+  const hexToEmoji = h => h.split("-").map(x=>String.fromCodePoint(parseInt(x,16))).join("");
+  const lookup = k => {
+    if(EMOJI_MAP[k]) return EMOJI_MAP[k];
+    if(typeof EMOJI_INDEX !== "undefined" && EMOJI_INDEX[k]) return hexToEmoji(EMOJI_INDEX[k]);
+    return null;
+  };
+  for(const k of keys){
+    const hit = k && lookup(k);
+    if(hit) return hit;
+  }
+  // 합성어 쪼개기: rainforest → forest, snowman → man 같은 뒷부분 찾기 (4글자 이상)
+  const t = toks.join("");
+  if(t.length >= 6){
+    for(let i=1; i<=t.length-4; i++){
+      const hit = lookup(t.slice(i));
+      if(hit) return hit;
     }
   }
   return "🔤";   // 못 찾은 단어 표시 — 직접 골라달라는 뜻
