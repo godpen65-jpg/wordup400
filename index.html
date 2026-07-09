@@ -200,6 +200,7 @@
   <div class="home-actions">
     <button onclick="openPrint()">🖨️ 단어 카드 인쇄</button>
     <button onclick="importUnit()">📥 공유 코드 입력</button>
+    <button id="share-all-btn" style="display:none" onclick="shareAll()">📤 내 유닛 전부 공유</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
   </div>
 </div>
@@ -446,23 +447,41 @@ function shareUnit(){
     prompt("아래 코드를 길게 눌러 복사해서 친구에게 보내주세요:", code);
   }
 }
+function shareAll(){
+  const list = Object.values(CUSTOM).map(u=>({name:u.name, words:u.words}));
+  if(!list.length) return;
+  const code = "WU2:" + encB64(JSON.stringify(list));
+  const done = ()=>alert(`유닛 ${list.length}개를 코드 하나로 복사했어요!\n카톡 등으로 친구에게 보내주세요.\n친구는 첫 화면의 [📥 공유 코드 입력]에 붙여넣으면 전부 받아져요.`);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(done).catch(()=>prompt("아래 코드를 길게 눌러 복사해서 친구에게 보내주세요:", code));
+  } else {
+    prompt("아래 코드를 길게 눌러 복사해서 친구에게 보내주세요:", code);
+  }
+}
 function importUnit(){
   const code = prompt("친구에게 받은 공유 코드를 붙여넣어 주세요:");
   if(!code) return;
   try{
     const t = code.trim();
-    if(!t.startsWith("WU1:")) throw 0;
-    const data = JSON.parse(decB64(t.slice(4)));
-    if(!data.name || !Array.isArray(data.words) || !data.words.length) throw 0;
-    const words = data.words
-      .filter(w=>Array.isArray(w) && w[0] && w[1])
-      .map(w=>[String(w[0]), String(w[1]), String(w[2]||"⭐")]);
-    if(!words.length) throw 0;
-    const id = "c" + Date.now();
-    CUSTOM[id] = { name: String(data.name), emoji: "📗", words };
+    let list;
+    if(t.startsWith("WU1:")) list = [JSON.parse(decB64(t.slice(4)))];
+    else if(t.startsWith("WU2:")) list = JSON.parse(decB64(t.slice(4)));
+    else throw 0;
+    if(!Array.isArray(list) || !list.length) throw 0;
+    let n = 0;
+    for(const data of list){
+      if(!data.name || !Array.isArray(data.words)) continue;
+      const words = data.words
+        .filter(w=>Array.isArray(w) && w[0] && w[1])
+        .map(w=>[String(w[0]), String(w[1]), String(w[2]||"⭐")]);
+      if(!words.length) continue;
+      CUSTOM["c" + Date.now() + "_" + n] = { name: String(data.name), emoji: "📗", words };
+      n++;
+    }
+    if(!n) throw 0;
     saveCustom();
     renderHome();
-    alert(`"${data.name}" 유닛을 받았어요! 🎉`);
+    alert(`유닛 ${n}개를 받았어요! 🎉`);
   }catch(e){
     alert("코드를 읽지 못했어요. 복사가 잘 됐는지 확인하고 다시 붙여넣어 주세요.");
   }
@@ -485,6 +504,7 @@ function renderHome(){
   add.onclick = openAdd;
   grid.appendChild(add);
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
+  document.getElementById("share-all-btn").style.display = Object.keys(CUSTOM).length ? "inline-block" : "none";
 }
 function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
