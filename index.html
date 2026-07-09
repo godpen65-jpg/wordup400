@@ -127,6 +127,10 @@
   @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
   .pop { animation:pop .5s; }
 
+  /* 검은 선 그림 */
+  img.licon { width:1em; height:1em; vertical-align:-0.12em; }
+  .credit { color:#ffffffbb; font-size:.75rem; margin-top:18px; }
+
   /* 결과 */
   .stars { font-size:3.4rem; margin:14px 0; }
   .score-line { font-size:1.4rem; color:#333; font-weight:bold; margin-bottom:6px; }
@@ -203,6 +207,7 @@
     <button id="share-all-btn" onclick="shareAll()">📤 내 유닛 전부 공유</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
   </div>
+  <div class="credit">단어 그림: OpenMoji (CC BY-SA 4.0)</div>
 </div>
 
 <!-- 모드 선택 -->
@@ -374,6 +379,27 @@ let HIDDEN = new Set(JSON.parse(localStorage.getItem("wordup_hidden_v1") || "[]"
 function saveCustom(){ localStorage.setItem("wordup_custom_v1", JSON.stringify(CUSTOM)); }
 function saveHidden(){ localStorage.setItem("wordup_hidden_v1", JSON.stringify([...HIDDEN])); }
 
+// ─── 검은 선 그림 (OpenMoji 선화, 안 되면 이모지로 표시) ───
+const OPENMOJI = "https://cdn.jsdelivr.net/npm/openmoji@15.1.0/black/svg/";
+function emojiCodes(e){ return [...e].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")); }
+function setIcon(el, emoji){
+  const codes = emojiCodes(emoji);
+  const c1 = codes.filter(c=>c!=="FE0F").join("-");
+  const c2 = codes.join("-");
+  el.textContent = "";
+  const img = document.createElement("img");
+  img.className = "licon";
+  img.alt = "";
+  let step = 0;
+  img.onerror = ()=>{
+    step++;
+    if(step===1 && c2!==c1) img.src = OPENMOJI + c2 + ".svg";
+    else el.textContent = emoji;   // 그림을 못 불러오면 이모지 그대로
+  };
+  img.src = OPENMOJI + c1 + ".svg";
+  el.appendChild(img);
+}
+
 let curUnit = "9";
 function U(){ return BUILTIN[curUnit] || CUSTOM[curUnit]; }
 function unitTitle(id){ return BUILTIN[id] ? "Unit " + id : (CUSTOM[id] ? CUSTOM[id].name : ""); }
@@ -494,18 +520,19 @@ function importUnit(){
 function renderHome(){
   const grid = document.getElementById("unit-grid");
   grid.innerHTML = "";
-  for(const u of Object.keys(BUILTIN)){
-    if(HIDDEN.has(u)) continue;
-    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", "Unit "+u, BUILTIN[u].topic.split(" ")[0]));
-  }
-  for(const id of Object.keys(CUSTOM)){
-    grid.appendChild(unitCard(id, CUSTOM[id].emoji||"📗", CUSTOM[id].name, "단어 "+CUSTOM[id].words.length+"개"));
-  }
+  // 만들기 버튼 → 내가 만든 유닛(최신순) → 기본 유닛 순서
   const add = document.createElement("div");
   add.className = "unit-card add-card";
   add.innerHTML = `<div class="emo">➕</div><div class="name">새 유닛 만들기</div>`;
   add.onclick = openAdd;
   grid.appendChild(add);
+  for(const id of Object.keys(CUSTOM).sort().reverse()){
+    grid.appendChild(unitCard(id, CUSTOM[id].emoji||"📗", CUSTOM[id].name, "단어 "+CUSTOM[id].words.length+"개"));
+  }
+  for(const u of Object.keys(BUILTIN)){
+    if(HIDDEN.has(u)) continue;
+    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", "Unit "+u, BUILTIN[u].topic.split(" ")[0]));
+  }
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
 }
 function unitCard(id, emo, name, topic){
@@ -681,7 +708,7 @@ function startLearn(){ lIdx=0; lPaused=false; show("scr-learn"); playCurrent(); 
 function stopLearn(){ lToken++; stopAudio(); }
 function renderLearn(){
   const w = U().words[lIdx];
-  document.getElementById("l-emoji").textContent = w[2];
+  setIcon(document.getElementById("l-emoji"), w[2]);
   document.getElementById("l-word").textContent = w[0];
   document.getElementById("l-meaning").textContent = w[1];
   document.getElementById("learn-prog").textContent = (lIdx+1)+" / "+U().words.length;
@@ -756,7 +783,7 @@ function loadQuizWord(){
   if(letters.length>1 && sh.join("")===qAnswer) sh = shuffle(letters);
   qTiles = sh.map(ch=>({ch, used:false}));
   qSlots = new Array(letters.length).fill(null);
-  document.getElementById("q-emoji").textContent = w[2];
+  setIcon(document.getElementById("q-emoji"), w[2]);
   document.getElementById("q-meaning").textContent = w[1];
   document.getElementById("quiz-prog").textContent = (qIdx+1)+" / "+U().words.length;
   setFb("","");
@@ -890,8 +917,9 @@ function renderPrint(){
     for(const [word, meaning, emoji] of words){
       const c = document.createElement("div");
       c.className = "pcard";
-      c.innerHTML = `<div class="emoji">${emoji}</div><div class="word">${escapeHtml(word)}</div>
+      c.innerHTML = `<div class="emoji"></div><div class="word">${escapeHtml(word)}</div>
                      <div class="meaning">${escapeHtml(meaning)}</div><div class="tag">${escapeHtml(tag)}</div>`;
+      setIcon(c.querySelector(".emoji"), emoji);
       grid.appendChild(c);
     }
     sec.appendChild(grid);
