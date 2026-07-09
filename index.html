@@ -379,13 +379,16 @@ let HIDDEN = new Set(JSON.parse(localStorage.getItem("wordup_hidden_v1") || "[]"
 function saveCustom(){ localStorage.setItem("wordup_custom_v1", JSON.stringify(CUSTOM)); }
 function saveHidden(){ localStorage.setItem("wordup_hidden_v1", JSON.stringify([...HIDDEN])); }
 
-// ─── 검은 선 그림 (OpenMoji 선화, 안 되면 이모지로 표시) ───
-const OPENMOJI = "https://cdn.jsdelivr.net/npm/openmoji@15.1.0/black/svg/";
+// ─── 검은 선 그림 (사이트에 저장된 OpenMoji 선화 → 없으면 외부 → 그래도 없으면 이모지) ───
+const OPENMOJI_LOCAL = "openmoji/";
+const OPENMOJI_CDN = "https://cdn.jsdelivr.net/npm/openmoji@15.1.0/black/svg/";
 function emojiCodes(e){ return [...e].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")); }
 function setIcon(el, emoji){
   const codes = emojiCodes(emoji);
   const c1 = codes.filter(c=>c!=="FE0F").join("-");
   const c2 = codes.join("-");
+  const tries = [OPENMOJI_LOCAL+c1, OPENMOJI_LOCAL+c2, OPENMOJI_CDN+c1, OPENMOJI_CDN+c2]
+    .filter((v,i,a)=>a.indexOf(v)===i);
   el.textContent = "";
   const img = document.createElement("img");
   img.className = "licon";
@@ -393,10 +396,10 @@ function setIcon(el, emoji){
   let step = 0;
   img.onerror = ()=>{
     step++;
-    if(step===1 && c2!==c1) img.src = OPENMOJI + c2 + ".svg";
-    else el.textContent = emoji;   // 그림을 못 불러오면 이모지 그대로
+    if(step < tries.length) img.src = tries[step] + ".svg";
+    else el.textContent = emoji;   // 전부 실패하면 이모지 그대로
   };
-  img.src = OPENMOJI + c1 + ".svg";
+  img.src = tries[0] + ".svg";
   el.appendChild(img);
 }
 
