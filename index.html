@@ -321,6 +321,7 @@
 
 <script src="audio.js"></script>
 <script src="xlsx.full.min.js"></script>
+<script src="emoji-index.js"></script>
 <script>
 // ─── 기본 제공 단어 데이터: [영어, 뜻, 그림] ───
 const BUILTIN = {
@@ -465,6 +466,14 @@ function suggestEmoji(word){
     if(k.endsWith("s")) keys.push(k.slice(0,-1));
   }
   for(const k of keys) if(k && EMOJI_MAP[k]) return EMOJI_MAP[k];
+  // 큰 사전(OpenMoji 공식 단어 2,600개)에서 찾기
+  if(typeof EMOJI_INDEX !== "undefined"){
+    for(const k of keys){
+      if(k && EMOJI_INDEX[k]){
+        return EMOJI_INDEX[k].split("-").map(h=>String.fromCodePoint(parseInt(h,16))).join("");
+      }
+    }
+  }
   return "🔤";   // 못 찾은 단어 표시 — 직접 골라달라는 뜻
 }
 
