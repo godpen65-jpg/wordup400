@@ -157,10 +157,14 @@
   .parse-error { color:#e03131; font-size:.95rem; margin-top:8px; }
 
   /* 카드 인쇄 */
-  .print-toolbar { display:flex; gap:12px; justify-content:center; margin-bottom:16px; }
+  .print-toolbar { display:flex; gap:12px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
   .print-toolbar button {
     font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#5f8bfd;
     border:none; border-radius:12px; padding:12px 22px; cursor:pointer;
+  }
+  .print-toolbar select {
+    font-family:inherit; font-size:1.05rem; font-weight:bold; color:#456;
+    border:2px solid #d0dce6; border-radius:12px; padding:10px 14px; background:#fff;
   }
   .print-toolbar .back { background:#9aa5b1; }
   .print-unit-title {
@@ -195,6 +199,7 @@
   <div class="unit-grid" id="unit-grid"></div>
   <div class="home-actions">
     <button onclick="openPrint()">🖨️ 단어 카드 인쇄</button>
+    <button onclick="importUnit()">📥 공유 코드 입력</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
   </div>
 </div>
@@ -206,6 +211,7 @@
   <div class="mode-btns">
     <button class="big btn-learn" onclick="startLearn()">📺 단어 배우기 (자동 재생)</button>
     <button class="big btn-quiz" onclick="startQuiz()">🧩 글자 맞추기 퀴즈</button>
+    <button class="big btn-green" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
     <button class="big btn-home" onclick="goHome()">🏠 처음으로</button>
   </div>
 </div>
@@ -279,8 +285,10 @@
       <div class="add-hint">영어 단어를 먼저 쓰고, 한 칸 띄운 뒤 뜻을 써주세요.<br>엑셀이나 카톡에서 복사해서 붙여넣어도 돼요.</div>
       <div class="parse-error" id="add-error"></div>
       <div class="add-actions">
+        <button class="big btn-home" onclick="document.getElementById('xlsx-file').click()">📂 엑셀 파일 불러오기</button>
         <button class="big btn-quiz" onclick="previewNewUnit()">다음 (그림 고르기) ➡️</button>
       </div>
+      <input type="file" id="xlsx-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="loadExcel(this)">
     </div>
     <div id="add-step2" style="display:none">
       <label>그림 확인 — 마음에 안 들면 칸을 눌러서 바꿔주세요 (이모지 키보드 😊)</label>
@@ -297,6 +305,7 @@
 <div class="screen" id="scr-print">
   <div class="print-toolbar">
     <button class="back" onclick="goHome()">◀ 돌아가기</button>
+    <select id="print-select" onchange="renderPrint()"></select>
     <button onclick="window.print()">🖨️ 인쇄하기</button>
   </div>
   <div class="add-hint" style="text-align:center;margin-bottom:10px">인쇄한 뒤 점선을 따라 잘라 주세요. 유닛마다 새 페이지에서 시작돼요.</div>
@@ -304,6 +313,7 @@
 </div>
 
 <script src="audio.js"></script>
+<script src="xlsx.full.min.js"></script>
 <script>
 // ─── 기본 제공 단어 데이터: [영어, 뜻, 그림] ───
 const BUILTIN = {
@@ -418,7 +428,44 @@ function openUnit(u){
   const info = U();
   document.getElementById("mode-topic").textContent =
     (BUILTIN[curUnit] ? info.topic + " · " : "") + "단어 " + info.words.length + "개";
+  document.getElementById("share-btn").style.display = CUSTOM[curUnit] ? "" : "none";
   show("scr-mode");
+}
+
+// ─── 유닛 공유 (코드 복사 / 붙여넣기) ───
+function encB64(s){ return btoa(unescape(encodeURIComponent(s))); }
+function decB64(s){ return decodeURIComponent(escape(atob(s))); }
+function shareUnit(){
+  const u = CUSTOM[curUnit];
+  if(!u) return;
+  const code = "WU1:" + encB64(JSON.stringify({name:u.name, words:u.words}));
+  const done = ()=>alert("공유 코드를 복사했어요!\n카톡 등으로 친구에게 보내주세요.\n친구는 첫 화면의 [📥 공유 코드 입력]에 붙여넣으면 돼요.");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(done).catch(()=>prompt("아래 코드를 길게 눌러 복사해서 친구에게 보내주세요:", code));
+  } else {
+    prompt("아래 코드를 길게 눌러 복사해서 친구에게 보내주세요:", code);
+  }
+}
+function importUnit(){
+  const code = prompt("친구에게 받은 공유 코드를 붙여넣어 주세요:");
+  if(!code) return;
+  try{
+    const t = code.trim();
+    if(!t.startsWith("WU1:")) throw 0;
+    const data = JSON.parse(decB64(t.slice(4)));
+    if(!data.name || !Array.isArray(data.words) || !data.words.length) throw 0;
+    const words = data.words
+      .filter(w=>Array.isArray(w) && w[0] && w[1])
+      .map(w=>[String(w[0]), String(w[1]), String(w[2]||"⭐")]);
+    if(!words.length) throw 0;
+    const id = "c" + Date.now();
+    CUSTOM[id] = { name: String(data.name), emoji: "📗", words };
+    saveCustom();
+    renderHome();
+    alert(`"${data.name}" 유닛을 받았어요! 🎉`);
+  }catch(e){
+    alert("코드를 읽지 못했어요. 복사가 잘 됐는지 확인하고 다시 붙여넣어 주세요.");
+  }
 }
 
 // ─── 홈 화면 그리기 ───
@@ -505,6 +552,39 @@ function previewNewUnit(){
   document.getElementById("add-step1").style.display = "none";
   document.getElementById("add-step2").style.display = "";
 }
+// 엑셀/CSV 파일 불러오기 (1열: 영어, 2열: 뜻)
+function loadExcel(input){
+  const file = input.files && input.files[0];
+  input.value = "";
+  if(!file) return;
+  const errEl = document.getElementById("add-error");
+  errEl.textContent = "";
+  if(typeof XLSX === "undefined"){ errEl.textContent = "엑셀 읽기 기능을 불러오지 못했어요. 새로고침 후 다시 해보세요."; return; }
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const wb = XLSX.read(e.target.result, {type:"array"});
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1});
+      const lines = [];
+      for(const r of rows){
+        const en = String(r[0]==null?"":r[0]).trim();
+        const ko = String(r[1]==null?"":r[1]).trim();
+        if(!en || !ko) continue;
+        if(!/[a-zA-Z]/.test(en)) continue;   // 제목 줄 등 영어가 아닌 줄은 건너뜀
+        lines.push(en + " " + ko);
+      }
+      if(!lines.length){ errEl.textContent = "파일에서 단어를 못 찾았어요. 1열에 영어, 2열에 뜻이 있는지 확인해주세요."; return; }
+      document.getElementById("add-words").value = lines.join("\n");
+      const nameEl = document.getElementById("add-name");
+      if(!nameEl.value.trim()) nameEl.value = file.name.replace(/\.(xlsx|xls|csv)$/i,"");
+      errEl.textContent = "";
+    }catch(err){
+      errEl.textContent = "파일을 읽지 못했어요. 엑셀(.xlsx) 파일이 맞는지 확인해주세요.";
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
 function saveNewUnit(){
   document.querySelectorAll("#add-preview .emo-in").forEach(inp=>{
     const v = inp.value.trim();
@@ -758,11 +838,27 @@ function showResult(){
 
 // ─── 카드 인쇄 ───
 function openPrint(){
+  const sel = document.getElementById("print-select");
+  sel.innerHTML = '<option value="all">전체 유닛</option>';
+  for(const u of Object.keys(BUILTIN)) if(!HIDDEN.has(u)) sel.innerHTML += `<option value="${u}">Unit ${u} ${BUILTIN[u].topic}</option>`;
+  for(const id of Object.keys(CUSTOM)) sel.innerHTML += `<option value="${escapeHtml(id)}">${escapeHtml(CUSTOM[id].name)}</option>`;
+  renderPrint();
+  show("scr-print");
+}
+function renderPrint(){
+  const pick = document.getElementById("print-select").value || "all";
   const root = document.getElementById("print-content");
   root.innerHTML = "";
   const entries = [];
-  for(const u of Object.keys(BUILTIN)) if(!HIDDEN.has(u)) entries.push([`Unit ${u} · ${BUILTIN[u].topic}`, BUILTIN[u].words, "Unit "+u]);
-  for(const id of Object.keys(CUSTOM)) entries.push([CUSTOM[id].name, CUSTOM[id].words, CUSTOM[id].name]);
+  for(const u of Object.keys(BUILTIN)){
+    if(HIDDEN.has(u)) continue;
+    if(pick!=="all" && pick!==u) continue;
+    entries.push([`Unit ${u} · ${BUILTIN[u].topic}`, BUILTIN[u].words, "Unit "+u]);
+  }
+  for(const id of Object.keys(CUSTOM)){
+    if(pick!=="all" && pick!==id) continue;
+    entries.push([CUSTOM[id].name, CUSTOM[id].words, CUSTOM[id].name]);
+  }
   for(const [title, words, tag] of entries){
     const sec = document.createElement("div");
     sec.className = "print-unit-section";
@@ -779,7 +875,6 @@ function openPrint(){
     sec.appendChild(grid);
     root.appendChild(sec);
   }
-  show("scr-print");
 }
 
 renderHome();
