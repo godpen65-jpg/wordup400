@@ -206,6 +206,7 @@
     <button onclick="importUnit()">📥 공유 코드 입력</button>
     <button id="share-all-btn" onclick="shareAll()">📤 내 유닛 전부 공유</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
+    <button id="icon-style-btn" onclick="toggleIconStyle()">🎨 그림: 컬러</button>
   </div>
   <div class="credit">단어 그림: OpenMoji (CC BY-SA 4.0)</div>
 </div>
@@ -381,11 +382,18 @@ let HIDDEN = new Set(JSON.parse(localStorage.getItem("wordup_hidden_v1") || "[]"
 function saveCustom(){ localStorage.setItem("wordup_custom_v1", JSON.stringify(CUSTOM)); }
 function saveHidden(){ localStorage.setItem("wordup_hidden_v1", JSON.stringify([...HIDDEN])); }
 
-// ─── 검은 선 그림 (사이트에 저장된 OpenMoji 선화 → 없으면 외부 → 그래도 없으면 이모지) ───
+// ─── 단어 그림: 기본은 컬러 이모지, 원하면 검은 선그림으로 전환 ───
+let ICON_STYLE = localStorage.getItem("wordup_icon_style") || "color";
+function toggleIconStyle(){
+  ICON_STYLE = ICON_STYLE === "color" ? "line" : "color";
+  localStorage.setItem("wordup_icon_style", ICON_STYLE);
+  renderHome();
+}
 const OPENMOJI_LOCAL = "openmoji/";
 const OPENMOJI_CDN = "https://cdn.jsdelivr.net/npm/openmoji@15.1.0/black/svg/";
 function emojiCodes(e){ return [...e].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")); }
 function setIcon(el, emoji){
+  if(ICON_STYLE === "color"){ el.textContent = emoji; return; }
   const codes = emojiCodes(emoji);
   const c1 = codes.filter(c=>c!=="FE0F").join("-");
   const c2 = codes.join("-");
@@ -449,7 +457,8 @@ const EMOJI_EXTRA = {
  hospital:"🏥",library:"📚",shop:"🏪",store:"🏪",farm:"🚜",city:"🏙️",bridge:"🌉",
  soup:"🍲",salad:"🥗",meat:"🥩",noodle:"🍜",snack:"🍿",tea:"🍵",coffee:"☕",cheese:"🧀",
  hotdog:"🌭",sandwich:"🥪",cucumber:"🥒",carrot:"🥕",potato:"🥔",onion:"🧅",corn:"🌽",
- day:"☀️",week:"📅",month:"📅",hour:"⏰",birthdaycake:"🎂",holiday:"🎉",trip:"🧳"
+ day:"☀️",week:"📅",month:"📅",hour:"⏰",birthdaycake:"🎂",holiday:"🎉",trip:"🧳",
+ street:"🛣️",downtown:"🏙️",avenue:"🛣️",corner:"🚏",crosswalk:"🚸",sidewalk:"🚶"
 };
 const EMOJI_MAP = {};
 for(const u of Object.values(BUILTIN)) for(const [w,,e] of u.words) EMOJI_MAP[w] = e;
@@ -569,6 +578,7 @@ function renderHome(){
     grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", "Unit "+u, BUILTIN[u].topic.split(" ")[0]));
   }
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
+  document.getElementById("icon-style-btn").textContent = ICON_STYLE === "color" ? "🎨 그림: 컬러" : "✏️ 그림: 검은선";
 }
 function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
