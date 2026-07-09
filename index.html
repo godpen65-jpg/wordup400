@@ -200,7 +200,7 @@
   <div class="home-actions">
     <button onclick="openPrint()">🖨️ 단어 카드 인쇄</button>
     <button onclick="importUnit()">📥 공유 코드 입력</button>
-    <button id="share-all-btn" style="display:none" onclick="shareAll()">📤 내 유닛 전부 공유</button>
+    <button id="share-all-btn" onclick="shareAll()">📤 내 유닛 전부 공유</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
   </div>
 </div>
@@ -449,7 +449,10 @@ function shareUnit(){
 }
 function shareAll(){
   const list = Object.values(CUSTOM).map(u=>({name:u.name, words:u.words}));
-  if(!list.length) return;
+  if(!list.length){
+    alert("아직 직접 만든 유닛이 없어요.\n[➕ 새 유닛 만들기]로 유닛을 만들면 여기서 한 번에 공유할 수 있어요!");
+    return;
+  }
   const code = "WU2:" + encB64(JSON.stringify(list));
   const done = ()=>alert(`유닛 ${list.length}개를 코드 하나로 복사했어요!\n카톡 등으로 친구에게 보내주세요.\n친구는 첫 화면의 [📥 공유 코드 입력]에 붙여넣으면 전부 받아져요.`);
   if(navigator.clipboard && navigator.clipboard.writeText){
@@ -504,7 +507,6 @@ function renderHome(){
   add.onclick = openAdd;
   grid.appendChild(add);
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
-  document.getElementById("share-all-btn").style.display = Object.keys(CUSTOM).length ? "inline-block" : "none";
 }
 function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
