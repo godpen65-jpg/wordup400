@@ -298,6 +298,7 @@
     </div>
     <div id="add-step2" style="display:none">
       <label>그림 확인 — 마음에 안 들면 칸을 눌러서 바꿔주세요 (이모지 키보드 😊)</label>
+      <div class="add-hint">🔤 표시는 맞는 그림을 못 찾은 단어예요 — 칸을 눌러 직접 넣어주세요.<br>공부 화면에서는 검은 선그림으로 바뀌어 나와요.</div>
       <div class="preview-list" id="add-preview"></div>
       <div class="add-actions">
         <button class="big btn-home" onclick="backToStep1()">◀ 뒤로</button>
@@ -430,19 +431,41 @@ const EMOJI_EXTRA = {
  hand:"✋",foot:"🦶",eye:"👁️",nose:"👃",mouth:"👄",ear:"👂",head:"🙂",hair:"💇",face:"🙂",body:"🧍",
  house:"🏠",home:"🏠",room:"🛏️",door:"🚪",window:"🪟",bed:"🛏️",kitchen:"🍳",bathroom:"🛁",
  money:"💰",phone:"📱",clock:"⏰",box:"📦",key:"🔑",umbrella:"☂️",ball:"⚽",doll:"🧸",toy:"🧸",
- music:"🎵",movie:"🎬",party:"🎉",birthday:"🎂",christmas:"🎄",zoo:"🦁",park:"🏞️",market:"🛒"
+ music:"🎵",movie:"🎬",party:"🎉",birthday:"🎂",christmas:"🎄",zoo:"🦁",park:"🏞️",market:"🛒",
+ leg:"🦵",arm:"💪",knee:"🦵",finger:"👆",neck:"🦒",shoulder:"🤷",tooth:"🦷",teeth:"🦷",lip:"👄",
+ bone:"🦴",blood:"🩸",heart:"❤️",elbow:"💪",toe:"🦶",
+ boy:"👦",girl:"👧",man:"👨",woman:"👩",king:"🤴",queen:"👸",prince:"🤴",princess:"👸",
+ doctor:"🧑‍⚕️",nurse:"🧑‍⚕️",police:"👮",firefighter:"🧑‍🚒",singer:"🎤",farmer:"🧑‍🌾",chef:"🧑‍🍳",
+ sheep:"🐑",goat:"🐐",mouse:"🐭",wolf:"🐺",fox:"🦊",deer:"🦌",whale:"🐳",dolphin:"🐬",shark:"🦈",
+ octopus:"🐙",butterfly:"🦋",spider:"🕷️",penguin:"🐧",owl:"🦉",turtle:"🐢",zebra:"🦓",giraffe:"🦒",
+ mountain:"⛰️",island:"🏝️",rainbow:"🌈",storm:"⛈️",ice:"🧊",fire:"🔥",leaf:"🍃",wood:"🪵",
+ cup:"☕",plate:"🍽️",spoon:"🥄",fork:"🍴",knife:"🔪",soap:"🧼",sofa:"🛋️",lamp:"💡",towel:"🧻",
+ see:"👀",hear:"👂",touch:"🖐️",smell:"👃",taste:"👅",buy:"🛒",sell:"💰",give:"🎁",send:"📨",
+ meet:"🤝",wash:"🧼",clean:"🧹",cook:"🍳",cut:"✂️",drive:"🚗",ride:"🚲",climb:"🧗",catch:"🧤",
+ sit:"🪑",stand:"🧍",start:"🚦",finish:"🏁",ask:"❓",answer:"💬",know:"🧠",think:"🤔",find:"🔍",
+ pretty:"💖",beautiful:"🌷",kind:"😇",smart:"🧠",strong:"💪",young:"👶",easy:"👌",heavy:"🏋️",
+ hungry:"🍽️",thirsty:"🥤",tired:"😪",rich:"💰",dangerous:"⚠️",quiet:"🤫",loud:"📢",warm:"🌤️",
+ hospital:"🏥",library:"📚",shop:"🏪",store:"🏪",farm:"🚜",city:"🏙️",bridge:"🌉",
+ soup:"🍲",salad:"🥗",meat:"🥩",noodle:"🍜",snack:"🍿",tea:"🍵",coffee:"☕",cheese:"🧀",
+ hotdog:"🌭",sandwich:"🥪",cucumber:"🥒",carrot:"🥕",potato:"🥔",onion:"🧅",corn:"🌽",
+ day:"☀️",week:"📅",month:"📅",hour:"⏰",birthdaycake:"🎂",holiday:"🎉",trip:"🧳"
 };
-const EMOJI_POOL = ["⭐","🌈","🎈","🍀","🎵","🧩","🍭","🌸","🚀","🐥","🎨","🔔"];
 const EMOJI_MAP = {};
 for(const u of Object.values(BUILTIN)) for(const [w,,e] of u.words) EMOJI_MAP[w] = e;
 Object.assign(EMOJI_MAP, EMOJI_EXTRA);
-let poolIdx = 0;
 function suggestEmoji(word){
+  const keys = [];
   const joined = word.toLowerCase().replace(/[^a-z]/g,"");   // "ice cream" → "icecream"
-  if(EMOJI_MAP[joined]) return EMOJI_MAP[joined];
   const last = word.toLowerCase().split(/\s+/).pop().replace(/[^a-z]/g,"");
-  if(EMOJI_MAP[last]) return EMOJI_MAP[last];
-  return EMOJI_POOL[(poolIdx++) % EMOJI_POOL.length];
+  keys.push(joined, last);
+  // 복수형: legs → leg, boxes → box, babies → baby
+  for(const k of [joined, last]){
+    if(k.endsWith("ies")) keys.push(k.slice(0,-3)+"y");
+    else if(k.endsWith("es")) keys.push(k.slice(0,-2));
+    if(k.endsWith("s")) keys.push(k.slice(0,-1));
+  }
+  for(const k of keys) if(k && EMOJI_MAP[k]) return EMOJI_MAP[k];
+  return "🔤";   // 못 찾은 단어 표시 — 직접 골라달라는 뜻
 }
 
 // ─── 화면 전환 ───
