@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>초등 수학 학년별 체크리스트</title>
+<style>
+  :root {
+    --ink:#1c2230; --sub:#68707e; --line:#e4e2dc; --paper:#faf9f6; --card:#ffffff;
+    --accent:#22314f;
+    --g1:#a3542a; --g2:#b5651d; --g3:#8a7423; --g4:#1f7a5c; --g5:#2f4b8c; --g6:#7a2f5c;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { height:100%; }
+  body {
+    font-family:"Pretendard","Malgun Gothic","맑은 고딕",-apple-system,"Segoe UI Emoji",sans-serif;
+    background:var(--paper); color:var(--ink);
+    min-height:100%; display:flex; justify-content:center;
+  }
+  .wrap { width:100%; max-width:640px; padding:26px 18px 50px; }
+
+  header { text-align:center; margin-bottom:26px; }
+  h1 { font-size:1.5rem; font-weight:800; letter-spacing:-.02em; }
+  .sub { color:var(--sub); font-size:.92rem; margin-top:6px; }
+
+  nav.jump { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:16px; }
+  nav.jump a {
+    font-size:.82rem; font-weight:700; text-decoration:none; color:var(--ink);
+    background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px;
+  }
+
+  .grade-block { margin-top:30px; }
+  .grade-head {
+    display:flex; align-items:center; gap:10px; padding-bottom:10px;
+    border-bottom:2px solid var(--line); margin-bottom:14px;
+  }
+  .grade-head .badge {
+    width:34px; height:34px; border-radius:9px; color:#fff; font-weight:800; font-size:.95rem;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .grade-head .ttl { font-size:1.08rem; font-weight:800; }
+  .grade-head .prog { margin-left:auto; font-size:.8rem; font-weight:700; color:var(--sub); }
+
+  .semester { margin-bottom:14px; }
+  .semester-label { font-size:.8rem; font-weight:700; color:var(--sub); margin:10px 0 6px 2px; }
+
+  .item {
+    display:flex; align-items:flex-start; gap:10px;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:12px 12px; margin-bottom:8px; cursor:pointer;
+  }
+  .item .num {
+    width:24px; height:24px; border-radius:7px; background:var(--paper); border:1px solid var(--line);
+    color:var(--sub); font-weight:800; font-size:.75rem; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .item.done .num { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .item input[type=checkbox] { width:19px; height:19px; margin-top:2px; flex-shrink:0; accent-color:var(--accent); }
+  .item .body { flex:1; }
+  .item .name { font-weight:700; font-size:.98rem; }
+  .item.done .name { color:var(--sub); text-decoration:line-through; }
+  .item .desc { font-size:.83rem; color:var(--sub); margin-top:2px; line-height:1.4; }
+
+  footer { display:flex; justify-content:center; gap:10px; margin-top:26px; flex-wrap:wrap; }
+  footer button {
+    font-family:inherit; background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:10px 16px; font-size:.85rem; font-weight:700; color:var(--ink); cursor:pointer;
+  }
+  footer button:active { transform:translateY(1px); }
+  .credit { text-align:center; color:var(--sub); font-size:.72rem; margin-top:18px; }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:#eef0f4; --sub:#9aa1ad; --line:#2c3140; --paper:#171a22; --card:#1f2330;
+      --accent:#5b73b7;
+      --g1:#c97b4c; --g2:#d98a4e; --g3:#c2a94f; --g4:#3fa984; --g5:#7c93e0; --g6:#c96fa0;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>초등 수학 학년별 체크리스트</h1>
+    <div class="sub">학년마다 꼭 익혀야 할 수학 단원을 확인해보세요</div>
+    <nav class="jump" id="jump"></nav>
+  </header>
+
+  <div id="grades"></div>
+
+  <footer>
+    <button onclick="resetAll()">↩️ 전체 초기화</button>
+  </footer>
+  <div class="credit">2022 개정 교육과정 초등수학 단원 기준</div>
+</div>
+
+<script>
+const CURRICULUM = {
+ 1: {color:"var(--g1)", semesters:[
+   {label:"1학기", units:[
+     ["9까지의 수","1부터 9까지 수를 세고 순서를 말할 수 있어요"],
+     ["여러 가지 모양","네모, 세모, 동그라미 모양을 구별할 수 있어요"],
+     ["덧셈과 뺄셈","한 자리 수의 덧셈과 뺄셈을 할 수 있어요"],
+     ["비교하기","길이·무게·넓이·담을 수 있는 양을 비교할 수 있어요"],
+     ["50까지의 수","50까지의 수를 세고 크기를 비교할 수 있어요"]]},
+   {label:"2학기", units:[
+     ["100까지의 수","100까지의 수를 세고 순서대로 나열할 수 있어요"],
+     ["덧셈과 뺄셈(1)","두 자리 수의 덧셈과 뺄셈을 할 수 있어요"],
+     ["여러 가지 모양","여러 입체 모양을 관찰하고 구별할 수 있어요"],
+     ["덧셈과 뺄셈(2)","세 수의 덧셈과 뺄셈을 할 수 있어요"],
+     ["시계 보기와 규칙 찾기","몇 시, 몇 시 30분을 읽고 규칙을 찾을 수 있어요"]]}
+ ]},
+ 2: {color:"var(--g2)", semesters:[
+   {label:"1학기", units:[
+     ["세 자리 수","세 자리 수를 읽고 자릿값을 이해해요"],
+     ["여러 가지 도형","삼각형, 사각형, 원의 특징을 구별할 수 있어요"],
+     ["덧셈과 뺄셈","받아올림·받아내림이 있는 계산을 할 수 있어요"],
+     ["길이 재기","자를 이용해 길이를 재고 어림할 수 있어요"],
+     ["분류하기","기준을 정해 물건을 분류할 수 있어요"],
+     ["곱셈","묶어 세기로 곱셈의 의미를 이해해요"]]},
+   {label:"2학기", units:[
+     ["네 자리 수","네 자리 수를 읽고 자릿값을 이해해요"],
+     ["곱셈구구","2~9단 곱셈구구를 외워서 계산할 수 있어요"],
+     ["길이 재기","cm와 m 단위로 길이를 재고 계산할 수 있어요"],
+     ["시각과 시간","시각을 읽고 시간의 흐름을 계산할 수 있어요"],
+     ["표와 그래프","자료를 표와 그래프로 나타낼 수 있어요"],
+     ["규칙 찾기","수와 도형의 배열에서 규칙을 찾을 수 있어요"]]}
+ ]},
+ 3: {color:"var(--g3)", semesters:[
+   {label:"1학기", units:[
+     ["덧셈과 뺄셈","세 자리 수의 덧셈과 뺄셈을 할 수 있어요"],
+     ["평면도형","각과 직각을 이해하고 도형을 구별해요"],
+     ["나눗셈","나눗셈의 의미를 이해하고 계산할 수 있어요"],
+     ["곱셈","(두 자리 수)×(한 자리 수)를 계산할 수 있어요"],
+     ["길이와 시간","mm, km와 초 단위를 이해하고 계산해요"],
+     ["분수와 소수","분수와 소수의 의미를 이해할 수 있어요"]]},
+   {label:"2학기", units:[
+     ["곱셈","(세 자리 수)×(한 자리 수)를 계산할 수 있어요"],
+     ["나눗셈","나머지가 있는 나눗셈을 계산할 수 있어요"],
+     ["원","원의 중심, 반지름, 지름을 이해해요"],
+     ["분수","분수의 크기를 비교할 수 있어요"],
+     ["들이와 무게","L, mL, kg, g 단위를 이해하고 계산해요"],
+     ["자료의 정리","자료를 그림그래프로 나타낼 수 있어요"]]}
+ ]},
+ 4: {color:"var(--g4)", semesters:[
+   {label:"1학기", units:[
+     ["큰 수","다섯 자리 이상의 큰 수를 읽고 쓸 수 있어요"],
+     ["각도","각도를 재고 예각·둔각을 구별할 수 있어요"],
+     ["곱셈과 나눗셈","(세 자리 수)×(두 자리 수)를 계산할 수 있어요"],
+     ["평면도형의 이동","도형의 밀기·뒤집기·돌리기를 이해해요"],
+     ["막대그래프","자료를 막대그래프로 나타내고 해석할 수 있어요"],
+     ["규칙 찾기","수와 계산식의 배열 규칙을 찾을 수 있어요"]]},
+   {label:"2학기", units:[
+     ["분수의 덧셈과 뺄셈","분모가 같은 분수의 덧셈과 뺄셈을 해요"],
+     ["삼각형","이등변삼각형, 정삼각형의 성질을 이해해요"],
+     ["소수의 덧셈과 뺄셈","소수 두 자리까지 덧셈과 뺄셈을 해요"],
+     ["사각형","평행사변형, 마름모, 사다리꼴을 구별해요"],
+     ["꺾은선그래프","꺾은선그래프를 그리고 해석할 수 있어요"],
+     ["다각형","다각형과 정다각형의 특징을 이해해요"]]}
+ ]},
+ 5: {color:"var(--g5)", semesters:[
+   {label:"1학기", units:[
+     ["자연수의 혼합 계산","덧셈, 뺄셈, 곱셈, 나눗셈이 섞인 식을 계산해요"],
+     ["약수와 배수","약수와 배수, 최대공약수·최소공배수를 구해요"],
+     ["규칙과 대응","두 양 사이의 대응 관계를 식으로 나타내요"],
+     ["약분과 통분","분수를 약분·통분하고 크기를 비교해요"],
+     ["분수의 덧셈과 뺄셈","분모가 다른 분수의 덧셈과 뺄셈을 해요"],
+     ["다각형의 둘레와 넓이","여러 도형의 둘레와 넓이를 구할 수 있어요"]]},
+   {label:"2학기", units:[
+     ["수의 범위와 어림하기","이상·이하·초과·미만과 반올림을 이해해요"],
+     ["분수의 곱셈","분수와 분수의 곱셈을 계산할 수 있어요"],
+     ["합동과 대칭","도형의 합동과 선대칭·점대칭을 이해해요"],
+     ["소수의 곱셈","소수와 소수의 곱셈을 계산할 수 있어요"],
+     ["직육면체","직육면체와 정육면체의 성질을 이해해요"],
+     ["평균과 가능성","평균을 구하고 일이 일어날 가능성을 말해요"]]}
+ ]},
+ 6: {color:"var(--g6)", semesters:[
+   {label:"1학기", units:[
+     ["분수의 나눗셈","분수의 나눗셈을 계산할 수 있어요"],
+     ["각기둥과 각뿔","각기둥과 각뿔의 구성 요소를 이해해요"],
+     ["소수의 나눗셈","소수의 나눗셈을 계산할 수 있어요"],
+     ["비와 비율","두 수를 비교하는 비와 비율을 이해해요"],
+     ["여러 가지 그래프","띠그래프, 원그래프를 그리고 해석해요"],
+     ["직육면체의 부피와 겉넓이","부피와 겉넓이를 구할 수 있어요"]]},
+   {label:"2학기", units:[
+     ["분수의 나눗셈","자연수와 분수가 섞인 나눗셈을 계산해요"],
+     ["소수의 나눗셈","자연수와 소수가 섞인 나눗셈을 계산해요"],
+     ["공간과 입체","쌓기나무로 만든 입체를 이해할 수 있어요"],
+     ["비례식과 비례배분","비례식을 세우고 비례배분을 할 수 있어요"],
+     ["원의 넓이","원주율을 이용해 원의 넓이를 구해요"],
+     ["원기둥, 원뿔, 구","입체도형의 특징을 구별할 수 있어요"]]}
+ ]}
+};
+
+const KEY = "math_checklist_v1";
+let STATE = JSON.parse(localStorage.getItem(KEY) || "{}");
+function save(){ localStorage.setItem(KEY, JSON.stringify(STATE)); }
+
+function render(){
+  const root = document.getElementById("grades");
+  const jump = document.getElementById("jump");
+  root.innerHTML = "";
+  jump.innerHTML = "";
+
+  for(const g of Object.keys(CURRICULUM).map(Number)){
+    const data = CURRICULUM[g];
+    const block = document.createElement("div");
+    block.className = "grade-block";
+    block.id = "grade-" + g;
+
+    let total = 0, checked = 0;
+    const semHtml = [];
+    data.semesters.forEach(sem=>{
+      const rows = sem.units.map((u,i)=>{
+        total++;
+        const id = g + "-" + sem.label + "-" + i;
+        const on = !!STATE[id];
+        if(on) checked++;
+        return {id, no:i+1, name:u[0], desc:u[1], on};
+      });
+      semHtml.push({label:sem.label, rows});
+    });
+
+    const head = document.createElement("div");
+    head.className = "grade-head";
+    head.innerHTML = `<span class="badge" style="background:${data.color}">${g}</span>
+      <span class="ttl">초등 ${g}학년</span>
+      <span class="prog">${checked} / ${total} 완료</span>`;
+    block.appendChild(head);
+
+    semHtml.forEach(sem=>{
+      const semDiv = document.createElement("div");
+      semDiv.className = "semester";
+      semDiv.innerHTML = `<div class="semester-label">${sem.label}</div>`;
+      sem.rows.forEach(r=>{
+        const row = document.createElement("div");
+        row.className = "item" + (r.on ? " done" : "");
+        row.innerHTML = `<span class="num">${r.no}</span>
+          <input type="checkbox" ${r.on ? "checked" : ""}>
+          <span class="body"><div class="name">${escapeHtml(r.name)}</div><div class="desc">${escapeHtml(r.desc)}</div></span>`;
+        const cb = row.querySelector("input");
+        const toggle = ()=>{
+          STATE[r.id] = !STATE[r.id];
+          save();
+          render();
+        };
+        row.onclick = (e)=>{ if(e.target !== cb) toggle(); };
+        cb.onclick = (e)=>{ e.stopPropagation(); toggle(); };
+        semDiv.appendChild(row);
+      });
+      block.appendChild(semDiv);
+    });
+
+    root.appendChild(block);
+
+    const a = document.createElement("a");
+    a.href = "#grade-" + g;
+    a.textContent = g + "학년";
+    jump.appendChild(a);
+  }
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function resetAll(){
+  if(!confirm("체크 표시를 모두 지울까요?")) return;
+  STATE = {};
+  save();
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
