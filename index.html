@@ -7,200 +7,182 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { height:100%; }
-  :root {
-    --ink:#1c2230; --sub:#68707e; --line:#e4e2dc; --paper:#faf9f6; --card:#ffffff;
-    --accent:#22314f; --accent-ink:#ffffff;
-    --g3:#b5651d; --g4:#1f7a5c; --g5:#2f4b8c; --g6:#7a2f5c;
-  }
   body {
-    font-family:"Pretendard","Malgun Gothic","맑은 고딕",-apple-system,"Segoe UI Emoji",sans-serif;
-    background:var(--paper);
+    font-family:"Segoe UI Emoji","Malgun Gothic","맑은 고딕",sans-serif;
+    background:linear-gradient(160deg,#7dd8ff 0%,#c3f0ca 100%);
     min-height:100%;
     display:flex; justify-content:center;
     user-select:none;
-    color:var(--ink);
   }
-  .screen { display:none; width:100%; max-width:640px; padding:24px 18px 40px; text-align:center; margin:0 auto; }
+  .screen { display:none; width:100%; max-width:640px; padding:20px; text-align:center; margin:auto; }
   .screen.on { display:block; }
 
-  h1 { font-size:1.6rem; font-weight:800; color:var(--ink); margin-bottom:4px; letter-spacing:-.02em; }
-  .sub { color:var(--sub); margin-bottom:26px; font-size:.95rem; }
+  h1 { font-size:2rem; color:#1a5276; margin-bottom:6px; }
+  .sub { color:#2e6b8a; margin-bottom:22px; font-size:1.05rem; }
 
-  .grade-section { margin-bottom:28px; text-align:left; }
-  .grade-title {
-    display:flex; align-items:center; gap:8px;
-    font-size:1.05rem; font-weight:800; color:var(--ink);
-    margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid var(--line);
-  }
-  .grade-title .dot { width:10px; height:10px; border-radius:3px; display:inline-block; }
-  .grade-title .count { margin-left:auto; font-size:.8rem; font-weight:600; color:var(--sub); }
-
-  .unit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .unit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
   .unit-card {
     position:relative;
-    background:var(--card); border-radius:14px; padding:14px 12px;
-    box-shadow:0 1px 2px rgba(20,20,30,.05); cursor:pointer;
-    transition:transform .1s, box-shadow .1s; border:1px solid var(--line);
-    text-align:left;
+    background:#fff; border-radius:20px; padding:18px 12px;
+    box-shadow:0 4px 10px rgba(0,0,0,.12); cursor:pointer;
+    transition:transform .1s; border:3px solid transparent;
   }
-  .unit-card:active { transform:scale(.97); }
-  .unit-card .card-top { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-  .unit-card .num-badge {
-    width:26px; height:26px; border-radius:8px; color:#fff; font-weight:800; font-size:.8rem;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  }
-  .unit-card .emo { font-size:1.5rem; }
-  .unit-card .name { font-weight:800; color:var(--ink); font-size:1.02rem; }
-  .unit-card .topic { color:var(--sub); font-size:.78rem; margin-top:2px; }
+  .unit-card:active { transform:scale(.96); }
+  .unit-card .emo { font-size:2.2rem; }
+  .unit-card .name { font-weight:bold; color:#333; margin-top:6px; font-size:1.15rem; }
+  .unit-card .topic { color:#888; font-size:.9rem; margin-top:2px; }
   .unit-card .del {
-    position:absolute; top:8px; right:8px; width:24px; height:24px;
-    border:none; border-radius:7px; background:#f1efe9; color:#9a9488;
-    font-size:.85rem; cursor:pointer; line-height:24px;
+    position:absolute; top:8px; right:8px; width:28px; height:28px;
+    border:none; border-radius:50%; background:#f1f3f5; color:#999;
+    font-size:.95rem; cursor:pointer; line-height:28px;
   }
-  .unit-card .del:active { background:#f6dede; color:#a13636; }
+  .unit-card .del:active { background:#ffe3e3; color:#e03131; }
+  .unit-card.add-card {
+    border:3px dashed #8fb8d8; background:#ffffffaa; color:#3b6fa0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:120px;
+  }
+  .unit-card.add-card .emo { font-size:2rem; }
 
-  .home-actions { display:flex; gap:8px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+  .home-actions { display:flex; gap:12px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
   .home-actions button {
-    font-family:inherit; background:var(--card); border:1px solid var(--line); border-radius:10px;
-    padding:10px 14px; font-size:.85rem; font-weight:700; color:var(--ink); cursor:pointer;
+    font-family:inherit; background:#ffffffcc; border:none; border-radius:14px;
+    padding:12px 18px; font-size:1rem; font-weight:bold; color:#456; cursor:pointer;
   }
-  .home-actions button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
-  .home-actions button:active { transform:translateY(1px); }
 
-  .mode-btns { display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+  .mode-btns { display:flex; flex-direction:column; gap:16px; margin-top:10px; }
   button.big {
-    font-family:inherit; font-size:1.08rem; font-weight:800; color:#fff;
-    border:none; border-radius:14px; padding:17px; cursor:pointer;
-    box-shadow:0 1px 2px rgba(20,20,30,.08); transition:transform .08s, opacity .08s;
+    font-family:inherit; font-size:1.4rem; font-weight:bold; color:#fff;
+    border:none; border-radius:22px; padding:20px; cursor:pointer;
+    box-shadow:0 5px 0 rgba(0,0,0,.18); transition:transform .1s;
   }
-  button.big:active { transform:translateY(1px); opacity:.92; }
-  .btn-learn { background:var(--accent); }
-  .btn-quiz  { background:var(--g5); }
-  button.big.btn-home { background:var(--card); color:var(--ink); border:1px solid var(--line); }
-  .btn-green { background:var(--g4); }
+  button.big:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18); }
+  .btn-learn { background:#ff9f43; }
+  .btn-quiz  { background:#5f8bfd; }
+  .btn-home  { background:#9aa5b1; }
+  .btn-green { background:#2ecc71; }
 
-  .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .topbar .small-btn {
-    font-family:inherit; background:var(--card); border:1px solid var(--line); border-radius:10px;
-    padding:9px 14px; font-size:.9rem; font-weight:700; color:var(--ink); cursor:pointer;
+    font-family:inherit; background:#ffffffcc; border:none; border-radius:14px;
+    padding:10px 16px; font-size:1rem; font-weight:bold; color:#456; cursor:pointer;
   }
-  .progress-txt { font-weight:800; color:var(--ink); font-size:1rem; }
+  .progress-txt { font-weight:bold; color:#1a5276; font-size:1.1rem; }
 
   .stage {
-    background:var(--card); border-radius:18px; padding:34px 20px 28px;
-    box-shadow:0 1px 3px rgba(20,20,30,.08); min-height:340px; border:1px solid var(--line);
+    background:#fff; border-radius:28px; padding:34px 20px 28px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15); min-height:340px;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
   }
   .stage .emoji { font-size:6.5rem; line-height:1.1; }
-  .stage .word  { font-size:3rem; font-weight:800; color:var(--ink); margin-top:10px; letter-spacing:1px; overflow-wrap:anywhere; }
-  .stage .meaning { font-size:1.35rem; color:var(--g3); font-weight:700; margin-top:8px; }
+  .stage .word  { font-size:3.2rem; font-weight:bold; color:#222; margin-top:10px; letter-spacing:2px; overflow-wrap:anywhere; }
+  .stage .meaning { font-size:1.5rem; color:#e67e22; font-weight:bold; margin-top:8px; }
 
   .learn-controls { display:flex; gap:12px; justify-content:center; margin-top:18px; }
   .learn-controls button {
-    font-family:inherit; font-size:1.4rem; border:1px solid var(--line); border-radius:50%;
-    width:60px; height:60px; cursor:pointer; background:var(--card);
-    box-shadow:0 1px 2px rgba(20,20,30,.08);
+    font-family:inherit; font-size:1.5rem; border:none; border-radius:50%;
+    width:64px; height:64px; cursor:pointer; background:#fff;
+    box-shadow:0 4px 8px rgba(0,0,0,.15);
   }
   .learn-controls button:active { transform:scale(.92); }
 
-  .bar { height:8px; background:var(--line); border-radius:5px; overflow:hidden; margin-top:16px; }
-  .bar > div { height:100%; background:var(--accent); width:0%; transition:width .4s; border-radius:5px; }
+  .bar { height:12px; background:#ffffff88; border-radius:6px; overflow:hidden; margin-top:16px; }
+  .bar > div { height:100%; background:#ff9f43; width:0%; transition:width .4s; border-radius:6px; }
 
   /* 퀴즈 */
   .q-prompt { display:flex; flex-direction:column; align-items:center; gap:6px; }
   .q-prompt .emoji { font-size:5rem; }
-  .q-prompt .meaning { font-size:1.5rem; font-weight:700; color:var(--g3); }
+  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#e67e22; }
   .speak-btn {
-    font-family:inherit; margin-top:6px; font-size:.95rem; background:var(--paper); color:var(--accent);
-    border:1px solid var(--line); border-radius:10px; padding:9px 16px; cursor:pointer; font-weight:700;
+    font-family:inherit; margin-top:6px; font-size:1.05rem; background:#eaf3ff; color:#3b6fd4;
+    border:none; border-radius:14px; padding:10px 18px; cursor:pointer; font-weight:bold;
   }
   .slots, .tiles { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
   .slots { margin-top:22px; min-height:56px; }
   .tiles { margin-top:20px; min-height:56px; }
   .slot {
-    width:46px; height:52px; border-bottom:4px solid var(--line); border-radius:8px;
-    font-size:1.9rem; font-weight:800; color:var(--ink);
+    width:48px; height:54px; border-bottom:5px solid #b8c4d0; border-radius:8px;
+    font-size:2rem; font-weight:bold; color:#222;
     display:flex; align-items:center; justify-content:center; cursor:pointer;
-    background:var(--paper);
+    background:#f4f7fa;
   }
-  .slot.filled { background:#eef1fb; border-bottom-color:var(--g5); }
+  .slot.filled { background:#fff3e0; border-bottom-color:#ff9f43; }
   .tile {
-    width:46px; height:52px; border-radius:10px; background:var(--accent); color:#fff;
-    font-size:1.8rem; font-weight:800; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; box-shadow:0 2px 0 #12182a;
+    width:48px; height:54px; border-radius:12px; background:#5f8bfd; color:#fff;
+    font-size:1.9rem; font-weight:bold; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 4px 0 #3d63c9;
   }
-  .tile:active { transform:translateY(2px); box-shadow:0 0px 0 #12182a; }
+  .tile:active { transform:translateY(2px); box-shadow:0 2px 0 #3d63c9; }
   .tile.used { visibility:hidden; }
   .q-actions { display:flex; gap:12px; justify-content:center; margin-top:22px; }
   .q-actions button {
-    font-family:inherit; border:1px solid var(--line); border-radius:10px; padding:11px 18px;
-    font-size:.95rem; font-weight:700; cursor:pointer;
+    font-family:inherit; border:none; border-radius:14px; padding:12px 20px;
+    font-size:1.05rem; font-weight:bold; cursor:pointer;
   }
-  .hint-btn { background:var(--card); color:var(--g3); }
-  .fb { margin-top:14px; font-size:1.25rem; font-weight:800; min-height:32px; }
-  .fb.good { color:var(--g4); }
-  .fb.bad  { color:#b4432f; }
+  .hint-btn { background:#fff3cd; color:#a07800; }
+  .fb { margin-top:14px; font-size:1.4rem; font-weight:bold; min-height:34px; }
+  .fb.good { color:#2ecc71; }
+  .fb.bad  { color:#e74c3c; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
   .shake { animation:shake .35s; }
-  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.2)} 100%{transform:scale(1)} }
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
   .pop { animation:pop .5s; }
 
   /* 검은 선 그림 */
   img.licon { width:1em; height:1em; vertical-align:-0.12em; }
-  .credit { color:var(--sub); font-size:.72rem; margin-top:18px; }
+  .credit { color:#ffffffbb; font-size:.75rem; margin-top:18px; }
 
   /* 결과 */
-  .stars { font-size:2.6rem; margin:14px 0; }
-  .score-line { font-size:1.2rem; color:var(--ink); font-weight:700; margin-bottom:6px; }
-  .retry-list { color:var(--sub); font-size:.95rem; margin-bottom:20px; }
+  .stars { font-size:3.4rem; margin:14px 0; }
+  .score-line { font-size:1.4rem; color:#333; font-weight:bold; margin-bottom:6px; }
+  .retry-list { color:#777; font-size:1.05rem; margin-bottom:20px; }
 
   /* 유닛 만들기 */
-  .add-box { background:var(--card); border-radius:16px; padding:22px 18px; box-shadow:0 1px 3px rgba(20,20,30,.08); border:1px solid var(--line); text-align:left; }
-  .add-box label { font-weight:700; color:var(--ink); display:block; margin:14px 0 6px; font-size:.92rem; }
+  .add-box { background:#fff; border-radius:24px; padding:24px 18px; box-shadow:0 8px 20px rgba(0,0,0,.15); text-align:left; }
+  .add-box label { font-weight:bold; color:#1a5276; display:block; margin:14px 0 6px; }
   .add-box input[type=text], .add-box textarea {
-    font-family:inherit; width:100%; border:1px solid var(--line); border-radius:10px;
-    padding:11px; font-size:1rem; background:var(--paper);
+    font-family:inherit; width:100%; border:2px solid #d0dce6; border-radius:12px;
+    padding:12px; font-size:1.05rem; background:#f8fbfd;
   }
   .add-box textarea { min-height:180px; resize:vertical; }
-  .add-hint { color:var(--sub); font-size:.85rem; margin-top:6px; line-height:1.5; }
+  .add-hint { color:#888; font-size:.9rem; margin-top:6px; line-height:1.5; }
   .preview-list { margin-top:10px; }
   .preview-row {
-    display:flex; align-items:center; gap:10px; background:var(--paper);
-    border-radius:10px; padding:8px 10px; margin-bottom:8px; border:1px solid var(--line);
+    display:flex; align-items:center; gap:10px; background:#f8fbfd;
+    border-radius:12px; padding:8px 10px; margin-bottom:8px;
   }
   .preview-row input.emo-in {
-    width:56px; font-size:1.5rem; text-align:center; border:1px solid var(--line);
-    border-radius:8px; background:#fff; padding:4px; font-family:inherit;
+    width:58px; font-size:1.6rem; text-align:center; border:2px solid #d0dce6;
+    border-radius:10px; background:#fff; padding:4px; font-family:inherit;
   }
-  .preview-row .pw { font-weight:700; font-size:1.05rem; color:var(--ink); }
-  .preview-row .pm { color:var(--g3); font-size:.95rem; margin-left:auto; }
-  .add-actions { display:flex; gap:10px; margin-top:18px; }
+  .preview-row .pw { font-weight:bold; font-size:1.1rem; color:#222; }
+  .preview-row .pm { color:#e67e22; font-size:1rem; margin-left:auto; }
+  .add-actions { display:flex; gap:12px; margin-top:18px; }
   .add-actions button { flex:1; }
-  .parse-error { color:#b4432f; font-size:.9rem; margin-top:8px; }
+  .parse-error { color:#e03131; font-size:.95rem; margin-top:8px; }
 
   /* 카드 인쇄 */
-  .print-toolbar { display:flex; gap:10px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
+  .print-toolbar { display:flex; gap:12px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
   .print-toolbar button {
-    font-family:inherit; font-size:1rem; font-weight:700; color:#fff; background:var(--accent);
-    border:none; border-radius:10px; padding:11px 20px; cursor:pointer;
+    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#5f8bfd;
+    border:none; border-radius:12px; padding:12px 22px; cursor:pointer;
   }
   .print-toolbar select {
-    font-family:inherit; font-size:.98rem; font-weight:700; color:var(--ink);
-    border:1px solid var(--line); border-radius:10px; padding:10px 14px; background:#fff;
+    font-family:inherit; font-size:1.05rem; font-weight:bold; color:#456;
+    border:2px solid #d0dce6; border-radius:12px; padding:10px 14px; background:#fff;
   }
-  .print-toolbar .back { background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .print-toolbar .back { background:#9aa5b1; }
   .print-unit-title {
-    font-size:1.25rem; font-weight:800; color:var(--ink); margin:16px 0 10px; text-align:left;
+    font-size:1.4rem; font-weight:bold; color:#1a5276; margin:16px 0 10px; text-align:left;
   }
   .print-cards { display:grid; grid-template-columns:repeat(2,1fr); }
   .pcard {
-    border:1.5px dashed var(--line); padding:16px 8px; text-align:center; background:#fff;
+    border:2px dashed #b8c4d0; padding:16px 8px; text-align:center; background:#fff;
     display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:140px;
   }
   .pcard .emoji { font-size:2.6rem; }
-  .pcard .word { font-size:1.5rem; font-weight:800; color:var(--ink); margin-top:4px; }
-  .pcard .meaning { font-size:.95rem; color:var(--g3); font-weight:700; margin-top:2px; }
-  .pcard .tag { font-size:.68rem; color:var(--sub); margin-top:5px; }
+  .pcard .word { font-size:1.6rem; font-weight:bold; color:#222; margin-top:4px; }
+  .pcard .meaning { font-size:1rem; color:#e67e22; font-weight:bold; margin-top:2px; }
+  .pcard .tag { font-size:.7rem; color:#aaa; margin-top:5px; }
 
   @media print {
     body { background:#fff; display:block; }
@@ -210,25 +192,16 @@
     .print-unit-section { page-break-after:always; }
     .pcard { min-height:58mm; }
   }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --ink:#eef0f4; --sub:#9aa1ad; --line:#2c3140; --paper:#171a22; --card:#1f2330;
-      --accent:#5b73b7; --accent-ink:#0f1218;
-      --g3:#d98a4e; --g4:#3fa984; --g5:#7c93e0; --g6:#c96fa0;
-    }
-  }
 </style>
 </head>
 <body>
 
 <!-- 홈: 유닛 선택 -->
 <div class="screen on" id="scr-home">
-  <h1>워드업 400</h1>
-  <div class="sub">학년별 단원을 골라 영단어를 공부해요</div>
-  <div id="unit-sections"></div>
+  <h1>🌟 우리집 단어공부 🌟</h1>
+  <div class="sub">공부할 유닛을 골라보세요!</div>
+  <div class="unit-grid" id="unit-grid"></div>
   <div class="home-actions">
-    <button class="primary" onclick="openAdd()">➕ 새 유닛 만들기</button>
     <button onclick="openPrint()">🖨️ 단어 카드 인쇄</button>
     <button onclick="importUnit()">📥 공유 코드 입력</button>
     <button id="share-all-btn" onclick="shareAll()">📤 내 유닛 전부 공유</button>
@@ -353,49 +326,49 @@
 <script>
 // ─── 기본 제공 단어 데이터: [영어, 뜻, 그림] ───
 const BUILTIN = {
- "9":{topic:"여행 ✈️",grade:3,words:[
+ "9":{topic:"여행 ✈️",words:[
   ["trip","여행","🧳"],["place","장소, 곳","📍"],["try","시도하다","💪"],["vacation","방학, 휴가","🏖️"],
   ["famous","유명한","⭐"],["airplane","비행기","✈️"],["visit","방문하다","🛎️"],["map","지도","🗺️"],
   ["picture","사진, 그림","📷"],["plan","계획하다","📝"],["boat","배","⛵"],["special","특별한","✨"],
   ["rest","휴식","😌"],["beach","해변","🏝️"],["stay","머무르다","🛌"],["wait","기다리다","⏳"],
   ["road","길","🛣️"],["hotel","호텔","🏨"],["pack","(짐을) 싸다, 챙기다","🎒"],["side","쪽","↔️"]]},
- "10":{topic:"옷 👕",grade:3,words:[
+ "10":{topic:"옷 👕",words:[
   ["wear","입다","🧥"],["dirty","더러운","💩"],["soft","부드러운","🧸"],["mirror","거울","🪞"],
   ["large","큰","🐘"],["pocket","주머니","🦘"],["small","작은","🐜"],["cover","덮다, 가리다","🙈"],
   ["pants","바지","👖"],["lovely","사랑스러운","🥰"],["scarf","스카프","🧣"],["cap","모자","🧢"],
   ["shirt","셔츠","👕"],["button","단추","🔘"],["pick","고르다","👆"],["cute","귀여운","🐰"],
   ["dress","드레스","👗"],["skirt","치마","💃"],["formal","격식을 차린","🤵"],["casual","편한 (옷차림)","😎"]]},
- "11":{topic:"자연 🌳",grade:4,words:[
+ "11":{topic:"자연 🌳",words:[
   ["sand","모래","🏜️"],["ugly","못생긴","👹"],["grow","자라다","🌱"],["plant","식물","🪴"],
   ["cage","우리, 새장","🐹"],["dark","어두운","🌑"],["forest","숲","🌲"],["grass","풀","🌿"],
   ["ground","땅","🌍"],["fall","떨어지다","🍂"],["air","공기","💨"],["sea","바다","🌊"],
   ["moon","달","🌙"],["deep","깊은","🕳️"],["nature","자연","🏞️"],["life","삶","🐣"],
   ["weather","날씨","⛅"],["die","죽다","🥀"],["river","강","🛶"],["stone","돌","🪨"]]},
- "12":{topic:"미술 🎨",grade:4,words:[
+ "12":{topic:"미술 🎨",words:[
   ["art","미술, 미술품","🎨"],["color","색칠하다","🖍️"],["draw","그리다","✏️"],["image","이미지","🖼️"],
   ["really","정말","😲"],["simple","단순한","⚪"],["gallery","미술관","🏛️"],["object","물건, 물체","📦"],
   ["idea","발상, 생각","💡"],["stick","붙이다","🩹"],["cartoon","만화","🗯️"],["sketch","스케치하다","✍️"],
   ["paint","(물감으로) 칠하다","🧑‍🎨"],["bright","밝은","☀️"],["erase","지우다","🧽"],["brush","붓","🖌️"],
   ["each","각각의","☝️"],["studio","스튜디오","🎬"],["line","선","📏"],["imagine","상상하다","💭"]]},
- "13":{topic:"장소 🏙️",grade:5,words:[
+ "13":{topic:"장소 🏙️",words:[
   ["build","짓다","🏗️"],["inside","~의 안에","📥"],["restaurant","식당","🍽️"],["church","교회","⛪"],
   ["ticket","표","🎫"],["gate","문","🚪"],["bank","은행","🏦"],["airport","공항","🛫"],
   ["subway","지하철","🚇"],["museum","박물관","🏛️"],["arrive","도착하다","🏁"],["bookstore","서점","📚"],
   ["tower","탑","🗼"],["huge","거대한","🦕"],["factory","공장","🏭"],["station","역","🚉"],
   ["across","건너편에","🚸"],["theater","극장","🎭"],["center","중심","🎯"],["location","위치","📍"]]},
- "14":{topic:"마음 💗",grade:5,words:[
+ "14":{topic:"마음 💗",words:[
   ["want","원하다","🙏"],["sick","아픈","🤒"],["fine","좋은, 괜찮은","👌"],["hate","싫어하다","😤"],
   ["glad","기쁜","😊"],["sad","슬픈","😢"],["angry","화가 난","😠"],["gift","선물","🎁"],
   ["fight","싸우다","🥊"],["worry","걱정하다","😟"],["enjoy","즐기다","😆"],["cry","울다","😭"],
   ["silly","바보 같은","🤪"],["smile","웃다","😄"],["lonely","외로운","🧍"],["mind","마음","🧠"],
   ["wish","바라다","🌠"],["shock","충격","😱"],["wonderful","아주 멋진","🤩"],["nervous","긴장되는","😰"]]},
- "15":{topic:"운동 ⚽",grade:6,words:[
+ "15":{topic:"운동 ⚽",words:[
   ["game","게임, 경기","🎮"],["win","이기다","🏆"],["sport","운동","🏅"],["hit","치다","👊"],
   ["tennis","테니스","🎾"],["ready","준비된","🚦"],["swim","수영하다","🏊"],["kick","차다","🦵"],
   ["soccer","축구","⚽"],["bat","방망이","🏏"],["pool","수영장","💦"],["coach","코치","🧑‍🏫"],
   ["shout","소리치다","📢"],["race","경주","🏃"],["skate","스케이트를 타다","⛸️"],["watch","보다","👀"],
   ["pass","건네주다, 패스하다","🤝"],["baseball","야구","⚾"],["throw","던지다","🤾"],["cheer","응원하다","📣"]]},
- "16":{topic:"미래 🤖",grade:6,words:[
+ "16":{topic:"미래 🤖",words:[
   ["robot","로봇","🤖"],["human","인간","🧑"],["perfect","완벽한","💯"],["computer","컴퓨터","💻"],
   ["fix","고치다","🔧"],["scientist","과학자","🧑‍🔬"],["already","이미, 벌써","⏰"],["show","보여주다","📺"],
   ["copy","복사하다","📋"],["system","시스템","⚙️"],["future","미래","🔮"],["argue","다투다","💢"],
@@ -629,63 +602,30 @@ function importUnit(){
   }
 }
 
-// ─── 홈 화면 그리기: 학년별 단원 그룹 + 번호 매기기 ───
-const GRADE_ORDER = [3,4,5,6];
-const GRADE_LABEL = {3:"초등 3학년", 4:"초등 4학년", 5:"초등 5학년", 6:"초등 6학년"};
-const GRADE_COLOR = {3:"var(--g3)", 4:"var(--g4)", 5:"var(--g5)", 6:"var(--g6)"};
+// ─── 홈 화면 그리기 ───
 function renderHome(){
-  const root = document.getElementById("unit-sections");
-  root.innerHTML = "";
-
-  // 내가 만든 유닛(최신순)
-  const customIds = Object.keys(CUSTOM).sort().reverse();
-  if(customIds.length){
-    const grid = document.createElement("div");
-    grid.className = "unit-grid";
-    customIds.forEach((id,i)=>{
-      grid.appendChild(unitCard(id, CUSTOM[id].emoji||"📗", CUSTOM[id].name,
-        "단어 "+CUSTOM[id].words.length+"개", i+1, "var(--accent)"));
-    });
-    root.appendChild(gradeSection("내가 만든 유닛", customIds.length, grid, "var(--accent)"));
+  const grid = document.getElementById("unit-grid");
+  grid.innerHTML = "";
+  // 만들기 버튼 → 내가 만든 유닛(최신순) → 기본 유닛 순서
+  const add = document.createElement("div");
+  add.className = "unit-card add-card";
+  add.innerHTML = `<div class="emo">➕</div><div class="name">새 유닛 만들기</div>`;
+  add.onclick = openAdd;
+  grid.appendChild(add);
+  for(const id of Object.keys(CUSTOM).sort().reverse()){
+    grid.appendChild(unitCard(id, CUSTOM[id].emoji||"📗", CUSTOM[id].name, "단어 "+CUSTOM[id].words.length+"개"));
   }
-
-  // 기본 유닛: 학년별로 묶고, 단원 번호는 전체 순서대로 이어서 매김
-  const byGrade = {};
-  let n = 0;
-  const orderedIds = Object.keys(BUILTIN).sort((a,b)=>+a-+b);
-  for(const u of orderedIds){
+  for(const u of Object.keys(BUILTIN)){
     if(HIDDEN.has(u)) continue;
-    n++;
-    const g = BUILTIN[u].grade || 3;
-    (byGrade[g] = byGrade[g] || []).push({id:u, no:n});
+    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", "Unit "+u, BUILTIN[u].topic.split(" ")[0]));
   }
-  for(const g of GRADE_ORDER){
-    if(!byGrade[g]) continue;
-    const grid = document.createElement("div");
-    grid.className = "unit-grid";
-    for(const {id,no} of byGrade[g]){
-      grid.appendChild(unitCard(id, BUILTIN[id].topic.split(" ")[1]||"📘",
-        BUILTIN[id].topic.split(" ")[0], "Unit "+id+" · 단어 "+BUILTIN[id].words.length+"개", no, GRADE_COLOR[g]));
-    }
-    root.appendChild(gradeSection(GRADE_LABEL[g], byGrade[g].length, grid, GRADE_COLOR[g]));
-  }
-
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
   document.getElementById("icon-style-btn").textContent = ICON_STYLE === "color" ? "🎨 그림: 컬러" : "✏️ 그림: 검은선";
 }
-function gradeSection(title, count, grid, color){
-  const sec = document.createElement("div");
-  sec.className = "grade-section";
-  sec.innerHTML = `<div class="grade-title"><span class="dot" style="background:${color}"></span>${escapeHtml(title)}<span class="count">${count}개 단원</span></div>`;
-  sec.appendChild(grid);
-  return sec;
-}
-function unitCard(id, emo, name, topic, no, color){
+function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
   d.className = "unit-card";
-  d.innerHTML = `<div class="card-top"><span class="num-badge" style="background:${color}">${no}</span><span class="emo"></span></div>
-                 <div class="name">${escapeHtml(name)}</div><div class="topic">${escapeHtml(topic)}</div>`;
-  setIcon(d.querySelector(".emo"), emo);
+  d.innerHTML = `<div class="emo">${emo}</div><div class="name">${escapeHtml(name)}</div><div class="topic">${escapeHtml(topic)}</div>`;
   d.onclick = ()=>openUnit(id);
   const del = document.createElement("button");
   del.className = "del"; del.textContent = "✕"; del.title = "유닛 삭제";
