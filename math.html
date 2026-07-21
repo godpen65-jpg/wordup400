@@ -7,7 +7,7 @@
 <style>
   :root {
     --ink:#1c2230; --sub:#68707e; --line:#e4e2dc; --paper:#faf9f6; --card:#ffffff;
-    --accent:#22314f;
+    --accent:#22314f; --good:#1f7a5c; --bad:#b4432f;
     --g1:#a3542a; --g2:#b5651d; --g3:#8a7423; --g4:#1f7a5c; --g5:#2f4b8c; --g6:#7a2f5c;
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -29,6 +29,23 @@
     background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px;
   }
 
+  .recap {
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; margin-bottom:26px;
+  }
+  .recap .rt { font-weight:800; font-size:.95rem; margin-bottom:8px; }
+  .recap .rt .n { color:var(--bad); }
+  .recap ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+  .recap li a {
+    display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink);
+    font-size:.85rem; font-weight:600;
+  }
+  .recap li .tag {
+    font-size:.7rem; font-weight:800; color:#fff; background:var(--bad);
+    border-radius:6px; padding:1px 6px; flex-shrink:0;
+  }
+  .recap .empty { color:var(--sub); font-size:.85rem; }
+
   .grade-block { margin-top:30px; }
   .grade-head {
     display:flex; align-items:center; gap:10px; padding-bottom:10px;
@@ -39,16 +56,19 @@
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
   .grade-head .ttl { font-size:1.08rem; font-weight:800; }
-  .grade-head .prog { margin-left:auto; font-size:.8rem; font-weight:700; color:var(--sub); }
+  .grade-head .prog { margin-left:auto; font-size:.8rem; font-weight:700; color:var(--sub); text-align:right; }
+  .grade-head .prog .t2 { display:block; color:var(--bad); }
 
   .semester { margin-bottom:14px; }
   .semester-label { font-size:.8rem; font-weight:700; color:var(--sub); margin:10px 0 6px 2px; }
 
   .item {
-    display:flex; align-items:flex-start; gap:10px;
-    background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:12px 12px; margin-bottom:8px; cursor:pointer;
+    background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line);
+    border-radius:12px; padding:12px 12px; margin-bottom:8px;
   }
+  .item.fail { border-left-color:var(--bad); }
+  .item.pass { border-left-color:var(--good); }
+  .item-top { display:flex; align-items:flex-start; gap:10px; cursor:pointer; }
   .item .num {
     width:24px; height:24px; border-radius:7px; background:var(--paper); border:1px solid var(--line);
     color:var(--sub); font-weight:800; font-size:.75rem; flex-shrink:0;
@@ -58,8 +78,36 @@
   .item input[type=checkbox] { width:19px; height:19px; margin-top:2px; flex-shrink:0; accent-color:var(--accent); }
   .item .body { flex:1; }
   .item .name { font-weight:700; font-size:.98rem; }
+  .item .name .ic { margin-right:4px; }
   .item.done .name { color:var(--sub); text-decoration:line-through; }
   .item .desc { font-size:.83rem; color:var(--sub); margin-top:2px; line-height:1.4; }
+
+  .quiz-toggle {
+    font-family:inherit; margin-top:8px; font-size:.78rem; font-weight:700;
+    background:var(--paper); color:var(--accent); border:1px solid var(--line);
+    border-radius:8px; padding:6px 10px; cursor:pointer;
+  }
+  .quiz-box { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); display:none; }
+  .quiz-box.open { display:block; }
+  .quiz-box .q-label { font-size:.72rem; font-weight:800; color:var(--sub); margin-bottom:3px; }
+  .quiz-box .q-text { font-size:.92rem; font-weight:600; line-height:1.5; }
+  .quiz-box .ans-toggle {
+    font-family:inherit; margin-top:8px; font-size:.78rem; font-weight:700;
+    background:var(--accent); color:#fff; border:none; border-radius:8px; padding:6px 12px; cursor:pointer;
+  }
+  .quiz-box .q-ans {
+    display:none; margin-top:8px; background:var(--paper); border-radius:8px; padding:8px 10px;
+    font-size:.88rem; font-weight:600; color:var(--good);
+  }
+  .quiz-box .q-ans.open { display:block; }
+  .quiz-box .q-feedback { display:none; gap:8px; margin-top:10px; }
+  .quiz-box .q-feedback.open { display:flex; }
+  .quiz-box .q-feedback button {
+    font-family:inherit; flex:1; font-size:.82rem; font-weight:700; border-radius:8px;
+    padding:8px; cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  }
+  .quiz-box .q-feedback button.on-pass { background:var(--good); color:#fff; border-color:var(--good); }
+  .quiz-box .q-feedback button.on-fail { background:var(--bad); color:#fff; border-color:var(--bad); }
 
   footer { display:flex; justify-content:center; gap:10px; margin-top:26px; flex-wrap:wrap; }
   footer button {
@@ -72,7 +120,7 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --ink:#eef0f4; --sub:#9aa1ad; --line:#2c3140; --paper:#171a22; --card:#1f2330;
-      --accent:#5b73b7;
+      --accent:#5b73b7; --good:#3fa984; --bad:#d9705a;
       --g1:#c97b4c; --g2:#d98a4e; --g3:#c2a94f; --g4:#3fa984; --g5:#7c93e0; --g6:#c96fa0;
     }
   }
@@ -82,10 +130,11 @@
 <div class="wrap">
   <header>
     <h1>초등 수학 학년별 체크리스트</h1>
-    <div class="sub">학년마다 꼭 익혀야 할 수학 단원을 확인해보세요</div>
+    <div class="sub">학년마다 꼭 익혀야 할 수학 단원을 확인하고, 예시문제로 아이 수준을 확인해보세요</div>
     <nav class="jump" id="jump"></nav>
   </header>
 
+  <div class="recap" id="recap"></div>
   <div id="grades"></div>
 
   <footer>
@@ -95,112 +144,121 @@
 </div>
 
 <script>
+// [단원명, 설명, 아이콘, 예시문제, 정답]
 const CURRICULUM = {
  1: {color:"var(--g1)", semesters:[
    {label:"1학기", units:[
-     ["9까지의 수","1부터 9까지 수를 세고 순서를 말할 수 있어요"],
-     ["여러 가지 모양","네모, 세모, 동그라미 모양을 구별할 수 있어요"],
-     ["덧셈과 뺄셈","한 자리 수의 덧셈과 뺄셈을 할 수 있어요"],
-     ["비교하기","길이·무게·넓이·담을 수 있는 양을 비교할 수 있어요"],
-     ["50까지의 수","50까지의 수를 세고 크기를 비교할 수 있어요"]]},
+     ["9까지의 수","1부터 9까지 수를 세고 순서를 말할 수 있어요","🔢","가장 큰 수는 어느 것일까요? 3, 7, 5","7"],
+     ["여러 가지 모양","네모, 세모, 동그라미 모양을 구별할 수 있어요","🔺","축구공은 어떤 모양과 비슷할까요? (세모/네모/동그라미)","동그라미(공 모양)"],
+     ["덧셈과 뺄셈","한 자리 수의 덧셈과 뺄셈을 할 수 있어요","➕","3 + 4 = ?","7"],
+     ["비교하기","길이·무게·넓이·담을 수 있는 양을 비교할 수 있어요","⚖️","연필 15cm, 지우개 5cm. 어느 것이 더 길까요?","연필"],
+     ["50까지의 수","50까지의 수를 세고 크기를 비교할 수 있어요","🔢","23보다 1 큰 수는 무엇일까요?","24"]]},
    {label:"2학기", units:[
-     ["100까지의 수","100까지의 수를 세고 순서대로 나열할 수 있어요"],
-     ["덧셈과 뺄셈(1)","두 자리 수의 덧셈과 뺄셈을 할 수 있어요"],
-     ["여러 가지 모양","여러 입체 모양을 관찰하고 구별할 수 있어요"],
-     ["덧셈과 뺄셈(2)","세 수의 덧셈과 뺄셈을 할 수 있어요"],
-     ["시계 보기와 규칙 찾기","몇 시, 몇 시 30분을 읽고 규칙을 찾을 수 있어요"]]}
+     ["100까지의 수","100까지의 수를 세고 순서대로 나열할 수 있어요","🔢","10개씩 묶음 7개와 낱개 4개는 얼마일까요?","74"],
+     ["덧셈과 뺄셈(1)","두 자리 수의 덧셈과 뺄셈을 할 수 있어요","➕","36 + 12 = ?","48"],
+     ["여러 가지 모양","여러 입체 모양을 관찰하고 구별할 수 있어요","🎲","축구공, 상자, 깡통 중 잘 굴러가는 모양은?","축구공(공 모양)"],
+     ["덧셈과 뺄셈(2)","세 수의 덧셈과 뺄셈을 할 수 있어요","➕","2 + 3 + 4 = ?","9"],
+     ["시계 보기와 규칙 찾기","몇 시, 몇 시 30분을 읽고 규칙을 찾을 수 있어요","🕒","짧은바늘 3, 긴바늘 12를 가리키면 몇 시일까요?","3시"]]}
  ]},
  2: {color:"var(--g2)", semesters:[
    {label:"1학기", units:[
-     ["세 자리 수","세 자리 수를 읽고 자릿값을 이해해요"],
-     ["여러 가지 도형","삼각형, 사각형, 원의 특징을 구별할 수 있어요"],
-     ["덧셈과 뺄셈","받아올림·받아내림이 있는 계산을 할 수 있어요"],
-     ["길이 재기","자를 이용해 길이를 재고 어림할 수 있어요"],
-     ["분류하기","기준을 정해 물건을 분류할 수 있어요"],
-     ["곱셈","묶어 세기로 곱셈의 의미를 이해해요"]]},
+     ["세 자리 수","세 자리 수를 읽고 자릿값을 이해해요","🔢","100이 4개, 10이 3개, 1이 5개이면 얼마일까요?","435"],
+     ["여러 가지 도형","삼각형, 사각형, 원의 특징을 구별할 수 있어요","🔺","변이 3개인 도형의 이름은 무엇일까요?","삼각형"],
+     ["덧셈과 뺄셈","받아올림·받아내림이 있는 계산을 할 수 있어요","➕","47 + 38 = ?","85"],
+     ["길이 재기","자를 이용해 길이를 재고 어림할 수 있어요","📏","1m는 몇 cm일까요?","100cm"],
+     ["분류하기","기준을 정해 물건을 분류할 수 있어요","🗂️","사과, 당근, 바나나, 오이를 두 무리로 나눈다면?","과일과 채소로 나누기"],
+     ["곱셈","묶어 세기로 곱셈의 의미를 이해해요","✖️","3개씩 4묶음은 모두 몇 개일까요?","12개"]]},
    {label:"2학기", units:[
-     ["네 자리 수","네 자리 수를 읽고 자릿값을 이해해요"],
-     ["곱셈구구","2~9단 곱셈구구를 외워서 계산할 수 있어요"],
-     ["길이 재기","cm와 m 단위로 길이를 재고 계산할 수 있어요"],
-     ["시각과 시간","시각을 읽고 시간의 흐름을 계산할 수 있어요"],
-     ["표와 그래프","자료를 표와 그래프로 나타낼 수 있어요"],
-     ["규칙 찾기","수와 도형의 배열에서 규칙을 찾을 수 있어요"]]}
+     ["네 자리 수","네 자리 수를 읽고 자릿값을 이해해요","🔢","1000이 2개, 100이 3개이면 얼마일까요?","2300"],
+     ["곱셈구구","2~9단 곱셈구구를 외워서 계산할 수 있어요","✖️","7 × 6 = ?","42"],
+     ["길이 재기","cm와 m 단위로 길이를 재고 계산할 수 있어요","📏","2m 30cm는 모두 몇 cm일까요?","230cm"],
+     ["시각과 시간","시각을 읽고 시간의 흐름을 계산할 수 있어요","🕒","1시간은 몇 분일까요?","60분"],
+     ["표와 그래프","자료를 표와 그래프로 나타낼 수 있어요","📊","사과 5명, 바나나 3명. 그래프에서 어느 쪽이 더 높을까요?","사과"],
+     ["규칙 찾기","수와 도형의 배열에서 규칙을 찾을 수 있어요","🔁","2, 4, 6, 8, ? 다음에 올 수는?","10"]]}
  ]},
  3: {color:"var(--g3)", semesters:[
    {label:"1학기", units:[
-     ["덧셈과 뺄셈","세 자리 수의 덧셈과 뺄셈을 할 수 있어요"],
-     ["평면도형","각과 직각을 이해하고 도형을 구별해요"],
-     ["나눗셈","나눗셈의 의미를 이해하고 계산할 수 있어요"],
-     ["곱셈","(두 자리 수)×(한 자리 수)를 계산할 수 있어요"],
-     ["길이와 시간","mm, km와 초 단위를 이해하고 계산해요"],
-     ["분수와 소수","분수와 소수의 의미를 이해할 수 있어요"]]},
+     ["덧셈과 뺄셈","세 자리 수의 덧셈과 뺄셈을 할 수 있어요","➕","247 + 158 = ?","405"],
+     ["평면도형","각과 직각을 이해하고 도형을 구별해요","🔺","직각은 몇 도일까요?","90도"],
+     ["나눗셈","나눗셈의 의미를 이해하고 계산할 수 있어요","➗","12 ÷ 4 = ?","3"],
+     ["곱셈","(두 자리 수)×(한 자리 수)를 계산할 수 있어요","✖️","23 × 3 = ?","69"],
+     ["길이와 시간","mm, km와 초 단위를 이해하고 계산해요","📏","1km는 몇 m일까요?","1000m"],
+     ["분수와 소수","분수와 소수의 의미를 이해할 수 있어요","🍰","전체를 4조각으로 나눈 것 중 1조각을 분수로 나타내면?","1/4"]]},
    {label:"2학기", units:[
-     ["곱셈","(세 자리 수)×(한 자리 수)를 계산할 수 있어요"],
-     ["나눗셈","나머지가 있는 나눗셈을 계산할 수 있어요"],
-     ["원","원의 중심, 반지름, 지름을 이해해요"],
-     ["분수","분수의 크기를 비교할 수 있어요"],
-     ["들이와 무게","L, mL, kg, g 단위를 이해하고 계산해요"],
-     ["자료의 정리","자료를 그림그래프로 나타낼 수 있어요"]]}
+     ["곱셈","(세 자리 수)×(한 자리 수)를 계산할 수 있어요","✖️","214 × 3 = ?","642"],
+     ["나눗셈","나머지가 있는 나눗셈을 계산할 수 있어요","➗","17 ÷ 5의 몫과 나머지는?","몫 3, 나머지 2"],
+     ["원","원의 중심, 반지름, 지름을 이해해요","⭕","원에서 중심을 지나 원 위의 두 점을 잇는 선분은?","지름"],
+     ["분수","분수의 크기를 비교할 수 있어요","🍰","1/3과 2/3 중 어느 것이 더 클까요?","2/3"],
+     ["들이와 무게","L, mL, kg, g 단위를 이해하고 계산해요","⚖️","1L는 몇 mL일까요?","1000mL"],
+     ["자료의 정리","자료를 그림그래프로 나타낼 수 있어요","📊","그림 1개가 2명이면, 그림 3개는 몇 명일까요?","6명"]]}
  ]},
  4: {color:"var(--g4)", semesters:[
    {label:"1학기", units:[
-     ["큰 수","다섯 자리 이상의 큰 수를 읽고 쓸 수 있어요"],
-     ["각도","각도를 재고 예각·둔각을 구별할 수 있어요"],
-     ["곱셈과 나눗셈","(세 자리 수)×(두 자리 수)를 계산할 수 있어요"],
-     ["평면도형의 이동","도형의 밀기·뒤집기·돌리기를 이해해요"],
-     ["막대그래프","자료를 막대그래프로 나타내고 해석할 수 있어요"],
-     ["규칙 찾기","수와 계산식의 배열 규칙을 찾을 수 있어요"]]},
+     ["큰 수","다섯 자리 이상의 큰 수를 읽고 쓸 수 있어요","🔢","10000이 3개, 1000이 5개이면 얼마일까요?","35000"],
+     ["각도","각도를 재고 예각·둔각을 구별할 수 있어요","📐","90도보다 작은 각을 무엇이라 할까요?","예각"],
+     ["곱셈과 나눗셈","(세 자리 수)×(두 자리 수)를 계산할 수 있어요","➗","132 ÷ 4 = ?","33"],
+     ["평면도형의 이동","도형의 밀기·뒤집기·돌리기를 이해해요","🔄","도형을 오른쪽으로 뒤집으면 좌우와 상하 중 무엇이 바뀔까요?","좌우"],
+     ["막대그래프","자료를 막대그래프로 나타내고 해석할 수 있어요","📊","막대그래프에서 막대가 길수록 무엇을 뜻할까요?","수(양)가 더 많음"],
+     ["규칙 찾기","수와 계산식의 배열 규칙을 찾을 수 있어요","🔁","1, 3, 6, 10, ? 다음에 올 수는?","15"]]},
    {label:"2학기", units:[
-     ["분수의 덧셈과 뺄셈","분모가 같은 분수의 덧셈과 뺄셈을 해요"],
-     ["삼각형","이등변삼각형, 정삼각형의 성질을 이해해요"],
-     ["소수의 덧셈과 뺄셈","소수 두 자리까지 덧셈과 뺄셈을 해요"],
-     ["사각형","평행사변형, 마름모, 사다리꼴을 구별해요"],
-     ["꺾은선그래프","꺾은선그래프를 그리고 해석할 수 있어요"],
-     ["다각형","다각형과 정다각형의 특징을 이해해요"]]}
+     ["분수의 덧셈과 뺄셈","분모가 같은 분수의 덧셈과 뺄셈을 해요","🍰","2/5 + 1/5 = ?","3/5"],
+     ["삼각형","이등변삼각형, 정삼각형의 성질을 이해해요","🔺","세 변의 길이가 모두 같은 삼각형은?","정삼각형"],
+     ["소수의 덧셈과 뺄셈","소수 두 자리까지 덧셈과 뺄셈을 해요","🔢","1.5 + 2.3 = ?","3.8"],
+     ["사각형","평행사변형, 마름모, 사다리꼴을 구별해요","🟦","마주 보는 두 쌍의 변이 평행한 사각형은?","평행사변형"],
+     ["꺾은선그래프","꺾은선그래프를 그리고 해석할 수 있어요","📈","꺾은선그래프는 무엇의 변화를 보기에 좋을까요?","시간에 따른 변화"],
+     ["다각형","다각형과 정다각형의 특징을 이해해요","🔷","변이 5개인 다각형의 이름은?","오각형"]]}
  ]},
  5: {color:"var(--g5)", semesters:[
    {label:"1학기", units:[
-     ["자연수의 혼합 계산","덧셈, 뺄셈, 곱셈, 나눗셈이 섞인 식을 계산해요"],
-     ["약수와 배수","약수와 배수, 최대공약수·최소공배수를 구해요"],
-     ["규칙과 대응","두 양 사이의 대응 관계를 식으로 나타내요"],
-     ["약분과 통분","분수를 약분·통분하고 크기를 비교해요"],
-     ["분수의 덧셈과 뺄셈","분모가 다른 분수의 덧셈과 뺄셈을 해요"],
-     ["다각형의 둘레와 넓이","여러 도형의 둘레와 넓이를 구할 수 있어요"]]},
+     ["자연수의 혼합 계산","덧셈, 뺄셈, 곱셈, 나눗셈이 섞인 식을 계산해요","🧮","12 + 3 × 4 = ?","24"],
+     ["약수와 배수","약수와 배수, 최대공약수·최소공배수를 구해요","🔢","12와 18의 최대공약수는?","6"],
+     ["규칙과 대응","두 양 사이의 대응 관계를 식으로 나타내요","🔁","한 변이 x인 정삼각형의 둘레는? (식으로)","x × 3"],
+     ["약분과 통분","분수를 약분·통분하고 크기를 비교해요","🍰","6/8을 약분하면?","3/4"],
+     ["분수의 덧셈과 뺄셈","분모가 다른 분수의 덧셈과 뺄셈을 해요","🍰","1/2 + 1/3 = ?","5/6"],
+     ["다각형의 둘레와 넓이","여러 도형의 둘레와 넓이를 구할 수 있어요","📐","가로 6cm, 세로 4cm 직사각형의 넓이는?","24cm²"]]},
    {label:"2학기", units:[
-     ["수의 범위와 어림하기","이상·이하·초과·미만과 반올림을 이해해요"],
-     ["분수의 곱셈","분수와 분수의 곱셈을 계산할 수 있어요"],
-     ["합동과 대칭","도형의 합동과 선대칭·점대칭을 이해해요"],
-     ["소수의 곱셈","소수와 소수의 곱셈을 계산할 수 있어요"],
-     ["직육면체","직육면체와 정육면체의 성질을 이해해요"],
-     ["평균과 가능성","평균을 구하고 일이 일어날 가능성을 말해요"]]}
+     ["수의 범위와 어림하기","이상·이하·초과·미만과 반올림을 이해해요","🔢","37을 반올림하여 십의 자리까지 나타내면?","40"],
+     ["분수의 곱셈","분수와 분수의 곱셈을 계산할 수 있어요","🍰","2/3 × 3/4 = ?","1/2"],
+     ["합동과 대칭","도형의 합동과 선대칭·점대칭을 이해해요","🔺","좌우가 완전히 겹치는 도형을 무엇이라 할까요?","선대칭도형"],
+     ["소수의 곱셈","소수와 소수의 곱셈을 계산할 수 있어요","🔢","0.4 × 0.5 = ?","0.2"],
+     ["직육면체","직육면체와 정육면체의 성질을 이해해요","📦","직육면체의 면은 모두 몇 개일까요?","6개"],
+     ["평균과 가능성","평균을 구하고 일이 일어날 가능성을 말해요","📊","80점, 90점, 100점의 평균은?","90점"]]}
  ]},
  6: {color:"var(--g6)", semesters:[
    {label:"1학기", units:[
-     ["분수의 나눗셈","분수의 나눗셈을 계산할 수 있어요"],
-     ["각기둥과 각뿔","각기둥과 각뿔의 구성 요소를 이해해요"],
-     ["소수의 나눗셈","소수의 나눗셈을 계산할 수 있어요"],
-     ["비와 비율","두 수를 비교하는 비와 비율을 이해해요"],
-     ["여러 가지 그래프","띠그래프, 원그래프를 그리고 해석해요"],
-     ["직육면체의 부피와 겉넓이","부피와 겉넓이를 구할 수 있어요"]]},
+     ["분수의 나눗셈","분수의 나눗셈을 계산할 수 있어요","🍰","3/4 ÷ 1/2 = ?","3/2 (=1과 1/2)"],
+     ["각기둥과 각뿔","각기둥과 각뿔의 구성 요소를 이해해요","🔺","밑면이 삼각형인 각기둥을 무엇이라 할까요?","삼각기둥"],
+     ["소수의 나눗셈","소수의 나눗셈을 계산할 수 있어요","🔢","6.4 ÷ 0.8 = ?","8"],
+     ["비와 비율","두 수를 비교하는 비와 비율을 이해해요","⚖️","10:5의 비율을 나타내면?","2"],
+     ["여러 가지 그래프","띠그래프, 원그래프를 그리고 해석해요","📊","전체를 100%로 하여 부채꼴로 나타낸 그래프는?","원그래프"],
+     ["직육면체의 부피와 겉넓이","부피와 겉넓이를 구할 수 있어요","📦","가로 3cm, 세로 4cm, 높이 5cm 직육면체의 부피는?","60cm³"]]},
    {label:"2학기", units:[
-     ["분수의 나눗셈","자연수와 분수가 섞인 나눗셈을 계산해요"],
-     ["소수의 나눗셈","자연수와 소수가 섞인 나눗셈을 계산해요"],
-     ["공간과 입체","쌓기나무로 만든 입체를 이해할 수 있어요"],
-     ["비례식과 비례배분","비례식을 세우고 비례배분을 할 수 있어요"],
-     ["원의 넓이","원주율을 이용해 원의 넓이를 구해요"],
-     ["원기둥, 원뿔, 구","입체도형의 특징을 구별할 수 있어요"]]}
+     ["분수의 나눗셈","자연수와 분수가 섞인 나눗셈을 계산해요","🍰","5 ÷ 2/3 = ?","15/2 (=7과 1/2)"],
+     ["소수의 나눗셈","자연수와 소수가 섞인 나눗셈을 계산해요","🔢","7 ÷ 0.25 = ?","28"],
+     ["공간과 입체","쌓기나무로 만든 입체를 이해할 수 있어요","🧊","쌓기나무 10개로 쌓은 모양의 부피는 쌓기나무 1개의 몇 배?","10배"],
+     ["비례식과 비례배분","비례식을 세우고 비례배분을 할 수 있어요","⚖️","3:4 = 6:x일 때 x는?","8"],
+     ["원의 넓이","원주율을 이용해 원의 넓이를 구해요","⭕","반지름 5cm인 원의 넓이는? (원주율 3.14)","78.5cm²"],
+     ["원기둥, 원뿔, 구","입체도형의 특징을 구별할 수 있어요","🥫","위아래가 원이고 옆면이 굽은 기둥 모양의 입체는?","원기둥"]]}
  ]}
 };
 
 const KEY = "math_checklist_v1";
+const TKEY = "math_test_v1";
 let STATE = JSON.parse(localStorage.getItem(KEY) || "{}");
+let TEST = JSON.parse(localStorage.getItem(TKEY) || "{}");
+let OPEN = new Set();     // 예시문제가 펼쳐진 항목
+let ANS_OPEN = new Set(); // 정답이 보이는 항목
 function save(){ localStorage.setItem(KEY, JSON.stringify(STATE)); }
+function saveTest(){ localStorage.setItem(TKEY, JSON.stringify(TEST)); }
 
 function render(){
   const root = document.getElementById("grades");
   const jump = document.getElementById("jump");
+  const recap = document.getElementById("recap");
   root.innerHTML = "";
   jump.innerHTML = "";
+
+  const failList = [];
 
   for(const g of Object.keys(CURRICULUM).map(Number)){
     const data = CURRICULUM[g];
@@ -208,7 +266,7 @@ function render(){
     block.className = "grade-block";
     block.id = "grade-" + g;
 
-    let total = 0, checked = 0;
+    let total = 0, checked = 0, failCount = 0;
     const semHtml = [];
     data.semesters.forEach(sem=>{
       const rows = sem.units.map((u,i)=>{
@@ -216,7 +274,9 @@ function render(){
         const id = g + "-" + sem.label + "-" + i;
         const on = !!STATE[id];
         if(on) checked++;
-        return {id, no:i+1, name:u[0], desc:u[1], on};
+        const result = TEST[id];
+        if(result === "fail"){ failCount++; failList.push({id, g, label:`${g}학년 ${sem.label} · ${u[0]}`}); }
+        return {id, no:i+1, name:u[0], desc:u[1], icon:u[2], q:u[3], a:u[4], on, result};
       });
       semHtml.push({label:sem.label, rows});
     });
@@ -225,7 +285,7 @@ function render(){
     head.className = "grade-head";
     head.innerHTML = `<span class="badge" style="background:${data.color}">${g}</span>
       <span class="ttl">초등 ${g}학년</span>
-      <span class="prog">${checked} / ${total} 완료</span>`;
+      <span class="prog">${checked} / ${total} 완료${failCount ? `<span class="t2">다시 확인 ${failCount}개</span>` : ""}</span>`;
     block.appendChild(head);
 
     semHtml.forEach(sem=>{
@@ -234,18 +294,54 @@ function render(){
       semDiv.innerHTML = `<div class="semester-label">${sem.label}</div>`;
       sem.rows.forEach(r=>{
         const row = document.createElement("div");
-        row.className = "item" + (r.on ? " done" : "");
-        row.innerHTML = `<span class="num">${r.no}</span>
-          <input type="checkbox" ${r.on ? "checked" : ""}>
-          <span class="body"><div class="name">${escapeHtml(r.name)}</div><div class="desc">${escapeHtml(r.desc)}</div></span>`;
+        row.className = "item" + (r.on ? " done" : "") + (r.result === "fail" ? " fail" : r.result === "pass" ? " pass" : "");
+        row.id = "item-" + r.id;
+        const qOpen = OPEN.has(r.id);
+        const aOpen = ANS_OPEN.has(r.id);
+        row.innerHTML = `
+          <div class="item-top">
+            <span class="num">${r.no}</span>
+            <input type="checkbox" ${r.on ? "checked" : ""}>
+            <span class="body">
+              <div class="name"><span class="ic">${r.icon}</span>${escapeHtml(r.name)}</div>
+              <div class="desc">${escapeHtml(r.desc)}</div>
+            </span>
+          </div>
+          <button class="quiz-toggle">✏️ 예시문제로 확인하기</button>
+          <div class="quiz-box ${qOpen ? "open" : ""}">
+            <div class="q-label">예시문제</div>
+            <div class="q-text">${escapeHtml(r.q)}</div>
+            <button class="ans-toggle">정답 보기</button>
+            <div class="q-ans ${aOpen ? "open" : ""}">정답: ${escapeHtml(r.a)}</div>
+            <div class="q-feedback ${aOpen ? "open" : ""}">
+              <button class="fb-btn ${r.result === "pass" ? "on-pass" : ""}" data-r="pass">😊 잘 풀었어요</button>
+              <button class="fb-btn ${r.result === "fail" ? "on-fail" : ""}" data-r="fail">😥 어려워했어요</button>
+            </div>
+          </div>`;
+
         const cb = row.querySelector("input");
-        const toggle = ()=>{
-          STATE[r.id] = !STATE[r.id];
-          save();
+        const top = row.querySelector(".item-top");
+        const toggleDone = ()=>{ STATE[r.id] = !STATE[r.id]; save(); render(); };
+        top.onclick = (e)=>{ if(e.target !== cb) toggleDone(); };
+        cb.onclick = (e)=>{ e.stopPropagation(); toggleDone(); };
+
+        row.querySelector(".quiz-toggle").onclick = ()=>{
+          if(OPEN.has(r.id)) OPEN.delete(r.id); else OPEN.add(r.id);
           render();
         };
-        row.onclick = (e)=>{ if(e.target !== cb) toggle(); };
-        cb.onclick = (e)=>{ e.stopPropagation(); toggle(); };
+        row.querySelector(".ans-toggle").onclick = ()=>{
+          ANS_OPEN.add(r.id);
+          render();
+        };
+        row.querySelectorAll(".fb-btn").forEach(btn=>{
+          btn.onclick = ()=>{
+            TEST[r.id] = TEST[r.id] === btn.dataset.r ? null : btn.dataset.r;
+            if(!TEST[r.id]) delete TEST[r.id];
+            saveTest();
+            render();
+          };
+        });
+
         semDiv.appendChild(row);
       });
       block.appendChild(semDiv);
@@ -258,12 +354,19 @@ function render(){
     a.textContent = g + "학년";
     jump.appendChild(a);
   }
+
+  if(failList.length){
+    recap.innerHTML = `<div class="rt">🔍 다시 확인이 필요해요 <span class="n">(${failList.length}개)</span></div>
+      <ul>${failList.map(f=>`<li><a href="#item-${f.id}"><span class="tag">확인</span>${escapeHtml(f.label)}</a></li>`).join("")}</ul>`;
+  } else {
+    recap.innerHTML = `<div class="rt">🔍 다시 확인이 필요해요</div><div class="empty">예시문제를 풀어보면 아이가 어려워하는 단원이 여기에 모여요.</div>`;
+  }
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function resetAll(){
-  if(!confirm("체크 표시를 모두 지울까요?")) return;
-  STATE = {};
-  save();
+  if(!confirm("체크 표시와 테스트 결과를 모두 지울까요?")) return;
+  STATE = {}; TEST = {}; OPEN = new Set(); ANS_OPEN = new Set();
+  save(); saveTest();
   render();
 }
 
