@@ -1016,5 +1016,99 @@ function renderPrint(){
 
 renderHome();
 </script>
+<!--HELP_MODAL_START-->
+<style>
+.hlp-btn{position:fixed;right:14px;bottom:14px;z-index:99998;
+  font-family:'Jua','Gaegu',system-ui,sans-serif;font-size:16px;
+  background:#f4869f;color:#fff;border:none;border-radius:999px;
+  padding:12px 18px;box-shadow:0 6px 18px rgba(232,105,143,.45);cursor:pointer}
+.hlp-btn:hover{background:#e8698f}
+.hlp-ov{position:fixed;inset:0;z-index:99999;background:rgba(60,40,55,.55);
+  display:none;align-items:center;justify-content:center;padding:16px}
+.hlp-ov.on{display:flex}
+.hlp-box{background:#fff;border-radius:22px;max-width:560px;width:100%;
+  max-height:86vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:24px 22px 30px;position:relative;
+  font-family:'Gaegu',system-ui,sans-serif;color:#4a3f55;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);text-align:left}
+.hlp-x{position:sticky;top:0;float:right;background:#ffe1ec;color:#e14b7a;
+  border:none;border-radius:999px;width:38px;height:38px;font-size:20px;cursor:pointer;
+  line-height:1;font-weight:700}
+.hlp-box h2{font-family:'Jua','Gaegu',sans-serif;font-size:25px;color:#e14b7a;
+  margin:0 0 6px;line-height:1.35}
+.hlp-box h3{font-family:'Jua','Gaegu',sans-serif;font-size:20px;color:#3f3550;
+  margin:22px 0 8px;padding-top:14px;border-top:2px dashed #ffe1ec;line-height:1.4}
+.hlp-box h3:first-of-type{border-top:none;padding-top:0;margin-top:14px}
+.hlp-box p{font-size:18px;line-height:1.65;margin:6px 0}
+.hlp-box ul{margin:6px 0 6px 4px;padding-left:20px}
+.hlp-box li{font-size:18px;line-height:1.65;margin-bottom:5px}
+.hlp-box b{color:#e14b7a}
+.hlp-tip{background:#fff6fa;border:2px solid #ffe1ec;border-radius:14px;
+  padding:12px 14px;margin-top:10px;font-size:17px;line-height:1.6}
+.hlp-lead{font-size:18px;color:#7a6f85;margin-bottom:4px}
+@media print{.hlp-btn,.hlp-ov{display:none !important}}
+</style>
+<button class="hlp-btn" type="button" onclick="hlpOpen()">❓ 사용법</button>
+<div class="hlp-ov" id="hlpOv"><div class="hlp-box">
+<button class="hlp-x" type="button" onclick="hlpClose()" aria-label="닫기">✕</button>
+<h2>🍎 우리집 단어공부 사용법</h2>
+<p class="hlp-lead">영어 단어를 그림과 소리로 재미있게! 로그인 없이, 공짜로 쓸 수 있어요.</p>
+
+<h3>1. 앱처럼 만들어 두기</h3>
+<ul>
+  <li><b>아이폰·아이패드</b> : 사파리 아래 공유 단추(네모+화살표) → <b>“홈 화면에 추가”</b></li>
+  <li><b>갤럭시</b> : 오른쪽 위 점 세 개 → <b>“홈 화면에 추가”</b></li>
+</ul>
+<p>홈 화면에 별 모양 아이콘이 생겨서, 다음부터는 눌러서 바로 열 수 있어요.</p>
+
+<h3>2. 단어 배우기 (틀어놓기만 하면 돼요)</h3>
+<ul>
+  <li>공부할 상자(유닛)를 누르고 <b>“단어 배우기”</b>를 눌러요.</li>
+  <li>그림과 단어가 크게 나오고 원어민 발음이 나와요.</li>
+  <li>영어 두 번 → 한국어 뜻 한 번 → 다음 단어로 저절로 넘어가요.</li>
+  <li>아래 동그란 단추 : ◀◀ 앞으로 · ⏸ 잠깐 멈춤 · ▶▶ 다음으로</li>
+</ul>
+
+<h3>3. 글자 맞추기 퀴즈</h3>
+<ul>
+  <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
+  <li>잘못 놓았으면 그 글자를 <b>다시 누르면</b> 빠져요.</li>
+  <li><b>발음 듣기</b>로 다시 듣고, 막히면 <b>힌트</b>로 한 글자씩 봐요.</li>
+  <li>다 풀면 별과 점수가 나와요. 틀린 단어는 다시 연습!</li>
+</ul>
+
+<h3>4. 우리 아이 단어 직접 넣기</h3>
+<ul>
+  <li>첫 화면 맨 위 <b>“+ 새 유닛 만들기”</b>를 눌러요.</li>
+  <li>이름을 짓고, 단어를 한 줄에 하나씩 써요. 예) <b>apple 사과</b></li>
+  <li>엑셀이 있으면 <b>“엑셀 파일 불러오기”</b>로 한 번에 넣을 수 있어요.</li>
+  <li>“다음”을 누르면 그림을 자동으로 골라 줘요. 마음에 안 들면 그림 칸을 눌러 바꾸면 돼요.</li>
+  <li><b>“저장하기”</b>를 누르면 완성!</li>
+</ul>
+
+<h3>5. 친구와 나누기 · 카드 인쇄</h3>
+<ul>
+  <li><b>“내 유닛 전부 공유”</b> → 코드가 복사돼요. 카톡으로 보내면 끝!</li>
+  <li>받은 코드는 <b>“공유 코드 입력”</b>에 붙여넣으면 그대로 생겨요.</li>
+  <li><b>“단어 카드 인쇄”</b>로 종이 카드를 뽑아 점선대로 자르면 완성.</li>
+  <li>아래 <b>“그림: 컬러”</b>를 누르면 컬러 ↔ 검은 선 그림으로 바뀌어요.</li>
+</ul>
+
+<div class="hlp-tip">
+  <b>잘 안 될 때</b><br>
+  · 소리가 안 나면 → 폰의 무음(진동)을 풀고 소리를 키워 주세요.<br>
+  · 화면이 이상하면 → 화면을 아래로 당겨 새로고침 해 주세요.<br>
+  · 기본 상자를 잘못 지웠으면 → <b>“지운 기본 유닛 되살리기”</b>를 누르면 돌아와요.
+</div>
+
+</div></div>
+<script>
+function hlpOpen(){document.getElementById('hlpOv').classList.add('on');}
+function hlpClose(){document.getElementById('hlpOv').classList.remove('on');}
+document.getElementById('hlpOv').addEventListener('click',function(e){
+  if(e.target===this) hlpClose();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();});
+</script>
+<!--HELP_MODAL_END-->
 </body>
 </html>
