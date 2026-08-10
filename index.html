@@ -830,20 +830,23 @@ function makeUtter(text, lang, rate){
 }
 
 // ─── 원어민 소리 (audio.js에 내장) + 없으면 기기 목소리 ───
-let curAudio = null;
+// 아이폰 사파리는 new Audio()를 계속 새로 만들면 첫 재생 이후 자동재생을 막아버려서,
+// 오디오 엘리먼트 하나를 계속 재사용한다 (src만 바꿔서 재생).
+const curAudio = new Audio();
 function stopAudio(){
-  if(curAudio){ curAudio.onended=null; curAudio.pause(); curAudio=null; }
+  curAudio.onended = null;
+  curAudio.pause();
   speechSynthesis.cancel();
 }
 function playOne(key, lang, text, rate, cb){
   cb = cb || function(){};
   const data = (typeof AUDIO !== "undefined") ? AUDIO[key] : null;
   if(data){
-    const a = new Audio(data);
-    curAudio = a;
-    a.onended = cb;
-    a.onerror = ()=>cb();
-    a.play().catch(()=>cb());
+    curAudio.onended = cb;
+    curAudio.onerror = ()=>cb();
+    curAudio.src = data;
+    curAudio.currentTime = 0;
+    curAudio.play().catch(()=>cb());
   } else {
     const u = makeUtter(text, lang==="en" ? "en-US" : "ko-KR", rate);
     u.onend = cb;
