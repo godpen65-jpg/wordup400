@@ -854,6 +854,13 @@ function playOne(key, lang, text, rate, cb){
     speechSynthesis.speak(u);
   }
 }
+// 탭을 닫거나 다른 앱으로 전환하거나 화면이 꺼지면 재생 중이던 소리를 즉시 멈춘다.
+function stopEverything(){
+  lToken++; lPaused = true;
+  stopAudio();
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden) stopEverything(); });
+window.addEventListener("pagehide", stopEverything);
 
 // ─── 효과음 ───
 let actx=null;
