@@ -374,7 +374,7 @@ const BUILTIN = {
   ["copy","복사하다","📋"],["system","시스템","⚙️"],["future","미래","🔮"],["argue","다투다","💢"],
   ["research","연구, 조사","🔬"],["fact","사실","📰"],["understand","이해하다","🙆"],["process","과정","🔄"],
   ["allow","허용하다","🆗"],["challenge","도전","🧗"],["invent","발명하다","🛠️"],["sure","확실한","✅"]]},
- "17":{topic:"보물지도 🗺️",words:[
+ "17":{topic:"보물지도 🗺️",label:"Reading 보물지도",words:[
   ["treasure","보물","💰"],["north","북쪽","⬆️"],["striped","줄무늬가 있는","🦓"],["east","동쪽","➡️"],
   ["patch","안대","🩹"],["south","남쪽","⬇️"],["pirate","해적","🏴‍☠️"],["west","서쪽","⬅️"],
   ["return","돌아오다","🔙"],["yell","소리치다","📢"]]}
@@ -419,7 +419,12 @@ function setIcon(el, emoji){
 
 let curUnit = "9";
 function U(){ return BUILTIN[curUnit] || CUSTOM[curUnit]; }
-function unitTitle(id){ return BUILTIN[id] ? "Unit " + id : (CUSTOM[id] ? CUSTOM[id].name : ""); }
+function unitTitle(id){ return BUILTIN[id] ? (BUILTIN[id].label || ("Unit " + id)) : (CUSTOM[id] ? CUSTOM[id].name : ""); }
+// 라벨에 이미 주제 이름이 들어있으면(예: "Reading 보물지도") 이모지만, 아니면 "주제 이모지" 전체를 붙인다.
+function topicSuffix(id){
+  const topic = BUILTIN[id].topic, label = unitTitle(id);
+  return label.includes(topic.split(" ")[0]) ? topic.split(" ").slice(-1)[0] : topic;
+}
 
 // ─── 그림(이모지) 자동 추천 ───
 const EMOJI_EXTRA = {
@@ -698,7 +703,7 @@ function renderHome(){
   }
   for(const u of Object.keys(BUILTIN)){
     if(HIDDEN.has(u)) continue;
-    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", "Unit "+u, BUILTIN[u].topic.split(" ")[0]));
+    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0]));
   }
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
   document.getElementById("icon-style-btn").textContent = ICON_STYLE === "color" ? "🎨 그림: 컬러" : "✏️ 그림: 검은선";
@@ -1067,7 +1072,7 @@ function showResult(){
 function openPrint(){
   const sel = document.getElementById("print-select");
   sel.innerHTML = '<option value="all">전체 유닛</option>';
-  for(const u of Object.keys(BUILTIN)) if(!HIDDEN.has(u)) sel.innerHTML += `<option value="${u}">Unit ${u} ${BUILTIN[u].topic}</option>`;
+  for(const u of Object.keys(BUILTIN)) if(!HIDDEN.has(u)) sel.innerHTML += `<option value="${u}">${escapeHtml(unitTitle(u))} ${topicSuffix(u)}</option>`;
   for(const id of Object.keys(CUSTOM)) sel.innerHTML += `<option value="${escapeHtml(id)}">${escapeHtml(CUSTOM[id].name)}</option>`;
   renderPrint();
   show("scr-print");
@@ -1080,7 +1085,7 @@ function renderPrint(){
   for(const u of Object.keys(BUILTIN)){
     if(HIDDEN.has(u)) continue;
     if(pick!=="all" && pick!==u) continue;
-    entries.push([`Unit ${u} · ${BUILTIN[u].topic}`, BUILTIN[u].words, "Unit "+u]);
+    entries.push([`${unitTitle(u)} · ${topicSuffix(u)}`, BUILTIN[u].words, unitTitle(u)]);
   }
   for(const id of Object.keys(CUSTOM)){
     if(pick!=="all" && pick!==id) continue;
