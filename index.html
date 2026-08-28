@@ -19,6 +19,8 @@
   .screen.on { display:block; }
 
   h1 { font-size:2rem; color:#1a5276; margin-bottom:6px; }
+  .home-title-row { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .home-title-row h1 { margin-bottom:0; }
   .sub { color:#2e6b8a; margin-bottom:22px; font-size:1.05rem; }
 
   .unit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
@@ -199,7 +201,10 @@
 
 <!-- 홈: 유닛 선택 -->
 <div class="screen on" id="scr-home">
-  <h1>🌟 우리집 단어공부 🌟</h1>
+  <div class="home-title-row">
+    <h1>🌟 우리집 단어공부 🌟</h1>
+    <button class="hlp-btn" type="button" onclick="hlpOpen()">❓ 사용법</button>
+  </div>
   <div class="sub">공부할 유닛을 골라보세요!</div>
   <div class="unit-grid" id="unit-grid"></div>
   <div class="home-actions">
@@ -1115,10 +1120,9 @@ renderHome();
 </script>
 <!--HELP_MODAL_START-->
 <style>
-.hlp-btn{position:fixed;right:14px;bottom:14px;z-index:99998;
-  font-family:'Jua','Gaegu',system-ui,sans-serif;font-size:16px;
+.hlp-btn{font-family:'Jua','Gaegu',system-ui,sans-serif;font-size:14px;
   background:#f4869f;color:#fff;border:none;border-radius:999px;
-  padding:12px 18px;box-shadow:0 6px 18px rgba(232,105,143,.45);cursor:pointer}
+  padding:8px 14px;box-shadow:0 4px 10px rgba(232,105,143,.4);cursor:pointer}
 .hlp-btn:hover{background:#e8698f}
 .hlp-ov{position:fixed;inset:0;z-index:99999;background:rgba(60,40,55,.55);
   display:none;align-items:center;justify-content:center;padding:16px}
@@ -1145,7 +1149,6 @@ renderHome();
 .hlp-lead{font-size:18px;color:#7a6f85;margin-bottom:4px}
 @media print{.hlp-btn,.hlp-ov{display:none !important}}
 </style>
-<button class="hlp-btn" type="button" onclick="hlpOpen()">❓ 사용법</button>
 <div class="hlp-ov" id="hlpOv"><div class="hlp-box">
 <button class="hlp-x" type="button" onclick="hlpClose()" aria-label="닫기">✕</button>
 <h2>🍎 우리집 단어공부 사용법</h2>
