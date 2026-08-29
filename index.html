@@ -873,6 +873,7 @@ const curAudio = new Audio();
 function stopAudio(){
   curAudio.onended = null;
   curAudio.pause();
+  curAudio.playbackRate = 1;   // 알파벳 빠른 속도가 다음 소리에 남지 않도록
   speechSynthesis.cancel();
 }
 function playOne(key, lang, text, rate, cb){
@@ -940,7 +941,7 @@ function playCurrent(){
         ...[...w[0]].filter(c=>/[a-zA-Z]/.test(c)).map(c=>{
           const lc = c.toLowerCase();
           return {fn: cb=>{
-            curAudio.playbackRate = 1.8;
+            curAudio.playbackRate = 2.7;
             playOne("letter:"+lc, "en", lc.toUpperCase()+".", 0.9, ()=>{ curAudio.playbackRate = 1; cb(); });
           }, gap:100};
         }),
@@ -1253,7 +1254,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.1 &nbsp;·&nbsp; 2026-08-29</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.2 &nbsp;·&nbsp; 2026-08-29</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
