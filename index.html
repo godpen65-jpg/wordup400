@@ -967,7 +967,10 @@ function playCurrent(){
         cb=>playOne("en:"+w[0], "en", w[0], 0.8, cb),
         ...[...w[0]].filter(c=>/[a-zA-Z]/.test(c)).map(c=>{
           const lc = c.toLowerCase();
-          return cb=>playOne("letter:"+lc, "en", lc.toUpperCase()+".", 0.9, cb);
+          return cb=>{
+            curAudio.playbackRate = 1.35;
+            playOne("letter:"+lc, "en", lc.toUpperCase()+".", 0.9, ()=>{ curAudio.playbackRate = 1; cb(); });
+          };
         }),
         cb=>playOne("ko:"+curUnit+":"+lIdx, "ko", koTxt, 0.95, cb)
       ]
@@ -976,11 +979,12 @@ function playCurrent(){
         cb=>playOne("en:"+w[0], "en", w[0], 0.85, cb),
         cb=>playOne("ko:"+curUnit+":"+lIdx, "ko", koTxt, 0.95, cb)
       ];
+  const stepGap = lMode === "spell" ? 150 : 350;
   let i = 0;
   function next(){
     if(token !== lToken || lPaused) return;
     if(i < steps.length){
-      steps[i++](()=> setTimeout(next, 350));
+      steps[i++](()=> setTimeout(next, stepGap));
     } else {
       setTimeout(()=>{
         if(token !== lToken || lPaused) return;
