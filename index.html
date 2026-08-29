@@ -9,7 +9,7 @@
   html { height:100%; }
   body {
     font-family:"Segoe UI Emoji","Malgun Gothic","맑은 고딕",sans-serif;
-    background:linear-gradient(160deg,#7dd8ff 0%,#c3f0ca 100%);
+    background:#f3e7d3;
     min-height:100%;
     display:flex; flex-direction:column; align-items:center;
     user-select:none;
@@ -134,7 +134,7 @@
   /* 검은 선 그림 */
   img.licon { width:1em; height:1em; vertical-align:-0.12em; object-fit:cover; border-radius:12%; }
   img.photo-icon { width:clamp(11rem,26vw,20rem); height:clamp(11rem,26vw,20rem); }
-  .credit { color:#ffffffbb; font-size:.75rem; margin-top:18px; }
+  .credit { color:#9c8a68; font-size:.75rem; margin-top:18px; }
 
   /* 결과 */
   .stars { font-size:3.4rem; margin:14px 0; }
@@ -214,7 +214,6 @@
     <button onclick="importUnit()">📥 공유 코드 입력</button>
     <button id="share-all-btn" onclick="shareAll()">📤 내 유닛 전부 공유</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
-    <button id="icon-style-btn" onclick="toggleIconStyle()">🎨 그림: 컬러</button>
   </div>
   <div class="credit">단어 그림: OpenMoji (CC BY-SA 4.0)</div>
 </div>
@@ -433,16 +432,7 @@ let HIDDEN = new Set(JSON.parse(localStorage.getItem("wordup_hidden_v1") || "[]"
 function saveCustom(){ localStorage.setItem("wordup_custom_v1", JSON.stringify(CUSTOM)); }
 function saveHidden(){ localStorage.setItem("wordup_hidden_v1", JSON.stringify([...HIDDEN])); }
 
-// ─── 단어 그림: 기본은 컬러 이모지, 원하면 검은 선그림으로 전환 ───
-let ICON_STYLE = localStorage.getItem("wordup_icon_style") || "color";
-function toggleIconStyle(){
-  ICON_STYLE = ICON_STYLE === "color" ? "line" : "color";
-  localStorage.setItem("wordup_icon_style", ICON_STYLE);
-  renderHome();
-}
-const OPENMOJI_LOCAL = "openmoji/";
-const OPENMOJI_CDN = "https://cdn.jsdelivr.net/npm/openmoji@15.1.0/black/svg/";
-function emojiCodes(e){ return [...e].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")); }
+// ─── 단어 그림: 컬러 이모지, 사진 아이콘은 img로 표시 ───
 function setIcon(el, emoji){
   if(/\.(jpg|jpeg|png|webp)$/i.test(emoji)){
     el.textContent = "";
@@ -453,24 +443,7 @@ function setIcon(el, emoji){
     el.appendChild(img);
     return;
   }
-  if(ICON_STYLE === "color"){ el.textContent = emoji; return; }
-  const codes = emojiCodes(emoji);
-  const c1 = codes.filter(c=>c!=="FE0F").join("-");
-  const c2 = codes.join("-");
-  const tries = [OPENMOJI_LOCAL+c1, OPENMOJI_LOCAL+c2, OPENMOJI_CDN+c1, OPENMOJI_CDN+c2]
-    .filter((v,i,a)=>a.indexOf(v)===i);
-  el.textContent = "";
-  const img = document.createElement("img");
-  img.className = "licon";
-  img.alt = "";
-  let step = 0;
-  img.onerror = ()=>{
-    step++;
-    if(step < tries.length) img.src = tries[step] + ".svg";
-    else el.textContent = emoji;   // 전부 실패하면 이모지 그대로
-  };
-  img.src = tries[0] + ".svg";
-  el.appendChild(img);
+  el.textContent = emoji;
 }
 
 let curUnit = "9";
@@ -762,7 +735,6 @@ function renderHome(){
     grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0]));
   }
   document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
-  document.getElementById("icon-style-btn").textContent = ICON_STYLE === "color" ? "🎨 그림: 컬러" : "✏️ 그림: 검은선";
 }
 function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
@@ -1281,7 +1253,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; 2026-07-28</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.1 &nbsp;·&nbsp; 2026-08-29</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
