@@ -941,9 +941,9 @@ function playCurrent(){
         ...[...w[0]].filter(c=>/[a-zA-Z]/.test(c)).map(c=>{
           const lc = c.toLowerCase();
           return {fn: cb=>{
-            curAudio.playbackRate = 2.7;
+            curAudio.playbackRate = 4;   // 브라우저가 소리를 내주는 최대 속도(4배 초과는 무음)
             playOne("letter:"+lc, "en", lc.toUpperCase()+".", 0.9, ()=>{ curAudio.playbackRate = 1; cb(); });
-          }, gap:100};
+          }, gap:60};
         }),
         {fn: cb=>playOne("ko:"+curUnit+":"+lIdx, "ko", koTxt, 0.95, cb), gap:350}
       ]
@@ -1254,7 +1254,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.2 &nbsp;·&nbsp; 2026-08-29</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.3 &nbsp;·&nbsp; 2026-08-29</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
