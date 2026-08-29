@@ -55,16 +55,16 @@
 
   .mode-btns { display:flex; flex-direction:column; gap:16px; margin-top:10px; }
   button.big {
-    font-family:inherit; font-size:1.4rem; font-weight:bold; color:#fff;
+    font-family:inherit; font-size:1.4rem; font-weight:bold; color:#44573c;
     border:none; border-radius:22px; padding:20px; cursor:pointer;
     box-shadow:0 5px 0 rgba(0,0,0,.18); transition:transform .1s;
   }
   button.big:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18); }
-  .btn-learn { background:#ef5f8f; }
-  .btn-spell { background:#8b6ad9; }
-  .btn-quiz  { background:#16b5a3; }
-  .btn-home  { background:#9aa88c; }
-  .btn-green { background:#45b86a; }
+  .btn-learn { background:#f6ecb2; }
+  .btn-spell { background:#e8eeb0; }
+  .btn-quiz  { background:#d6e9b4; }
+  .btn-home  { background:#cddcc4; }
+  .btn-green { background:#c9e6bd; }
 
   .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .topbar .small-btn {
@@ -80,7 +80,7 @@
   }
   .stage .emoji { font-size:clamp(6.5rem,14vw,10rem); line-height:1.1; }
   .stage .word  { font-size:3.2rem; font-weight:bold; color:#222; margin-top:10px; letter-spacing:2px; overflow-wrap:anywhere; }
-  .stage .meaning { font-size:1.5rem; color:#e0457a; font-weight:bold; margin-top:8px; }
+  .stage .meaning { font-size:1.5rem; color:#4a8f7d; font-weight:bold; margin-top:8px; }
 
   .learn-controls { display:flex; gap:12px; justify-content:center; margin-top:18px; }
   .learn-controls button {
@@ -91,12 +91,12 @@
   .learn-controls button:active { transform:scale(.92); }
 
   .bar { height:12px; background:#ffffff88; border-radius:6px; overflow:hidden; margin-top:16px; }
-  .bar > div { height:100%; background:#16b5a3; width:0%; transition:width .4s; border-radius:6px; }
+  .bar > div { height:100%; background:#a8cf8a; width:0%; transition:width .4s; border-radius:6px; }
 
   /* 퀴즈 */
   .q-prompt { display:flex; flex-direction:column; align-items:center; gap:6px; }
   .q-prompt .emoji { font-size:clamp(5rem,11vw,8rem); }
-  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#e0457a; }
+  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#4a8f7d; }
   .speak-btn {
     font-family:inherit; margin-top:6px; font-size:1.05rem; background:#eaf3ff; color:#3b6fd4;
     border:none; border-radius:14px; padding:10px 18px; cursor:pointer; font-weight:bold;
@@ -110,9 +110,9 @@
     display:flex; align-items:center; justify-content:center; cursor:pointer;
     background:#f4f7fa;
   }
-  .slot.filled { background:#d7f2ee; border-bottom-color:#16b5a3; }
+  .slot.filled { background:#eef5e4; border-bottom-color:#a8cf8a; }
   .tile {
-    width:48px; height:54px; border-radius:12px; background:#16b5a3; color:#fff;
+    width:48px; height:54px; border-radius:12px; background:#d6e9b4; color:#44573c;
     font-size:1.9rem; font-weight:bold; display:flex; align-items:center; justify-content:center;
     cursor:pointer; box-shadow:0 4px 0 #3d63c9;
   }
@@ -125,7 +125,7 @@
   }
   .hint-btn { background:#fff3cd; color:#a07800; }
   .fb { margin-top:14px; font-size:1.4rem; font-weight:bold; min-height:34px; }
-  .fb.good { color:#45b86a; }
+  .fb.good { color:#5f9954; }
   .fb.bad  { color:#e74c3c; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
   .shake { animation:shake .35s; }
@@ -161,7 +161,7 @@
     border-radius:10px; background:#fff; padding:4px; font-family:inherit;
   }
   .preview-row .pw { font-weight:bold; font-size:1.1rem; color:#222; }
-  .preview-row .pm { color:#e0457a; font-size:1rem; margin-left:auto; }
+  .preview-row .pm { color:#4a8f7d; font-size:1rem; margin-left:auto; }
   .add-actions { display:flex; gap:12px; margin-top:18px; }
   .add-actions button { flex:1; }
   .parse-error { color:#e03131; font-size:.95rem; margin-top:8px; }
@@ -169,14 +169,14 @@
   /* 카드 인쇄 */
   .print-toolbar { display:flex; gap:12px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
   .print-toolbar button {
-    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#16b5a3;
+    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#56a091;
     border:none; border-radius:12px; padding:12px 22px; cursor:pointer;
   }
   .print-toolbar select {
     font-family:inherit; font-size:1.05rem; font-weight:bold; color:#456;
     border:2px solid #d0dce6; border-radius:12px; padding:10px 14px; background:#fff;
   }
-  .print-toolbar .back { background:#9aa88c; }
+  .print-toolbar .back { background:#aab0a0; }
   .print-unit-title {
     font-size:1.4rem; font-weight:bold; color:#1a5276; margin:16px 0 10px; text-align:left;
   }
@@ -187,7 +187,7 @@
   }
   .pcard .emoji { font-size:2.6rem; }
   .pcard .word { font-size:1.6rem; font-weight:bold; color:#222; margin-top:4px; }
-  .pcard .meaning { font-size:1rem; color:#e0457a; font-weight:bold; margin-top:2px; }
+  .pcard .meaning { font-size:1rem; color:#4a8f7d; font-weight:bold; margin-top:2px; }
   .pcard .tag { font-size:.7rem; color:#aaa; margin-top:5px; }
 
   @media print {
@@ -1255,7 +1255,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.4 &nbsp;·&nbsp; 2026-08-29</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.5 &nbsp;·&nbsp; 2026-08-29</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
