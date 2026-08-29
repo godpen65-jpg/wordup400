@@ -131,7 +131,7 @@
   .pop { animation:pop .5s; }
 
   /* 검은 선 그림 */
-  img.licon { width:1em; height:1em; vertical-align:-0.12em; }
+  img.licon { width:1em; height:1em; vertical-align:-0.12em; object-fit:cover; border-radius:12%; }
   .credit { color:#ffffffbb; font-size:.75rem; margin-top:18px; }
 
   /* 결과 */
@@ -408,10 +408,20 @@ const BUILTIN = {
   ["fly a kite","연을 날리다","🪁"],["make a cake","케이크를 만들다","🎂"],["paint a picture","그림을 그리다","🎨"],["play a game","게임을 하다","🎮"],
   ["play soccer","축구를 하다","⚽"],["read a book","책을 읽다","📖"],["sing a song","노래를 부르다","🎤"],["write a story","이야기를 쓰다","✍️"],
   ["swing","흔들다","🛝"],["go to the park","공원에 가다","🏞️"]]},
- "24":{topic:"마을 🏘️",label:"학원 Unit 7",words:[
-  ["library","도서관","📚"],["park","공원","🏞️"],["playground","놀이터","🛝"],["store","가게","🏪"],
-  ["street","거리, 길","🛣️"],["swimming pool","수영장","🏊"],["town center","도심지, 시내","🏙️"],["zoo","동물원","🦁"],
-  ["school","학교","🏫"],["museum","박물관","🏛️"],["house","집","🏠"],["garden","정원","🌷"]]}
+ "24":{topic:"마을 🏘️",label:"학원 유닛 7-1",words:[
+  ["library","도서관","img/jason7/01_library.jpg"],["park","공원","img/jason7/02_park.jpg"],
+  ["playground","놀이터","img/jason7/03_playground.jpg"],["store","가게","img/jason7/04_store.jpg"],
+  ["street","거리, 길","img/jason7/05_street.jpg"],["swimming pool","수영장","img/jason7/06_swimming_pool.jpg"],
+  ["town center","도심지, 시내","img/jason7/07_town_center.jpg"],["zoo","동물원","img/jason7/08_zoo.jpg"],
+  ["school","학교","img/jason7/09_school.jpg"],["museum","박물관","img/jason7/10_museum.jpg"],
+  ["house","집","img/jason7/11_house.jpg"],["garden","정원","img/jason7/12_garden.jpg"]]},
+ "25":{topic:"교실·동물 🐒",label:"학원 유닛 7-2",words:[
+  ["tree","나무","img/jason7/13_tree.jpg"],["flower","꽃","img/jason7/14_flower.jpg"],
+  ["path","길, 오솔길","img/jason7/15_path.jpg"],["fence","울타리","img/jason7/16_fence.jpg"],
+  ["cabinet","수납장, 캐비닛","img/jason7/17_cabinet.jpg"],["board","칠판, 게시판","img/jason7/18_board.jpg"],
+  ["chair","의자","img/jason7/19_chair.jpg"],["bag","가방","img/jason7/20_bag.jpg"],
+  ["monkey","원숭이","img/jason7/21_monkey.jpg"],["elephant","코끼리","img/jason7/22_elephant.jpg"],
+  ["zebra","얼룩말","img/jason7/23_zebra.jpg"],["real","진짜의","img/jason7/24_real.jpg"]]}
 };
 
 // ─── 내가 만든 유닛 (이 기기에 저장) ───
@@ -431,6 +441,15 @@ const OPENMOJI_LOCAL = "openmoji/";
 const OPENMOJI_CDN = "https://cdn.jsdelivr.net/npm/openmoji@15.1.0/black/svg/";
 function emojiCodes(e){ return [...e].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")); }
 function setIcon(el, emoji){
+  if(/\.(jpg|jpeg|png|webp)$/i.test(emoji)){
+    el.textContent = "";
+    const img = document.createElement("img");
+    img.className = "licon";
+    img.alt = "";
+    img.src = emoji;
+    el.appendChild(img);
+    return;
+  }
   if(ICON_STYLE === "color"){ el.textContent = emoji; return; }
   const codes = emojiCodes(emoji);
   const c1 = codes.filter(c=>c!=="FE0F").join("-");
