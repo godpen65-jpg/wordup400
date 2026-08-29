@@ -60,6 +60,7 @@
   }
   button.big:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18); }
   .btn-learn { background:#ff9f43; }
+  .btn-spell { background:#9b6bff; }
   .btn-quiz  { background:#5f8bfd; }
   .btn-home  { background:#9aa5b1; }
   .btn-green { background:#2ecc71; }
@@ -76,7 +77,7 @@
     box-shadow:0 8px 20px rgba(0,0,0,.15); min-height:340px;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
   }
-  .stage .emoji { font-size:6.5rem; line-height:1.1; }
+  .stage .emoji { font-size:clamp(6.5rem,14vw,10rem); line-height:1.1; }
   .stage .word  { font-size:3.2rem; font-weight:bold; color:#222; margin-top:10px; letter-spacing:2px; overflow-wrap:anywhere; }
   .stage .meaning { font-size:1.5rem; color:#e67e22; font-weight:bold; margin-top:8px; }
 
@@ -93,7 +94,7 @@
 
   /* 퀴즈 */
   .q-prompt { display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .q-prompt .emoji { font-size:5rem; }
+  .q-prompt .emoji { font-size:clamp(5rem,11vw,8rem); }
   .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#e67e22; }
   .speak-btn {
     font-family:inherit; margin-top:6px; font-size:1.05rem; background:#eaf3ff; color:#3b6fd4;
@@ -223,7 +224,8 @@
   <h1 id="mode-title">Unit 9</h1>
   <div class="sub" id="mode-topic"></div>
   <div class="mode-btns">
-    <button class="big btn-learn" onclick="startLearn()">📺 단어 배우기 (자동 재생)</button>
+    <button class="big btn-learn" onclick="startLearn('read')">📺 단어 배우기 (자동 재생)</button>
+    <button class="big btn-spell" onclick="startLearn('spell')">🔤 스펠링 배우기 (철자 읽기)</button>
     <button class="big btn-quiz" onclick="startQuiz()">🧩 글자 맞추기 퀴즈</button>
     <button class="big btn-green" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
     <button class="big btn-home" onclick="goHome()">🏠 처음으로</button>
@@ -940,8 +942,8 @@ function buzzSound(){ tone(180,.3,0,"square",.12); }
 function winSound(){ tone(523,.15); tone(659,.15,.15); tone(784,.15,.3); tone(1047,.4,.45); }
 
 // ─── 학습 모드 (자동재생) ───
-let lIdx=0, lPaused=false, lToken=0;
-function startLearn(){ lIdx=0; lPaused=false; show("scr-learn"); playCurrent(); }
+let lIdx=0, lPaused=false, lToken=0, lMode="read";
+function startLearn(mode){ lMode = mode || "read"; lIdx=0; lPaused=false; show("scr-learn"); playCurrent(); }
 function stopLearn(){ lToken++; stopAudio(); }
 function renderLearn(){
   const w = U().words[lIdx];
@@ -958,12 +960,22 @@ function playCurrent(){
   renderLearn();
   const w = U().words[lIdx];
   const koTxt = w[1].replace(/[()]/g,"").split(",")[0].trim();
-  // 영어 2번 → 한국어 뜻 1번 → 잠깐 쉬고 다음 단어
-  const steps = [
-    cb=>playOne("en:"+w[0], "en", w[0], 0.75, cb),
-    cb=>playOne("en:"+w[0], "en", w[0], 0.85, cb),
-    cb=>playOne("ko:"+curUnit+":"+lIdx, "ko", koTxt, 0.95, cb)
-  ];
+  // 영어 2번 → 한국어 뜻 1번 → 잠깐 쉬고 다음 단어 (읽기 모드)
+  // 영어 1번 → 알파벳 하나씩 → 한국어 뜻 1번 (스펠링 모드)
+  const steps = lMode === "spell"
+    ? [
+        cb=>playOne("en:"+w[0], "en", w[0], 0.8, cb),
+        ...[...w[0]].filter(c=>/[a-zA-Z]/.test(c)).map(c=>{
+          const lc = c.toLowerCase();
+          return cb=>playOne("letter:"+lc, "en", lc.toUpperCase()+".", 0.9, cb);
+        }),
+        cb=>playOne("ko:"+curUnit+":"+lIdx, "ko", koTxt, 0.95, cb)
+      ]
+    : [
+        cb=>playOne("en:"+w[0], "en", w[0], 0.75, cb),
+        cb=>playOne("en:"+w[0], "en", w[0], 0.85, cb),
+        cb=>playOne("ko:"+curUnit+":"+lIdx, "ko", koTxt, 0.95, cb)
+      ];
   let i = 0;
   function next(){
     if(token !== lToken || lPaused) return;
