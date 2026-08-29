@@ -9,7 +9,8 @@
   html { height:100%; }
   body {
     font-family:"Segoe UI Emoji","Malgun Gothic","맑은 고딕",sans-serif;
-    background:#f3e7d3;
+    background:linear-gradient(165deg,#fbf8ee 0%,#f6efc6 45%,#cfe8b8 100%);
+    background-attachment:fixed;
     min-height:100%;
     display:flex; flex-direction:column; align-items:center;
     user-select:none;
@@ -59,11 +60,11 @@
     box-shadow:0 5px 0 rgba(0,0,0,.18); transition:transform .1s;
   }
   button.big:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18); }
-  .btn-learn { background:#ff9f43; }
-  .btn-spell { background:#9b6bff; }
-  .btn-quiz  { background:#5f8bfd; }
-  .btn-home  { background:#9aa5b1; }
-  .btn-green { background:#2ecc71; }
+  .btn-learn { background:#ef5f8f; }
+  .btn-spell { background:#8b6ad9; }
+  .btn-quiz  { background:#16b5a3; }
+  .btn-home  { background:#9aa88c; }
+  .btn-green { background:#45b86a; }
 
   .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .topbar .small-btn {
@@ -79,7 +80,7 @@
   }
   .stage .emoji { font-size:clamp(6.5rem,14vw,10rem); line-height:1.1; }
   .stage .word  { font-size:3.2rem; font-weight:bold; color:#222; margin-top:10px; letter-spacing:2px; overflow-wrap:anywhere; }
-  .stage .meaning { font-size:1.5rem; color:#e67e22; font-weight:bold; margin-top:8px; }
+  .stage .meaning { font-size:1.5rem; color:#e0457a; font-weight:bold; margin-top:8px; }
 
   .learn-controls { display:flex; gap:12px; justify-content:center; margin-top:18px; }
   .learn-controls button {
@@ -90,12 +91,12 @@
   .learn-controls button:active { transform:scale(.92); }
 
   .bar { height:12px; background:#ffffff88; border-radius:6px; overflow:hidden; margin-top:16px; }
-  .bar > div { height:100%; background:#ff9f43; width:0%; transition:width .4s; border-radius:6px; }
+  .bar > div { height:100%; background:#16b5a3; width:0%; transition:width .4s; border-radius:6px; }
 
   /* 퀴즈 */
   .q-prompt { display:flex; flex-direction:column; align-items:center; gap:6px; }
   .q-prompt .emoji { font-size:clamp(5rem,11vw,8rem); }
-  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#e67e22; }
+  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#e0457a; }
   .speak-btn {
     font-family:inherit; margin-top:6px; font-size:1.05rem; background:#eaf3ff; color:#3b6fd4;
     border:none; border-radius:14px; padding:10px 18px; cursor:pointer; font-weight:bold;
@@ -109,9 +110,9 @@
     display:flex; align-items:center; justify-content:center; cursor:pointer;
     background:#f4f7fa;
   }
-  .slot.filled { background:#fff3e0; border-bottom-color:#ff9f43; }
+  .slot.filled { background:#d7f2ee; border-bottom-color:#16b5a3; }
   .tile {
-    width:48px; height:54px; border-radius:12px; background:#5f8bfd; color:#fff;
+    width:48px; height:54px; border-radius:12px; background:#16b5a3; color:#fff;
     font-size:1.9rem; font-weight:bold; display:flex; align-items:center; justify-content:center;
     cursor:pointer; box-shadow:0 4px 0 #3d63c9;
   }
@@ -124,7 +125,7 @@
   }
   .hint-btn { background:#fff3cd; color:#a07800; }
   .fb { margin-top:14px; font-size:1.4rem; font-weight:bold; min-height:34px; }
-  .fb.good { color:#2ecc71; }
+  .fb.good { color:#45b86a; }
   .fb.bad  { color:#e74c3c; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
   .shake { animation:shake .35s; }
@@ -134,7 +135,7 @@
   /* 검은 선 그림 */
   img.licon { width:1em; height:1em; vertical-align:-0.12em; object-fit:cover; border-radius:12%; }
   img.photo-icon { width:clamp(11rem,26vw,20rem); height:clamp(11rem,26vw,20rem); }
-  .credit { color:#9c8a68; font-size:.75rem; margin-top:18px; }
+  .credit { color:#7d8a68; font-size:.75rem; margin-top:18px; }
 
   /* 결과 */
   .stars { font-size:3.4rem; margin:14px 0; }
@@ -160,7 +161,7 @@
     border-radius:10px; background:#fff; padding:4px; font-family:inherit;
   }
   .preview-row .pw { font-weight:bold; font-size:1.1rem; color:#222; }
-  .preview-row .pm { color:#e67e22; font-size:1rem; margin-left:auto; }
+  .preview-row .pm { color:#e0457a; font-size:1rem; margin-left:auto; }
   .add-actions { display:flex; gap:12px; margin-top:18px; }
   .add-actions button { flex:1; }
   .parse-error { color:#e03131; font-size:.95rem; margin-top:8px; }
@@ -168,14 +169,14 @@
   /* 카드 인쇄 */
   .print-toolbar { display:flex; gap:12px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
   .print-toolbar button {
-    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#5f8bfd;
+    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#16b5a3;
     border:none; border-radius:12px; padding:12px 22px; cursor:pointer;
   }
   .print-toolbar select {
     font-family:inherit; font-size:1.05rem; font-weight:bold; color:#456;
     border:2px solid #d0dce6; border-radius:12px; padding:10px 14px; background:#fff;
   }
-  .print-toolbar .back { background:#9aa5b1; }
+  .print-toolbar .back { background:#9aa88c; }
   .print-unit-title {
     font-size:1.4rem; font-weight:bold; color:#1a5276; margin:16px 0 10px; text-align:left;
   }
@@ -186,7 +187,7 @@
   }
   .pcard .emoji { font-size:2.6rem; }
   .pcard .word { font-size:1.6rem; font-weight:bold; color:#222; margin-top:4px; }
-  .pcard .meaning { font-size:1rem; color:#e67e22; font-weight:bold; margin-top:2px; }
+  .pcard .meaning { font-size:1rem; color:#e0457a; font-weight:bold; margin-top:2px; }
   .pcard .tag { font-size:.7rem; color:#aaa; margin-top:5px; }
 
   @media print {
@@ -1250,11 +1251,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 
 <!-- VISITOR_VERSION_START -->
 <style>
-#site-meta{text-align:center;padding:18px 10px;margin-top:10px;font-family:'Jua','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#b0a8b8;line-height:1.6;}
+#site-meta{text-align:center;padding:18px 10px;margin-top:10px;font-family:'Jua','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#7d8a68;line-height:1.6;}
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.3 &nbsp;·&nbsp; 2026-08-29</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.4 &nbsp;·&nbsp; 2026-08-29</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
