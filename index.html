@@ -914,6 +914,25 @@ function tone(freq, dur, when=0, type="sine", vol=.25){
 function dingSound(){ tone(660,.15); tone(880,.25,.13); }
 function buzzSound(){ tone(180,.3,0,"square",.12); }
 function winSound(){ tone(523,.15); tone(659,.15,.15); tone(784,.15,.3); tone(1047,.4,.45); }
+// 힌트를 쓰면 나는 우스꽝스러운 소리 (뿜-빠-뿜-빠~ 하고 미끄러져 내려가는 트롬본 소리)
+function sillySound(){
+  if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+  const t0 = actx.currentTime;
+  // [주파수, 시작 시각, 길이] — 마지막 음은 주욱 미끄러진다
+  const notes = [[392,0,.16],[349,.17,.16],[311,.34,.16],[262,.51,.45]];
+  for(const [f, at, dur] of notes){
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = "sawtooth";
+    o.connect(g); g.connect(actx.destination);
+    const t = t0 + at;
+    o.frequency.setValueAtTime(f, t);
+    if(dur > .3) o.frequency.exponentialRampToValueAtTime(f*.55, t+dur);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(.2, t+.02);
+    g.gain.exponentialRampToValueAtTime(.001, t+dur);
+    o.start(t); o.stop(t+dur+.02);
+  }
+}
 
 // ─── 학습 모드 (자동재생) ───
 let lIdx=0, lPaused=false, lToken=0, lMode="read";
@@ -1090,7 +1109,7 @@ function useHint(){
   const ti = qTiles.findIndex(t=>!t.used && t.ch===need);
   if(ti !== -1){
     qSlots[si2]=ti; qTiles[ti].used=true;
-    tone(700,.12,0,"triangle",.15);
+    sillySound();
     renderQuiz();
     if(qSlots.indexOf(null) === -1) checkAnswer();
   }
@@ -1256,7 +1275,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.6 &nbsp;·&nbsp; 2026-08-29</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.7 &nbsp;·&nbsp; 2026-08-29</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
