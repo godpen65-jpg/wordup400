@@ -96,6 +96,18 @@
   }
   .learn-controls button:active { transform:scale(.92); }
 
+  /* 화면 높이가 낮은 태블릿(가로) — 버튼이 화면 아래 작업표시줄에 가리지 않게 카드 줄이기 (2026-10-13) */
+  @media (max-height:760px) {
+    #scr-learn { padding-top:10px; padding-bottom:10px; }
+    #scr-learn .topbar { margin-bottom:8px; }
+    #scr-learn .stage { min-height:0; padding:16px 20px 14px; }
+    #scr-learn .stage .emoji { font-size:min(clamp(6.5rem,14vw,10rem), 24vh); }
+    #scr-learn .stage .word { font-size:min(3.2rem, 8vh); margin-top:4px; }
+    #scr-learn .stage .meaning { font-size:min(1.5rem, 4.4vh); margin-top:4px; }
+    #scr-learn .bar { margin-top:10px; }
+    #scr-learn .learn-controls { margin-top:10px; }
+    #scr-learn .learn-controls button { width:56px; height:56px; font-size:1.3rem; }
+  }
   .bar { height:12px; background:#ffffff88; border-radius:6px; overflow:hidden; margin-top:16px; }
   .bar > div { height:100%; background:#a8cf8a; width:0%; transition:width .4s; border-radius:6px; }
 
