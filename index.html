@@ -204,6 +204,7 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:140px;
   }
   .pcard .emoji { font-size:2.6rem; }
+  .pcard img.photo-icon { width:30mm; height:30mm; }
   .pcard .word { font-size:1.6rem; font-weight:bold; color:#222; margin-top:4px; }
   .pcard .meaning { font-size:1rem; color:#4a8f7d; font-weight:bold; margin-top:2px; }
   .pcard .tag { font-size:.7rem; color:#aaa; margin-top:5px; }
@@ -234,7 +235,7 @@
     <button id="share-all-btn" onclick="shareAll()">📤 내 유닛 전부 공유</button>
     <button id="restore-btn" style="display:none" onclick="restoreBuiltin()">↩️ 지운 기본 유닛 되살리기</button>
   </div>
-  <div class="credit">단어 그림: OpenMoji (CC BY-SA 4.0)</div>
+  <div class="credit">단어 그림: 학원 단어카드 스타일로 새로 그림 (Higgsfield)</div>
 </div>
 
 <!-- 모드 선택 -->
@@ -475,6 +476,54 @@ function setIcon(el, emoji){
     return;
   }
   el.textContent = emoji;
+}
+// 학원 단어카드 스타일 그림 (2026-11, img/cards/). 단어가 같으면 내가 만든 유닛에도 이 그림이 나온다.
+// 유닛에 따로 정해 둔 그림(img/...)이 있으면 그게 먼저.
+const CARD_PIC = {
+ "trip":"trip", "place":"place", "try":"try", "vacation":"vacation", "famous":"famous", "airplane":"airplane",
+ "visit":"visit", "map":"map", "picture":"picture", "plan":"plan", "special":"special", "rest":"rest",
+ "beach":"beach", "stay":"stay", "wait":"wait", "road":"road", "hotel":"hotel", "pack":"pack",
+ "side":"side", "wear":"wear", "dirty":"dirty", "soft":"soft", "mirror":"mirror", "large":"large",
+ "pocket":"pocket", "small":"small", "cover":"cover", "pants":"pants", "lovely":"lovely", "scarf":"scarf",
+ "cap":"cap", "shirt":"shirt", "button":"button", "pick":"pick", "cute":"cute", "dress":"dress",
+ "skirt":"skirt", "formal":"formal", "casual":"casual", "sand":"sand", "ugly":"ugly", "grow":"grow",
+ "plant":"plant", "cage":"cage", "dark":"dark", "forest":"forest", "grass":"grass", "ground":"ground",
+ "fall":"fall", "air":"air", "sea":"sea", "moon":"moon", "deep":"deep", "nature":"nature",
+ "life":"life", "weather":"weather", "die":"die", "river":"river", "stone":"stone", "art":"art",
+ "color":"color", "draw":"draw", "image":"image", "really":"really", "simple":"simple", "gallery":"gallery",
+ "object":"object", "idea":"idea", "stick":"stick", "cartoon":"cartoon", "sketch":"sketch", "paint":"paint",
+ "bright":"bright", "erase":"erase", "brush":"brush", "each":"each", "studio":"studio", "line":"line",
+ "imagine":"imagine", "build":"build", "inside":"inside", "restaurant":"restaurant", "church":"church", "ticket":"ticket",
+ "gate":"gate", "bank":"bank", "airport":"airport", "subway":"subway", "museum":"museum", "arrive":"arrive",
+ "bookstore":"bookstore", "tower":"tower", "huge":"huge", "factory":"factory", "station":"station", "across":"across",
+ "theater":"theater", "center":"center", "location":"location", "want":"want", "sick":"sick", "fine":"fine",
+ "hate":"hate", "glad":"glad", "sad":"sad", "angry":"angry", "gift":"gift", "fight":"fight",
+ "worry":"worry", "enjoy":"enjoy", "cry":"cry", "silly":"silly", "smile":"smile", "lonely":"lonely",
+ "mind":"mind", "wish":"wish", "shock":"shock", "wonderful":"wonderful", "nervous":"nervous", "game":"game",
+ "win":"win", "sport":"sport", "hit":"hit", "tennis":"tennis", "ready":"ready", "swim":"swim",
+ "kick":"kick", "soccer":"soccer", "bat":"bat", "pool":"pool", "coach":"coach", "shout":"shout",
+ "race":"race", "skate":"skate", "watch":"watch", "pass":"pass", "baseball":"baseball", "throw":"throw",
+ "cheer":"cheer", "robot":"robot", "human":"human", "perfect":"perfect", "computer":"computer", "fix":"fix",
+ "already":"already", "show":"show", "copy":"copy", "system":"system", "future":"future", "argue":"argue",
+ "research":"research", "fact":"fact", "process":"process", "allow":"allow", "challenge":"challenge", "invent":"invent",
+ "sure":"sure", "treasure":"treasure", "striped":"striped", "east":"east", "patch":"patch", "south":"south",
+ "west":"west", "return":"return", "yell":"yell", "library":"library", "park":"park", "playground":"playground",
+ "store":"store", "street":"street", "swimming pool":"swimming_pool", "town center":"town_center", "zoo":"zoo", "model":"model",
+ "tiny":"tiny", "bee":"bee", "bird":"bird", "chicken":"chicken", "dog":"dog", "donkey":"donkey",
+ "duck":"duck", "sheep":"sheep", "pen":"pen", "farmer":"farmer", "jeans":"jeans", "shoes":"shoes",
+ "socks":"socks", "t-shirt":"tshirt", "boots":"boots", "gloves":"gloves", "banana":"banana", "bread":"bread",
+ "candy":"candy", "lemon":"lemon", "milk":"milk", "potato":"potato", "rice":"rice", "tomato":"tomato",
+ "water":"water", "lunch":"lunch", "beach ball":"beach_ball", "ice cream":"ice_cream", "ocean":"ocean", "sandcastle":"sandcastle",
+ "sun hat":"sun_hat", "shell":"shell", "snorkel":"snorkel", "fly a kite":"fly_a_kite", "make a cake":"make_a_cake", "paint a picture":"paint_a_picture",
+ "play a game":"play_a_game", "play soccer":"play_soccer", "read a book":"read_a_book", "sing a song":"sing_a_song", "write a story":"write_a_story", "swing":"swing",
+ "go to the park":"go_to_the_park", "snuggle":"snuggle", "chirp":"chirp", "grumble":"grumble", "trudge":"trudge", "disturb":"disturb",
+ "tortoise":"tortoise", "sculpture":"sculpture", "groan":"groan", "giggle":"giggle", "realize":"realize", "cow":"cow",
+ "scientist":"scientist", "pirate":"pirate", "boat":"boat", "north":"north", "understand":"understand"
+};
+function wordPic(w){
+  if(/\.(jpg|jpeg|png|webp)$/i.test(w[2] || "")) return w[2];
+  const f = CARD_PIC[String(w[0]).toLowerCase()];
+  return f ? "img/cards/" + f + ".jpg" : w[2];
 }
 
 let curUnit = "9";
@@ -970,7 +1019,7 @@ function startLearn(mode){ lMode = mode || "read"; lIdx=0; lPaused=false; show("
 function stopLearn(){ lToken++; stopAudio(); }
 function renderLearn(){
   const w = U().words[lIdx];
-  setIcon(document.getElementById("l-emoji"), w[2]);
+  setIcon(document.getElementById("l-emoji"), wordPic(w));
   document.getElementById("l-word").textContent = w[0];
   document.getElementById("l-meaning").textContent = w[1];
   document.getElementById("learn-prog").textContent = (lIdx+1)+" / "+U().words.length;
@@ -1060,7 +1109,7 @@ function loadQuizWord(){
   if(letters.length>1 && sh.join("")===qAnswer) sh = shuffle(letters);
   qTiles = sh.map(ch=>({ch, used:false}));
   qSlots = new Array(letters.length).fill(null);
-  setIcon(document.getElementById("q-emoji"), w[2]);
+  setIcon(document.getElementById("q-emoji"), wordPic(w));
   document.getElementById("q-meaning").textContent = w[1];
   document.getElementById("quiz-prog").textContent = (qIdx+1)+" / "+U().words.length;
   setFb("","");
@@ -1191,12 +1240,13 @@ function renderPrint(){
     sec.innerHTML = `<div class="print-unit-title">${escapeHtml(title)}</div>`;
     const grid = document.createElement("div");
     grid.className = "print-cards";
-    for(const [word, meaning, emoji] of words){
+    for(const w of words){
+      const [word, meaning] = w;
       const c = document.createElement("div");
       c.className = "pcard";
       c.innerHTML = `<div class="emoji"></div><div class="word">${escapeHtml(word)}</div>
                      <div class="meaning">${escapeHtml(meaning)}</div><div class="tag">${escapeHtml(tag)}</div>`;
-      setIcon(c.querySelector(".emoji"), emoji);
+      setIcon(c.querySelector(".emoji"), wordPic(w));
       grid.appendChild(c);
     }
     sec.appendChild(grid);
@@ -1305,7 +1355,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.10 &nbsp;·&nbsp; 2026-10-18</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.11 &nbsp;·&nbsp; 2026-11-04</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
