@@ -1195,13 +1195,12 @@ function loadChoice(){
   const dir = qKind === "mix" ? (Math.random() < .5 ? "mean" : "word") : qKind;
   const key = dir === "mean" ? 1 : 0;          // 보기로 보여줄 칸: 뜻(1) 또는 영어(0)
   const emo = document.getElementById("c-emoji"), txt = document.getElementById("c-text");
-  if(dir === "mean"){            // 영어를 보고(듣고) 뜻 고르기 — 그림은 맞힌 뒤에 보여준다
-    setIcon(emo, "❓");
+  setIcon(emo, "❓");             // 그림은 두 퀴즈 모두 맞힌 뒤에 보여준다
+  if(dir === "mean"){            // 영어를 보고(듣고) 뜻 고르기
     txt.textContent = w[0]; txt.className = "c-text en";
     document.getElementById("c-speak").style.display = "";
     playOne("en:"+w[0], "en", w[0], 0.8);
-  } else {                       // 그림과 뜻을 보고 영어 고르기
-    setIcon(emo, w[2]);
+  } else {                       // 뜻을 보고 영어 고르기
     txt.textContent = w[1]; txt.className = "c-text ko";
     document.getElementById("c-speak").style.display = "none";
   }
@@ -1457,7 +1456,8 @@ renderHome();
 <h3>3. 퀴즈 네 가지</h3>
 <ul>
   <li><b>뜻 퀴즈</b> : 영어를 보고 듣고, 맞는 뜻을 골라요.</li>
-  <li><b>영단어 퀴즈</b> : 그림과 뜻을 보고, 맞는 영어를 골라요.</li>
+  <li><b>영단어 퀴즈</b> : 뜻을 보고, 맞는 영어를 골라요.</li>
+  <li>두 퀴즈 모두 그림은 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
   <li><b>뜻 + 영단어 퀴즈</b> : 두 가지가 섞여서 나와요.</li>
   <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
   <li><b>스펠링 퀴즈</b>는 아래처럼 해요.</li>
