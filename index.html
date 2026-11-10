@@ -73,6 +73,10 @@
     .mode-btns.grid2 { display:grid; grid-template-columns:1fr 1fr; }
     .mode-btns.grid2 .wide { grid-column:1 / -1; }
   }
+  .mode-btns .row3 { display:flex; flex-direction:column; gap:16px; }
+  @media (min-width:700px) {
+    .mode-btns .row3 { grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,1fr); }
+  }
   .mode-btns .grp { grid-column:1 / -1; text-align:left; font-weight:bold; color:#666; font-size:1.05rem; margin-bottom:-8px; }
   .book-card .emo { font-size:clamp(2.8rem,6vw,4rem); }
   .book-card { padding:26px 12px; }
@@ -113,6 +117,13 @@
     #scr-learn .learn-controls { margin-top:10px; }
     #scr-learn .learn-controls button { width:56px; height:56px; font-size:1.3rem; }
   }
+  /* 그림 없이 외우기: 그림을 숨기고 영어·뜻을 크게 */
+  #scr-learn.textonly .stage .emoji { display:none; }
+  /* 스펠링 퀴즈 (글씨만 보고): 그림을 숨기고 뜻을 크게 */
+  #scr-quiz.textonly .q-prompt .emoji { display:none; }
+  #scr-quiz.textonly .q-prompt .meaning { font-size:min(2.6rem, 8vh); margin:10px 0 4px; }
+  #scr-learn.textonly .stage .word { font-size:min(5rem, 14vh); margin-top:0; }
+  #scr-learn.textonly .stage .meaning { font-size:min(2.4rem, 7vh); margin-top:14px; }
   .bar { height:12px; background:#e8e8e8; border-radius:6px; overflow:hidden; margin-top:16px; }
   .bar > div { height:100%; background:#111; width:0%; transition:width .4s; border-radius:6px; }
 
@@ -296,13 +307,17 @@
   <div class="sub" id="mode-topic"></div>
   <div class="mode-btns grid2">
     <div class="grp">📖 외우기</div>
-    <button class="big btn-learn" onclick="startLearn('read')">📺 단어 배우기 (자동 재생)</button>
-    <button class="big btn-spell" onclick="startLearn('spell')">🔤 스펠링 배우기 (철자 읽기)</button>
+    <div class="row3">
+      <button class="big btn-learn" onclick="startLearn('read')">🖼️ 그림 단어 외우기</button>
+      <button class="big btn-spell" onclick="startLearn('spell')">🔤 스펠 외우기</button>
+      <button class="big" onclick="startLearn('text')">📝 그림 없이 단어 외우기</button>
+    </div>
     <div class="grp">✏️ 퀴즈</div>
-    <button class="big btn-quiz" onclick="startQuiz('spell')">🧩 스펠링 퀴즈</button>
+    <button class="big btn-quiz" onclick="startQuiz('spell')">🧩 스펠링 퀴즈 (그림 보고)</button>
+    <button class="big" onclick="startQuiz('spelltext')">🔤 스펠링 퀴즈 (글씨만 보고)</button>
     <button class="big btn-mean" onclick="startQuiz('mean')">💬 뜻 퀴즈</button>
     <button class="big btn-word" onclick="startQuiz('word')">🔠 영단어 퀴즈</button>
-    <button class="big btn-mix" onclick="startQuiz('mix')">🖼️ 뜻 + 영단어 퀴즈 (그림 보고)</button>
+    <button class="big btn-mix wide" onclick="startQuiz('mix')">🖼️ 뜻 + 영단어 퀴즈 (그림 보고)</button>
     <button class="big btn-green wide" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
     <button class="big btn-home wide" onclick="goHome()">🏠 처음으로</button>
   </div>
@@ -1096,7 +1111,11 @@ function sillySound(){
 
 // ─── 학습 모드 (자동재생) ───
 let lIdx=0, lPaused=false, lToken=0, lMode="read";
-function startLearn(mode){ lMode = mode || "read"; lIdx=0; lPaused=false; show("scr-learn"); playCurrent(); }
+function startLearn(mode){
+  lMode = mode || "read"; lIdx=0; lPaused=false;
+  document.getElementById("scr-learn").classList.toggle("textonly", lMode === "text");   // 그림 없이 외우기
+  show("scr-learn"); playCurrent();
+}
 function stopLearn(){ lToken++; stopAudio(); }
 function renderLearn(){
   const w = U().words[lIdx];
@@ -1151,6 +1170,7 @@ function playCurrent(){
 }
 function finishLearn(){
   winSound();
+  document.getElementById("scr-learn").classList.remove("textonly");   // 끝 화면에서는 🎉를 보여준다
   document.getElementById("l-emoji").textContent = "🎉";
   document.getElementById("l-word").textContent = "다 봤어요!";
   document.getElementById("l-meaning").textContent = "이제 퀴즈로 확인해 볼까요?";
@@ -1178,18 +1198,20 @@ function shuffle(a){
   for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; }
   return b;
 }
+// 스펠링 퀴즈는 두 가지: spell(그림+뜻 보고), spelltext(뜻 글씨만 보고)
+function isSpell(k){ return k === "spell" || k === "spelltext"; }
 function startQuiz(kind, list){
   qKind = kind || "spell";
   const all = U().words.map((_,i)=>i);
   const pick = (list && list.length) ? [...list] : all;
-  qList = qKind === "spell" ? pick.sort((a,b)=>a-b) : shuffle(pick);
+  qList = isSpell(qKind) ? pick.sort((a,b)=>a-b) : shuffle(pick);
   qPos=0; qCorrect=0; qRetry=[];
-  if(qKind === "spell"){ show("scr-quiz"); loadQuizWord(); }
+  if(isSpell(qKind)){ show("scr-quiz"); loadQuizWord(); }
   else { show("scr-choice"); loadChoice(); }
 }
 function quizProg(){ return "문제 " + (qPos+1) + " / " + qList.length + " · ⭐ 맞힌 개수 " + qCorrect; }
 function quizNext(){
-  if(qPos < qList.length-1){ qPos++; if(qKind === "spell") loadQuizWord(); else loadChoice(); }
+  if(qPos < qList.length-1){ qPos++; if(isSpell(qKind)) loadQuizWord(); else loadChoice(); }
   else showResult();
 }
 // 고르기 퀴즈 한 문제
@@ -1265,6 +1287,7 @@ function loadQuizWord(){
   qTiles = sh.map(ch=>({ch, used:false}));
   qSlots = new Array(letters.length).fill(null);
   setIcon(document.getElementById("q-emoji"), w[2]);
+  document.getElementById("scr-quiz").classList.toggle("textonly", qKind === "spelltext");   // 글씨만 보고: 그림 숨김
   document.getElementById("q-meaning").textContent = w[1];
   document.getElementById("quiz-prog").textContent = quizProg();
   setFb("","");
@@ -1309,6 +1332,7 @@ function checkAnswer(){
     dingSound();
     setFb("딩동댕! " + w[0] + " 🎉", "good");
     document.getElementById("quiz-prog").textContent = quizProg();
+    document.getElementById("scr-quiz").classList.remove("textonly");   // 맞히면 그림을 보여준다
     document.getElementById("q-emoji").classList.add("pop");
     playOne("en:"+w[0], "en", w[0], 0.9);
     const t = qToken;
@@ -1457,12 +1481,13 @@ renderHome();
 </ul>
 <p>홈 화면에 별 모양 아이콘이 생겨서, 다음부터는 눌러서 바로 열 수 있어요.</p>
 
-<h3>2. 단어 배우기 (틀어놓기만 하면 돼요)</h3>
+<h3>2. 단어 외우기 (틀어놓기만 하면 돼요)</h3>
 <ul>
-  <li>첫 화면에서 <b>교재</b>를 고르고, 공부할 상자(유닛)를 누른 다음 <b>“단어 배우기”</b>를 눌러요.</li>
+  <li>첫 화면에서 <b>교재</b>를 고르고, 공부할 상자(유닛)를 누른 다음 <b>“그림 단어 외우기”</b>를 눌러요.</li>
   <li>그림과 단어가 크게 나오고 원어민 발음이 나와요.</li>
   <li>영어 두 번 → 한국어 뜻 한 번 → 다음 단어로 저절로 넘어가요.</li>
   <li>아래 동그란 단추 : ◀◀ 앞으로 · ⏸ 잠깐 멈춤 · ▶▶ 다음으로</li>
+  <li><b>“그림 없이 단어 외우기”</b>는 그림 없이 영어와 뜻 글자만 크게 보여 주고, 소리는 그림 단어 외우기와 똑같이 나와요.</li>
 </ul>
 
 <h3>3. 퀴즈 네 가지</h3>
@@ -1472,7 +1497,7 @@ renderHome();
   <li>이 두 퀴즈는 그림이 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
   <li><b>뜻 + 영단어 퀴즈</b> : <b>그림만</b> 보고, 맞는 뜻이나 영어를 골라요.</li>
   <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
-  <li><b>스펠링 퀴즈</b>는 아래처럼 해요.</li>
+  <li><b>스펠링 퀴즈</b>는 두 가지예요. <b>그림 보고</b>는 그림과 뜻을, <b>글씨만 보고</b>는 뜻 글씨만 보고 맞혀요. 푸는 방법은 아래처럼 해요.</li>
   <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
   <li>잘못 놓았으면 그 글자를 <b>다시 누르면</b> 빠져요.</li>
   <li><b>발음 듣기</b>로 다시 듣고, 막히면 <b>힌트</b>로 한 글자씩 봐요.</li>
@@ -1519,7 +1544,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.12 &nbsp;·&nbsp; 2026-11-10</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.13 &nbsp;·&nbsp; 2026-11-11</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
