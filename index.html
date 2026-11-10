@@ -187,7 +187,6 @@
   .c-text { font-weight:bold; overflow-wrap:anywhere; margin-top:4px; }
   .c-text.en { font-size:min(3.2rem, 9vh); color:#111; letter-spacing:2px; }
   .c-text.ko { font-size:min(2rem, 6vh); color:#111; }
-  .c-text.ask { font-size:min(1.3rem, 4.5vh); color:#888; }
   #scr-choice .fb { margin-top:8px; font-size:1.25rem; min-height:30px; }
   .c-opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
   .c-opts button {
@@ -317,7 +316,6 @@
     <button class="big" onclick="startQuiz('spelltext')">🔤 스펠링 퀴즈 (글씨만 보고)</button>
     <button class="big btn-mean" onclick="startQuiz('mean')">💬 뜻 퀴즈</button>
     <button class="big btn-word" onclick="startQuiz('word')">🔠 영단어 퀴즈</button>
-    <button class="big btn-mix wide" onclick="startQuiz('mix')">🖼️ 뜻 + 영단어 퀴즈 (그림 보고)</button>
     <button class="big btn-green wide" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
     <button class="big btn-home wide" onclick="goHome()">🏠 처음으로</button>
   </div>
@@ -1189,7 +1187,7 @@ function learnNext(){
 }
 
 // ─── 퀴즈 ───
-// qKind: spell(스펠링) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기) / mix(뜻+영단어 섞어서)
+// qKind: spell(스펠링, 그림 보고) / spelltext(스펠링, 글씨만 보고) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기)
 // qList: 이번에 풀 단어 번호들, qRetry: 한 번에 못 맞힌 단어 번호들
 let qIdx=0, qTiles=[], qSlots=[], qClean=true, qCorrect=0, qRetry=[], qAnswer="";
 let qKind="spell", qList=[], qPos=0, qToken=0, cLocked=false;
@@ -1220,15 +1218,11 @@ function loadChoice(){
   qIdx = qList[qPos];
   const words = U().words, w = words[qIdx];
   qClean = true; cLocked = false;
-  const pic = qKind === "mix";                 // 뜻+영단어 퀴즈: 그림만 보고 고르기
-  const dir = pic ? (Math.random() < .5 ? "mean" : "word") : qKind;
+  const dir = qKind;
   const key = dir === "mean" ? 1 : 0;          // 보기로 보여줄 칸: 뜻(1) 또는 영어(0)
   const emo = document.getElementById("c-emoji"), txt = document.getElementById("c-text");
   document.getElementById("c-speak").style.display = "none";
-  if(pic){                       // 그림만 보고 뜻 또는 영어 고르기
-    setIcon(emo, w[2]);
-    txt.textContent = dir === "mean" ? "뜻을 골라요" : "영어를 골라요"; txt.className = "c-text ask";
-  } else if(dir === "mean"){     // 영어를 보고(듣고) 뜻 고르기 — 그림은 맞힌 뒤에 보여준다
+  if(dir === "mean"){     // 영어를 보고(듣고) 뜻 고르기 — 그림은 맞힌 뒤에 보여준다
     setIcon(emo, "❓");
     txt.textContent = w[0]; txt.className = "c-text en";
     document.getElementById("c-speak").style.display = "";
@@ -1244,7 +1238,6 @@ function loadChoice(){
   for(const o of shuffle(words)){
     if(others.length === 3) break;
     if(o[0].toLowerCase() === w[0].toLowerCase() || o[1] === w[1] || seen.has(o[key])) continue;
-    if(pic && o[2] === w[2]) continue;         // 그림이 같은 단어(바지/청바지 등)는 보기에서 뺀다
     seen.add(o[key]); others.push(o);
   }
   const box = document.getElementById("c-opts");
@@ -1495,7 +1488,6 @@ renderHome();
   <li><b>뜻 퀴즈</b> : 영어를 보고 듣고, 맞는 뜻을 골라요.</li>
   <li><b>영단어 퀴즈</b> : 뜻을 보고, 맞는 영어를 골라요.</li>
   <li>이 두 퀴즈는 그림이 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
-  <li><b>뜻 + 영단어 퀴즈</b> : <b>그림만</b> 보고, 맞는 뜻이나 영어를 골라요.</li>
   <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
   <li><b>스펠링 퀴즈</b>는 두 가지예요. <b>그림 보고</b>는 그림과 뜻을, <b>글씨만 보고</b>는 뜻 글씨만 보고 맞혀요. 푸는 방법은 아래처럼 해요.</li>
   <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
@@ -1544,7 +1536,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.13 &nbsp;·&nbsp; 2026-11-11</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.14 &nbsp;·&nbsp; 2026-11-11</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
