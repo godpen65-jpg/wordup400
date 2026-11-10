@@ -187,6 +187,7 @@
   .c-text { font-weight:bold; overflow-wrap:anywhere; margin-top:4px; }
   .c-text.en { font-size:min(3.2rem, 9vh); color:#111; letter-spacing:2px; }
   .c-text.ko { font-size:min(2rem, 6vh); color:#111; }
+  .c-text.def { font-size:min(1.9rem, 5.5vh); color:#111; line-height:1.35; max-width:30em; }
   #scr-choice .fb { margin-top:8px; font-size:1.25rem; min-height:30px; }
   .c-opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
   .c-opts button {
@@ -316,6 +317,7 @@
     <button class="big" onclick="startQuiz('spelltext')">🔤 스펠링 퀴즈 (그림 없이)</button>
     <button class="big btn-mean" onclick="startQuiz('mean')">💬 뜻 퀴즈</button>
     <button class="big btn-word" onclick="startQuiz('word')">🔠 영단어 퀴즈</button>
+    <button class="big wide" id="def-btn" onclick="startQuiz('def')">📖 영영 퀴즈 (영어 설명 듣고 고르기)</button>
     <button class="big btn-green wide" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
     <button class="big btn-home wide" onclick="goHome()">🏠 처음으로</button>
   </div>
@@ -370,7 +372,7 @@
   <div class="stage" id="choice-stage">
     <div class="emoji" id="c-emoji">❓</div>
     <div class="c-text en" id="c-text">apple</div>
-    <button class="speak-btn" id="c-speak" onclick="speakCurrentQuizWord()">🔊 발음 듣기</button>
+    <button class="speak-btn" id="c-speak" onclick="qKind === 'def' ? speakDef() : speakCurrentQuizWord()">🔊 다시 듣기</button>
     <div class="fb" id="c-fb"></div>
   </div>
   <div class="c-opts" id="c-opts"></div>
@@ -551,6 +553,19 @@ const BUILTIN = {
   ["keep company","함께 있어 주다","img/milo/16_keep_company.jpg"],["already","이미","img/milo/17_already.jpg"],["pet","쓰다듬다","img/milo/18_pet.jpg"],
   ["follow","따라가다","img/milo/19_follow.jpg"],["point","가리키다","img/milo/20_point.jpg"]]}
 };
+
+// ─── 영영 뜻 (Word Up 400 교재) : 영영 퀴즈에 쓴다. 소리는 audio.js의 "def:단어" ───
+const ENDEF = {
+ "9":{"trip": "the act of going to a place for fun", "place": "an area, building, city, etc.", "try": "to do something new", "vacation": "a period of time when people do not work or go to school", "famous": "known by many people", "airplane": "a flying machine that people use to go places", "visit": "to go somewhere to see a person or place", "map": "a drawing of a town, a country, or the world", "picture": "a drawing, photo, or painting", "plan": "to think about what you will do", "boat": "a thing that people use to move on water", "special": "more important or better than normal", "rest": "a quiet time when you do not do any work", "beach": "a sandy area next to the ocean", "stay": "to live in a place for a short time", "wait": "to stay in one place until something happens", "road": "a path for cars to drive on", "hotel": "a place with many rooms where people can stay", "pack": "to put things into a bag for a trip", "side": "the right or left part of something"},
+ "10":{"wear": "to put clothes on your body", "dirty": "not clean", "soft": "not hard; nice to touch", "mirror": "a piece of glass that people can use to look at themselves", "large": "big", "pocket": "a small bag or pouch inside your clothes", "small": "little", "cover": "to put something over something else", "pants": "a piece of clothing that covers each leg", "lovely": "pretty", "scarf": "a piece of cloth that you wear around your neck", "cap": "a soft hat with a curved part that sticks out in front", "shirt": "a piece of clothing that covers the top part of your body", "button": "a small piece of wood, plastic, etc., used to hold clothes together", "pick": "to choose something", "cute": "pretty and small", "dress": "a type of clothing for women; made of one long piece", "skirt": "a piece of clothing for women that covers the lower half of the body", "formal": "for serious, important events", "casual": "not for special events"},
+ "11":{"sand": "very small pieces of rock", "ugly": "not pretty", "grow": "to become bigger", "plant": "a living thing that usually grows in soil", "cage": "a special box to keep animals in", "dark": "with little or no light", "forest": "an area with many trees", "grass": "a green plant with thin leaves", "ground": "the place under your feet", "fall": "to move down quickly and freely", "air": "the gases around the earth", "sea": "a large area of salt water", "moon": "the round object that moves around the earth", "deep": "far from the top", "nature": "anything that people did not make", "life": "the time between birth and death", "weather": "the conditions in the air, such as wind, rain, etc.", "die": "to stop living", "river": "a natural water way that runs across the land to the sea", "stone": "a small rock that can be found on the ground"},
+ "12":{"art": "the making of things that are beautiful or interesting", "color": "to put color on something", "draw": "to make a picture", "image": "a picture of something", "really": "very", "simple": "easy; not having many difficult parts", "gallery": "a place to see artwork", "object": "a thing that you can see and touch that is not alive", "idea": "a thought in your mind", "stick": "to put two things together with glue", "cartoon": "a drawing of a fun character", "sketch": "to make a quick drawing", "paint": "to cover something with paint", "bright": "strong in color", "erase": "to get pencil marks off of something", "brush": "an object used to paint things", "each": "every thing in a group", "studio": "a room where an artist works", "line": "a long, thin mark", "imagine": "to have a picture or idea of something in your mind"},
+ "13":{"build": "to put things together to make something", "inside": "in a building", "restaurant": "a place where you can buy and eat food", "church": "a place where Christians go to pray", "ticket": "a piece of paper or image that lets you travel", "gate": "a door that covers the opening in a wall", "bank": "a place where you can keep your money", "airport": "a place where you can take an airplane", "subway": "a train system that runs underground", "museum": "a place where people can see important objects or paintings", "arrive": "to get to the place that you are going to", "bookstore": "a place that sells books", "tower": "a building that is very tall and narrow", "huge": "very big", "factory": "a place where people make things using machines", "station": "a place where you can take a subway or train", "across": "on the other side of something", "theater": "a place where you can watch movies", "center": "the middle of something", "location": "the place where something is"},
+ "14":{"want": "to feel the need for something", "sick": "not feeling well", "fine": "good; healthy", "hate": "to dislike strongly", "glad": "happy", "sad": "feeling unhappy", "angry": "very mad", "gift": "something given for free", "fight": "to yell at someone or hit them", "worry": "to feel that something bad will happen", "enjoy": "to like doing something", "cry": "to have tears come out of your eyes", "silly": "doing something without thinking", "smile": "to make a happy face by showing your teeth", "lonely": "feeling alone", "mind": "the part of a person that thinks and feels", "wish": "to want something very much", "shock": "a very big surprise", "wonderful": "very good", "nervous": "worried about the future"},
+ "15":{"game": "a fun activity with special rules", "win": "to do better than other players in a game", "sport": "a game where players use their skills to win", "hit": "to touch something very quickly and hard", "tennis": "a sport where players use rackets to hit a ball over a net", "ready": "able to start doing something now", "swim": "to move through water using your arms and legs", "kick": "to hit something with your leg or foot", "soccer": "a sport where two teams try to kick a ball into each other's goal", "bat": "a wooden stick that players use to hit a ball", "pool": "a space filled with water for swimming", "coach": "someone whose job is to help you get better at a sport or skill", "shout": "to say something in a loud voice", "race": "any game where the fastest player wins", "skate": "to go places using special shoes with wheels", "watch": "to see", "pass": "to give the ball to another player on your team", "baseball": "a sport where players hit a ball with a bat", "throw": "to send something through the air using your arm", "cheer": "to shout for your favorite team"},
+ "16":{"robot": "a machine that can do a job by itself", "human": "a person", "perfect": "without mistakes", "computer": "a machine that works with data", "fix": "to make a broken thing like new", "scientist": "someone who studies how the world works", "already": "before now", "show": "to make someone see something", "copy": "to make something that looks like something else", "system": "a group of things that work together as a whole", "future": "the time after now", "argue": "to talk angrily to each other", "research": "finding information about something", "fact": "something true", "understand": "to know how something works", "process": "the steps needed to reach a goal", "allow": "to let", "challenge": "an interesting or hard problem", "invent": "to create something new", "sure": "knowing that something is true"}
+};
+function defOf(i){ const m = BUILTIN[curUnit] && ENDEF[curUnit]; return m ? m[U().words[i][0]] : null; }
 
 // ─── 교재: 첫 화면에서 교재를 고르면 그 안의 유닛이 보인다 ───
 // 새 유닛을 BUILTIN에 넣으면 여기 units에도 번호를 넣어준다 (안 넣으면 '그 밖의 단어'에 모인다).
@@ -807,6 +822,7 @@ function openUnit(u){
   document.getElementById("mode-topic").textContent =
     (BUILTIN[curUnit] ? info.topic + " · " : "") + "단어 " + info.words.length + "개";
   document.getElementById("share-btn").style.display = CUSTOM[curUnit] ? "" : "none";
+  document.getElementById("def-btn").style.display = ENDEF[curUnit] && BUILTIN[curUnit] ? "" : "none";   // 영영 뜻이 있는 유닛만
   show("scr-mode");
 }
 
@@ -1192,7 +1208,7 @@ function learnNext(){
 }
 
 // ─── 퀴즈 ───
-// qKind: spell(스펠링, 그림 보고) / spelltext(스펠링, 그림 없이) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기)
+// qKind: spell(스펠링, 그림 보고) / spelltext(스펠링, 그림 없이) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기) / def(영영 설명 듣고 영어 고르기)
 // qList: 이번에 풀 단어 번호들, qRetry: 한 번에 못 맞힌 단어 번호들
 let qIdx=0, qTiles=[], qSlots=[], qClean=true, qCorrect=0, qRetry=[], qAnswer="";
 let qKind="spell", qList=[], qPos=0, qToken=0, cLocked=false;
@@ -1205,7 +1221,7 @@ function shuffle(a){
 function isSpell(k){ return k === "spell" || k === "spelltext"; }
 function startQuiz(kind, list){
   qKind = kind || "spell";
-  const all = U().words.map((_,i)=>i);
+  const all = U().words.map((_,i)=>i).filter(i=>qKind !== "def" || defOf(i));
   const pick = (list && list.length) ? [...list] : all;
   qList = isSpell(qKind) ? pick.sort((a,b)=>a-b) : shuffle(pick);
   qPos=0; qCorrect=0; qRetry=[];
@@ -1232,6 +1248,11 @@ function loadChoice(){
     txt.textContent = w[0]; txt.className = "c-text en";
     document.getElementById("c-speak").style.display = "";
     playOne("en:"+w[0], "en", w[0], 0.8);
+  } else if(dir === "def"){      // 영어 설명을 보고(듣고) 영어 고르기 — 설명은 자동으로 읽어준다
+    setIcon(emo, "❓");
+    txt.textContent = defOf(qIdx); txt.className = "c-text def";
+    document.getElementById("c-speak").style.display = "";
+    speakDef();
   } else {                       // 뜻을 보고 영어 고르기 — 그림은 맞힌 뒤에 보여준다
     setIcon(emo, "❓");
     txt.textContent = w[1]; txt.className = "c-text ko";
@@ -1373,6 +1394,11 @@ function useHint(){
     if(qSlots.indexOf(null) === -1) checkAnswer();
   }
 }
+function speakDef(){
+  stopAudio();
+  const w = U().words[qIdx];
+  playOne("def:"+w[0], "en", defOf(qIdx), 0.85);
+}
 function speakCurrentQuizWord(){
   stopAudio();
   const w = U().words[qIdx];
@@ -1492,7 +1518,8 @@ renderHome();
 <ul>
   <li><b>뜻 퀴즈</b> : 영어를 보고 듣고, 맞는 뜻을 골라요.</li>
   <li><b>영단어 퀴즈</b> : 뜻을 보고, 맞는 영어를 골라요.</li>
-  <li>이 두 퀴즈는 그림이 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
+  <li><b>영영 퀴즈</b> : 영어 설명을 읽어 주면 듣고, 맞는 영어 단어를 골라요. (워드업 400 유닛만)</li>
+  <li>이 퀴즈들은 그림이 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
   <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
   <li><b>스펠링 퀴즈</b>는 두 가지예요. <b>그림 보고</b>는 그림과 뜻을, <b>그림 없이</b>는 그림 없이 뜻 글씨만 보고 맞혀요. 푸는 방법은 아래처럼 해요.</li>
   <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
@@ -1541,7 +1568,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.14 &nbsp;·&nbsp; 2026-11-11</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.15 &nbsp;·&nbsp; 2026-11-11</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
