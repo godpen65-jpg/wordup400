@@ -8,15 +8,14 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="install.js" defer></script>
-<meta name="theme-color" content="#ffe3e0">
+<meta name="theme-color" content="#ffffff">
 <title>워드업400 단어학습</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { height:100%; }
   body {
     font-family:"Segoe UI Emoji","Malgun Gothic","맑은 고딕",sans-serif;
-    background:linear-gradient(165deg,#fbf8ee 0%,#f6efc6 45%,#cfe8b8 100%);
-    background-attachment:fixed;
+    background:#fff; color:#111;
     min-height:100%;
     display:flex; flex-direction:column; align-items:center;
     user-select:none;
@@ -25,74 +24,80 @@
   .screen { display:none; width:100%; max-width:min(1100px,94vw); padding:20px; text-align:center; margin:auto; }
   .screen.on { display:block; }
 
-  h1 { font-size:2rem; color:#1a5276; margin-bottom:6px; }
+  h1 { font-size:2rem; color:#111; margin-bottom:6px; }
   .home-title-row { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
   .home-title-row h1 { margin-bottom:0; }
-  .sub { color:#2e6b8a; margin-bottom:22px; font-size:1.05rem; }
+  .sub { color:#666; margin-bottom:22px; font-size:1.05rem; }
 
   .unit-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
   .unit-card {
     position:relative;
     background:#fff; border-radius:20px; padding:18px 12px;
-    box-shadow:0 4px 10px rgba(0,0,0,.12); cursor:pointer;
-    transition:transform .1s; border:3px solid transparent;
+    box-shadow:0 5px 0 #111; cursor:pointer;
+    transition:transform .1s; border:2.5px solid #111;
   }
   .unit-card:active { transform:scale(.96); }
   .unit-card .emo { font-size:clamp(2.2rem,5vw,3.2rem); }
-  .unit-card .name { font-weight:bold; color:#333; margin-top:6px; font-size:clamp(1.15rem,2.2vw,1.4rem); }
+  .unit-card .name { font-weight:bold; color:#111; margin-top:6px; font-size:clamp(1.15rem,2.2vw,1.4rem); }
   .unit-card .topic { color:#888; font-size:.9rem; margin-top:2px; }
   .unit-card .del {
     position:absolute; top:8px; right:8px; width:28px; height:28px;
-    border:none; border-radius:50%; background:#f1f3f5; color:#999;
+    border:none; border-radius:50%; background:#f2f2f2; color:#888;
     font-size:.95rem; cursor:pointer; line-height:28px;
   }
   .unit-card .del:active { background:#ffe3e3; color:#e03131; }
   .unit-card.add-card {
-    border:3px dashed #8fb8d8; background:#ffffffaa; color:#3b6fa0;
+    border:2.5px dashed #111; background:#fff; color:#111; box-shadow:none;
     display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:120px;
   }
   .unit-card.add-card .emo { font-size:2rem; }
 
   .home-actions { display:flex; gap:12px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
   .home-actions button {
-    font-family:inherit; background:#ffffffcc; border:none; border-radius:14px;
-    padding:12px 18px; font-size:1rem; font-weight:bold; color:#456; cursor:pointer;
+    font-family:inherit; background:#fff; border:2px solid #111; border-radius:14px;
+    padding:12px 18px; font-size:1rem; font-weight:bold; color:#111; cursor:pointer;
   }
 
   .mode-btns { display:flex; flex-direction:column; gap:16px; margin-top:10px; }
   button.big {
-    font-family:inherit; font-size:1.4rem; font-weight:bold; color:#44573c;
-    border:none; border-radius:22px; padding:20px; cursor:pointer;
-    box-shadow:0 5px 0 rgba(0,0,0,.18); transition:transform .1s;
+    font-family:inherit; font-size:1.4rem; font-weight:bold; color:#111;
+    background:#fff; border:2.5px solid #111; border-radius:22px; padding:18px; cursor:pointer;
+    box-shadow:0 5px 0 #111; transition:transform .1s;
   }
-  button.big:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18); }
-  .btn-learn { background:#f6ecb2; }
-  .btn-spell { background:#e8eeb0; }
-  .btn-quiz  { background:#d6e9b4; }
-  .btn-home  { background:#cddcc4; }
-  .btn-green { background:#c9e6bd; }
+  button.big:active { transform:translateY(3px); box-shadow:0 2px 0 #111; }
+  button.big.btn-home { background:#111; color:#fff; box-shadow:0 5px 0 #999; }
+  button.big.btn-home:active { box-shadow:0 2px 0 #999; }
+
+  /* 유닛 화면 버튼: 넓은 화면에서는 두 줄로 */
+  @media (min-width:700px) {
+    .mode-btns.grid2 { display:grid; grid-template-columns:1fr 1fr; }
+    .mode-btns.grid2 .wide { grid-column:1 / -1; }
+  }
+  .mode-btns .grp { grid-column:1 / -1; text-align:left; font-weight:bold; color:#666; font-size:1.05rem; margin-bottom:-8px; }
+  .book-card .emo { font-size:clamp(2.8rem,6vw,4rem); }
+  .book-card { padding:26px 12px; }
 
   .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .topbar .small-btn {
-    font-family:inherit; background:#ffffffcc; border:none; border-radius:14px;
-    padding:10px 16px; font-size:1rem; font-weight:bold; color:#456; cursor:pointer;
+    font-family:inherit; background:#fff; border:2px solid #111; border-radius:14px;
+    padding:10px 16px; font-size:1rem; font-weight:bold; color:#111; cursor:pointer;
   }
-  .progress-txt { font-weight:bold; color:#1a5276; font-size:1.1rem; }
+  .progress-txt { font-weight:bold; color:#111; font-size:1.1rem; }
 
   .stage {
     background:#fff; border-radius:28px; padding:34px 20px 28px;
-    box-shadow:0 8px 20px rgba(0,0,0,.15); min-height:340px;
+    border:2.5px solid #111; min-height:340px;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
   }
   .stage .emoji { font-size:clamp(6.5rem,14vw,10rem); line-height:1.1; }
-  .stage .word  { font-size:3.2rem; font-weight:bold; color:#222; margin-top:10px; letter-spacing:2px; overflow-wrap:anywhere; }
-  .stage .meaning { font-size:1.5rem; color:#4a8f7d; font-weight:bold; margin-top:8px; }
+  .stage .word  { font-size:3.2rem; font-weight:bold; color:#111; margin-top:10px; letter-spacing:2px; overflow-wrap:anywhere; }
+  .stage .meaning { font-size:1.5rem; color:#555; font-weight:bold; margin-top:8px; }
 
   .learn-controls { display:flex; gap:12px; justify-content:center; margin-top:18px; }
   .learn-controls button {
     font-family:inherit; font-size:1.5rem; border:none; border-radius:50%;
     width:64px; height:64px; cursor:pointer; background:#fff;
-    box-shadow:0 4px 8px rgba(0,0,0,.15);
+    border:2.5px solid #111;
   }
   .learn-controls button:active { transform:scale(.92); }
 
@@ -108,78 +113,111 @@
     #scr-learn .learn-controls { margin-top:10px; }
     #scr-learn .learn-controls button { width:56px; height:56px; font-size:1.3rem; }
   }
-  .bar { height:12px; background:#ffffff88; border-radius:6px; overflow:hidden; margin-top:16px; }
-  .bar > div { height:100%; background:#a8cf8a; width:0%; transition:width .4s; border-radius:6px; }
+  .bar { height:12px; background:#e8e8e8; border-radius:6px; overflow:hidden; margin-top:16px; }
+  .bar > div { height:100%; background:#111; width:0%; transition:width .4s; border-radius:6px; }
 
   /* 퀴즈 */
   .q-prompt { display:flex; flex-direction:column; align-items:center; gap:6px; }
   .q-prompt .emoji { font-size:clamp(5rem,11vw,8rem); }
-  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#4a8f7d; }
+  .q-prompt .meaning { font-size:1.6rem; font-weight:bold; color:#555; }
   .speak-btn {
-    font-family:inherit; margin-top:6px; font-size:1.05rem; background:#eaf3ff; color:#3b6fd4;
-    border:none; border-radius:14px; padding:10px 18px; cursor:pointer; font-weight:bold;
+    font-family:inherit; margin-top:6px; font-size:1.05rem; background:#fff; color:#111;
+    border:2px solid #111; border-radius:14px; padding:10px 18px; cursor:pointer; font-weight:bold;
   }
   .slots, .tiles { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
   .slots { margin-top:22px; min-height:56px; }
   .tiles { margin-top:20px; min-height:56px; }
   .slot {
-    width:48px; height:54px; border-bottom:5px solid #b8c4d0; border-radius:8px;
-    font-size:2rem; font-weight:bold; color:#222;
+    width:48px; height:54px; border-bottom:5px solid #bbb; border-radius:8px;
+    font-size:2rem; font-weight:bold; color:#111;
     display:flex; align-items:center; justify-content:center; cursor:pointer;
-    background:#f4f7fa;
+    background:#f5f5f5;
   }
-  .slot.filled { background:#eef5e4; border-bottom-color:#a8cf8a; }
+  .slot.filled { background:#fff; border-bottom-color:#111; }
   .tile {
-    width:48px; height:54px; border-radius:12px; background:#d6e9b4; color:#44573c;
+    width:48px; height:54px; border-radius:12px; background:#fff; color:#111; border:2.5px solid #111;
     font-size:1.9rem; font-weight:bold; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; box-shadow:0 4px 0 #3d63c9;
+    cursor:pointer; box-shadow:0 4px 0 #111;
   }
-  .tile:active { transform:translateY(2px); box-shadow:0 2px 0 #3d63c9; }
+  .tile:active { transform:translateY(2px); box-shadow:0 2px 0 #111; }
   .tile.used { visibility:hidden; }
   .q-actions { display:flex; gap:12px; justify-content:center; margin-top:22px; }
   .q-actions button {
     font-family:inherit; border:none; border-radius:14px; padding:12px 20px;
     font-size:1.05rem; font-weight:bold; cursor:pointer;
   }
-  .hint-btn { background:#fff3cd; color:#a07800; }
+  .hint-btn { background:#fff; color:#111; border:2px solid #111 !important; }
   .fb { margin-top:14px; font-size:1.4rem; font-weight:bold; min-height:34px; }
-  .fb.good { color:#5f9954; }
-  .fb.bad  { color:#e74c3c; }
+  .fb.good { color:#1f9d55; }
+  .fb.bad  { color:#e03131; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
   .shake { animation:shake .35s; }
   @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
   .pop { animation:pop .5s; }
 
+  /* 스펠링 퀴즈: 가로 화면에서 사진이 커서 글자 칸이 화면 밖으로 밀리지 않게 */
+  #scr-quiz img.photo-icon { width:min(clamp(11rem,26vw,20rem), 30vh); height:min(clamp(11rem,26vw,20rem), 30vh); }
+  @media (max-height:760px) {
+    #scr-quiz { padding-top:10px; padding-bottom:10px; }
+    #scr-quiz .topbar { margin-bottom:8px; }
+    #scr-quiz .stage { min-height:0; padding:14px 20px 12px; }
+    #scr-quiz .slots { margin-top:12px; }
+    #scr-quiz .tiles { margin-top:12px; }
+    #scr-quiz .q-actions { margin-top:10px; }
+    #scr-quiz .fb { margin-top:6px; min-height:28px; }
+  }
+
+  /* 고르기 퀴즈 (뜻 / 영단어 / 섞어서) */
+  #scr-choice { padding-top:12px; padding-bottom:12px; }
+  #scr-choice .topbar { margin-bottom:10px; }
+  #scr-choice .stage { min-height:0; padding:16px 20px 12px; }
+  #scr-choice .stage .emoji { font-size:min(clamp(5rem,11vw,8rem), 20vh); }
+  #scr-choice img.photo-icon { width:min(clamp(11rem,26vw,20rem), 28vh); height:min(clamp(11rem,26vw,20rem), 28vh); }
+  .c-text { font-weight:bold; overflow-wrap:anywhere; margin-top:4px; }
+  .c-text.en { font-size:min(3.2rem, 9vh); color:#111; letter-spacing:2px; }
+  .c-text.ko { font-size:min(2rem, 6vh); color:#111; }
+  .c-text.ask { font-size:min(1.3rem, 4.5vh); color:#888; }
+  #scr-choice .fb { margin-top:8px; font-size:1.25rem; min-height:30px; }
+  .c-opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  .c-opts button {
+    font-family:inherit; font-size:clamp(1.2rem,2.6vw,1.8rem); font-weight:bold; color:#111;
+    background:#fff; border:2.5px solid #111; border-radius:20px; padding:12px 8px; min-height:74px;
+    cursor:pointer; box-shadow:0 4px 0 #111; overflow-wrap:anywhere;
+  }
+  .c-opts button:active { transform:translateY(2px); box-shadow:0 2px 0 #111; }
+  .c-opts button.ok { background:#c9f2d6; border-color:#1f9d55; box-shadow:0 4px 0 #1f9d55; }
+  .c-opts button.no { background:#ffe0e0; border-color:#e03131; box-shadow:0 4px 0 #e03131; color:#999; }
+
   /* 검은 선 그림 */
   img.licon { width:1em; height:1em; vertical-align:-0.12em; object-fit:cover; border-radius:12%; }
   img.photo-icon { width:clamp(11rem,26vw,20rem); height:clamp(11rem,26vw,20rem); }
-  .credit { color:#7d8a68; font-size:.75rem; margin-top:18px; }
+  .credit { color:#999; font-size:.75rem; margin-top:18px; }
 
   /* 결과 */
   .stars { font-size:3.4rem; margin:14px 0; }
-  .score-line { font-size:1.4rem; color:#333; font-weight:bold; margin-bottom:6px; }
+  .score-line { font-size:1.4rem; color:#111; font-weight:bold; margin-bottom:6px; }
   .retry-list { color:#777; font-size:1.05rem; margin-bottom:20px; }
 
   /* 유닛 만들기 */
-  .add-box { background:#fff; border-radius:24px; padding:24px 18px; box-shadow:0 8px 20px rgba(0,0,0,.15); text-align:left; }
-  .add-box label { font-weight:bold; color:#1a5276; display:block; margin:14px 0 6px; }
+  .add-box { background:#fff; border-radius:24px; padding:24px 18px; border:2.5px solid #111; text-align:left; }
+  .add-box label { font-weight:bold; color:#111; display:block; margin:14px 0 6px; }
   .add-box input[type=text], .add-box textarea {
-    font-family:inherit; width:100%; border:2px solid #d0dce6; border-radius:12px;
-    padding:12px; font-size:1.05rem; background:#f8fbfd;
+    font-family:inherit; width:100%; border:2px solid #111; border-radius:12px;
+    padding:12px; font-size:1.05rem; background:#fff;
   }
   .add-box textarea { min-height:180px; resize:vertical; }
   .add-hint { color:#888; font-size:.9rem; margin-top:6px; line-height:1.5; }
   .preview-list { margin-top:10px; }
   .preview-row {
-    display:flex; align-items:center; gap:10px; background:#f8fbfd;
+    display:flex; align-items:center; gap:10px; background:#f5f5f5;
     border-radius:12px; padding:8px 10px; margin-bottom:8px;
   }
   .preview-row input.emo-in {
-    width:58px; font-size:1.6rem; text-align:center; border:2px solid #d0dce6;
+    width:58px; font-size:1.6rem; text-align:center; border:2px solid #111;
     border-radius:10px; background:#fff; padding:4px; font-family:inherit;
   }
-  .preview-row .pw { font-weight:bold; font-size:1.1rem; color:#222; }
-  .preview-row .pm { color:#4a8f7d; font-size:1rem; margin-left:auto; }
+  .preview-row .pw { font-weight:bold; font-size:1.1rem; color:#111; }
+  .preview-row .pm { color:#555; font-size:1rem; margin-left:auto; }
   .add-actions { display:flex; gap:12px; margin-top:18px; }
   .add-actions button { flex:1; }
   .parse-error { color:#e03131; font-size:.95rem; margin-top:8px; }
@@ -187,25 +225,25 @@
   /* 카드 인쇄 */
   .print-toolbar { display:flex; gap:12px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
   .print-toolbar button {
-    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#56a091;
+    font-family:inherit; font-size:1.1rem; font-weight:bold; color:#fff; background:#111;
     border:none; border-radius:12px; padding:12px 22px; cursor:pointer;
   }
   .print-toolbar select {
-    font-family:inherit; font-size:1.05rem; font-weight:bold; color:#456;
-    border:2px solid #d0dce6; border-radius:12px; padding:10px 14px; background:#fff;
+    font-family:inherit; font-size:1.05rem; font-weight:bold; color:#111;
+    border:2px solid #111; border-radius:12px; padding:10px 14px; background:#fff;
   }
-  .print-toolbar .back { background:#aab0a0; }
+  .print-toolbar .back { background:#fff; color:#111; border:2px solid #111; }
   .print-unit-title {
-    font-size:1.4rem; font-weight:bold; color:#1a5276; margin:16px 0 10px; text-align:left;
+    font-size:1.4rem; font-weight:bold; color:#111; margin:16px 0 10px; text-align:left;
   }
   .print-cards { display:grid; grid-template-columns:repeat(2,1fr); }
   .pcard {
-    border:2px dashed #b8c4d0; padding:16px 8px; text-align:center; background:#fff;
+    border:2px dashed #999; padding:16px 8px; text-align:center; background:#fff;
     display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:140px;
   }
   .pcard .emoji { font-size:2.6rem; }
-  .pcard .word { font-size:1.6rem; font-weight:bold; color:#222; margin-top:4px; }
-  .pcard .meaning { font-size:1rem; color:#4a8f7d; font-weight:bold; margin-top:2px; }
+  .pcard .word { font-size:1.6rem; font-weight:bold; color:#111; margin-top:4px; }
+  .pcard .meaning { font-size:1rem; color:#555; font-weight:bold; margin-top:2px; }
   .pcard .tag { font-size:.7rem; color:#aaa; margin-top:5px; }
 
   @media print {
@@ -220,14 +258,14 @@
 </head>
 <body>
 
-<!-- 홈: 유닛 선택 -->
+<!-- 홈: 교재 선택 -->
 <div class="screen on" id="scr-home">
   <div class="home-title-row">
-    <h1>🌟 우리집 단어공부 🌟</h1>
+    <h1>우리집 단어공부</h1>
     <button class="hlp-btn" type="button" onclick="hlpOpen()">❓ 사용법</button>
   </div>
-  <div class="sub">공부할 유닛을 골라보세요!</div>
-  <div class="unit-grid" id="unit-grid"></div>
+  <div class="sub">공부할 교재를 골라보세요!</div>
+  <div class="unit-grid" id="book-grid"></div>
   <div class="home-actions">
     <button onclick="openPrint()">🖨️ 단어 카드 인쇄</button>
     <button onclick="importUnit()">📥 공유 코드 입력</button>
@@ -237,16 +275,36 @@
   <div class="credit">단어 그림: OpenMoji (CC BY-SA 4.0)</div>
 </div>
 
+<!-- 교재 안의 유닛 선택 -->
+<div class="screen" id="scr-units">
+  <div class="topbar">
+    <button class="small-btn" onclick="goHome()">◀ 교재 고르기</button>
+    <div class="progress-txt" id="units-count"></div>
+  </div>
+  <h1 id="units-title">워드업 400</h1>
+  <div class="sub">공부할 유닛을 골라보세요!</div>
+  <div class="unit-grid" id="unit-grid"></div>
+</div>
+
 <!-- 모드 선택 -->
 <div class="screen" id="scr-mode">
+  <div class="topbar">
+    <button class="small-btn" onclick="openBook(curBook)">◀ 유닛 고르기</button>
+    <div class="progress-txt" id="mode-book"></div>
+  </div>
   <h1 id="mode-title">Unit 9</h1>
   <div class="sub" id="mode-topic"></div>
-  <div class="mode-btns">
+  <div class="mode-btns grid2">
+    <div class="grp">📖 외우기</div>
     <button class="big btn-learn" onclick="startLearn('read')">📺 단어 배우기 (자동 재생)</button>
     <button class="big btn-spell" onclick="startLearn('spell')">🔤 스펠링 배우기 (철자 읽기)</button>
-    <button class="big btn-quiz" onclick="startQuiz()">🧩 글자 맞추기 퀴즈</button>
-    <button class="big btn-green" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
-    <button class="big btn-home" onclick="goHome()">🏠 처음으로</button>
+    <div class="grp">✏️ 퀴즈</div>
+    <button class="big btn-quiz" onclick="startQuiz('spell')">🧩 스펠링 퀴즈</button>
+    <button class="big btn-mean" onclick="startQuiz('mean')">💬 뜻 퀴즈</button>
+    <button class="big btn-word" onclick="startQuiz('word')">🔠 영단어 퀴즈</button>
+    <button class="big btn-mix" onclick="startQuiz('mix')">🖼️ 뜻 + 영단어 퀴즈 (그림 보고)</button>
+    <button class="big btn-green wide" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
+    <button class="big btn-home wide" onclick="goHome()">🏠 처음으로</button>
   </div>
 </div>
 
@@ -290,6 +348,21 @@
   </div>
 </div>
 
+<!-- 고르기 퀴즈: 뜻 / 영단어 / 섞어서 -->
+<div class="screen" id="scr-choice">
+  <div class="topbar">
+    <button class="small-btn" onclick="show('scr-mode')">◀ 나가기</button>
+    <div class="progress-txt" id="choice-prog">1 / 20</div>
+  </div>
+  <div class="stage" id="choice-stage">
+    <div class="emoji" id="c-emoji">❓</div>
+    <div class="c-text en" id="c-text">apple</div>
+    <button class="speak-btn" id="c-speak" onclick="speakCurrentQuizWord()">🔊 발음 듣기</button>
+    <div class="fb" id="c-fb"></div>
+  </div>
+  <div class="c-opts" id="c-opts"></div>
+</div>
+
 <!-- 결과 -->
 <div class="screen" id="scr-result">
   <div class="stage">
@@ -298,7 +371,8 @@
     <div class="score-line" id="r-score"></div>
     <div class="retry-list" id="r-retry"></div>
     <div class="mode-btns" style="width:100%">
-      <button class="big btn-quiz" onclick="startQuiz()">🔁 다시 풀기</button>
+      <button class="big btn-word" id="r-wrong-btn" onclick="startQuiz(qKind, qRetry)">📒 틀린 단어만 다시 풀기</button>
+      <button class="big btn-quiz" onclick="startQuiz(qKind)">🔁 처음부터 다시 풀기</button>
       <button class="big btn-green" onclick="show('scr-mode')">✅ 유닛 화면으로</button>
     </div>
   </div>
@@ -354,81 +428,81 @@
 // ─── 기본 제공 단어 데이터: [영어, 뜻, 그림] ───
 const BUILTIN = {
  "9":{topic:"여행 ✈️",words:[
-  ["trip","여행","🧳"],["place","장소, 곳","📍"],["try","시도하다","💪"],["vacation","방학, 휴가","🏖️"],
-  ["famous","유명한","⭐"],["airplane","비행기","✈️"],["visit","방문하다","🛎️"],["map","지도","🗺️"],
-  ["picture","사진, 그림","📷"],["plan","계획하다","📝"],["boat","배","⛵"],["special","특별한","✨"],
-  ["rest","휴식","😌"],["beach","해변","🏝️"],["stay","머무르다","🛌"],["wait","기다리다","⏳"],
-  ["road","길","🛣️"],["hotel","호텔","🏨"],["pack","(짐을) 싸다, 챙기다","🎒"],["side","쪽","↔️"]]},
+  ["trip","여행","img/wu/trip.jpg"],["place","장소, 곳","img/wu/place.jpg"],["try","시도하다","img/wu/try.jpg"],["vacation","방학, 휴가","img/wu/vacation.jpg"],
+  ["famous","유명한","img/wu/famous.jpg"],["airplane","비행기","img/wu/airplane.jpg"],["visit","방문하다","img/wu/visit.jpg"],["map","지도","img/wu/map.jpg"],
+  ["picture","사진, 그림","img/wu/picture.jpg"],["plan","계획하다","img/wu/plan.jpg"],["boat","배","img/wu/boat.jpg"],["special","특별한","img/wu/special.jpg"],
+  ["rest","휴식","img/wu/rest.jpg"],["beach","해변","img/wu/beach.jpg"],["stay","머무르다","img/wu/stay.jpg"],["wait","기다리다","img/wu/wait.jpg"],
+  ["road","길","img/wu/road.jpg"],["hotel","호텔","img/wu/hotel.jpg"],["pack","(짐을) 싸다, 챙기다","img/wu/pack.jpg"],["side","쪽","img/wu/side.jpg"]]},
  "10":{topic:"옷 👕",words:[
-  ["wear","입다","🧥"],["dirty","더러운","💩"],["soft","부드러운","🧸"],["mirror","거울","🪞"],
-  ["large","큰","🐘"],["pocket","주머니","🦘"],["small","작은","🐜"],["cover","덮다, 가리다","🙈"],
-  ["pants","바지","👖"],["lovely","사랑스러운","🥰"],["scarf","스카프","🧣"],["cap","모자","🧢"],
-  ["shirt","셔츠","👕"],["button","단추","🔘"],["pick","고르다","👆"],["cute","귀여운","🐰"],
-  ["dress","드레스","👗"],["skirt","치마","💃"],["formal","격식을 차린","🤵"],["casual","편한 (옷차림)","😎"]]},
+  ["wear","입다","img/wu/wear.jpg"],["dirty","더러운","img/wu/dirty.jpg"],["soft","부드러운","img/wu/soft.jpg"],["mirror","거울","img/wu/mirror.jpg"],
+  ["large","큰","img/wu/large.jpg"],["pocket","주머니","img/wu/pocket.jpg"],["small","작은","img/wu/small.jpg"],["cover","덮다, 가리다","img/wu/cover.jpg"],
+  ["pants","바지","img/js910/03_pants.jpg"],["lovely","사랑스러운","img/wu/lovely.jpg"],["scarf","스카프","img/wu/scarf.jpg"],["cap","모자","img/wu/cap.jpg"],
+  ["shirt","셔츠","img/js910/04_shirt.jpg"],["button","단추","img/wu/button.jpg"],["pick","고르다","img/wu/pick.jpg"],["cute","귀여운","img/wu/cute.jpg"],
+  ["dress","드레스","img/js910/01_dress.jpg"],["skirt","치마","img/js910/06_skirt.jpg"],["formal","격식을 차린","img/wu/formal.jpg"],["casual","편한 (옷차림)","img/wu/casual.jpg"]]},
  "11":{topic:"자연 🌳",words:[
-  ["sand","모래","🏜️"],["ugly","못생긴","👹"],["grow","자라다","🌱"],["plant","식물","🪴"],
-  ["cage","우리, 새장","🐹"],["dark","어두운","🌑"],["forest","숲","🌲"],["grass","풀","🌿"],
-  ["ground","땅","🌍"],["fall","떨어지다","🍂"],["air","공기","💨"],["sea","바다","🌊"],
-  ["moon","달","🌙"],["deep","깊은","🕳️"],["nature","자연","🏞️"],["life","삶","🐣"],
-  ["weather","날씨","⛅"],["die","죽다","🥀"],["river","강","🛶"],["stone","돌","🪨"]]},
+  ["sand","모래","img/wu/sand.jpg"],["ugly","못생긴","img/wu/ugly.jpg"],["grow","자라다","img/wu/grow.jpg"],["plant","식물","img/wu/plant.jpg"],
+  ["cage","우리, 새장","img/wu/cage.jpg"],["dark","어두운","img/wu/dark.jpg"],["forest","숲","img/wu/forest.jpg"],["grass","풀","img/wu/grass.jpg"],
+  ["ground","땅","img/wu/ground.jpg"],["fall","떨어지다","img/wu/fall.jpg"],["air","공기","img/wu/air.jpg"],["sea","바다","img/wu/sea.jpg"],
+  ["moon","달","img/wu/moon.jpg"],["deep","깊은","img/wu/deep.jpg"],["nature","자연","img/wu/nature.jpg"],["life","삶","img/wu/life.jpg"],
+  ["weather","날씨","img/wu/weather.jpg"],["die","죽다","img/wu/die.jpg"],["river","강","img/wu/river.jpg"],["stone","돌","img/wu/stone.jpg"]]},
  "12":{topic:"미술 🎨",words:[
-  ["art","미술, 미술품","🎨"],["color","색칠하다","🖍️"],["draw","그리다","✏️"],["image","이미지","🖼️"],
-  ["really","정말","😲"],["simple","단순한","⚪"],["gallery","미술관","🏛️"],["object","물건, 물체","📦"],
-  ["idea","발상, 생각","💡"],["stick","붙이다","🩹"],["cartoon","만화","🗯️"],["sketch","스케치하다","✍️"],
-  ["paint","(물감으로) 칠하다","🧑‍🎨"],["bright","밝은","☀️"],["erase","지우다","🧽"],["brush","붓","🖌️"],
-  ["each","각각의","☝️"],["studio","스튜디오","🎬"],["line","선","📏"],["imagine","상상하다","💭"]]},
+  ["art","미술, 미술품","img/wu/art.jpg"],["color","색칠하다","img/wu/color.jpg"],["draw","그리다","img/wu/draw.jpg"],["image","이미지","img/wu/image.jpg"],
+  ["really","정말","img/wu/really.jpg"],["simple","단순한","img/wu/simple.jpg"],["gallery","미술관","img/wu/gallery.jpg"],["object","물건, 물체","img/wu/object.jpg"],
+  ["idea","발상, 생각","img/wu/idea.jpg"],["stick","붙이다","img/wu/stick.jpg"],["cartoon","만화","img/wu/cartoon.jpg"],["sketch","스케치하다","img/wu/sketch.jpg"],
+  ["paint","(물감으로) 칠하다","img/wu/paint.jpg"],["bright","밝은","img/wu/bright.jpg"],["erase","지우다","img/wu/erase.jpg"],["brush","붓","img/wu/brush.jpg"],
+  ["each","각각의","img/wu/each.jpg"],["studio","스튜디오","img/wu/studio.jpg"],["line","선","img/wu/line.jpg"],["imagine","상상하다","img/wu/imagine.jpg"]]},
  "13":{topic:"장소 🏙️",words:[
-  ["build","짓다","🏗️"],["inside","~의 안에","📥"],["restaurant","식당","🍽️"],["church","교회","⛪"],
-  ["ticket","표","🎫"],["gate","문","🚪"],["bank","은행","🏦"],["airport","공항","🛫"],
-  ["subway","지하철","🚇"],["museum","박물관","🏛️"],["arrive","도착하다","🏁"],["bookstore","서점","📚"],
-  ["tower","탑","🗼"],["huge","거대한","🦕"],["factory","공장","🏭"],["station","역","🚉"],
-  ["across","건너편에","🚸"],["theater","극장","🎭"],["center","중심","🎯"],["location","위치","📍"]]},
+  ["build","짓다","img/wu/build.jpg"],["inside","~의 안에","img/wu/inside.jpg"],["restaurant","식당","img/wu/restaurant.jpg"],["church","교회","img/wu/church.jpg"],
+  ["ticket","표","img/wu/ticket.jpg"],["gate","문","img/milo/11_gate.jpg"],["bank","은행","img/wu/bank.jpg"],["airport","공항","img/wu/airport.jpg"],
+  ["subway","지하철","img/wu/subway.jpg"],["museum","박물관","img/jason7/10_museum.jpg"],["arrive","도착하다","img/wu/arrive.jpg"],["bookstore","서점","img/wu/bookstore.jpg"],
+  ["tower","탑","img/wu/tower.jpg"],["huge","거대한","img/wu/huge.jpg"],["factory","공장","img/wu/factory.jpg"],["station","역","img/wu/station.jpg"],
+  ["across","건너편에","img/wu/across.jpg"],["theater","극장","img/wu/theater.jpg"],["center","중심","img/wu/center.jpg"],["location","위치","img/wu/location.jpg"]]},
  "14":{topic:"마음 💗",words:[
-  ["want","원하다","🙏"],["sick","아픈","🤒"],["fine","좋은, 괜찮은","👌"],["hate","싫어하다","😤"],
-  ["glad","기쁜","😊"],["sad","슬픈","😢"],["angry","화가 난","😠"],["gift","선물","🎁"],
-  ["fight","싸우다","🥊"],["worry","걱정하다","😟"],["enjoy","즐기다","😆"],["cry","울다","😭"],
-  ["silly","바보 같은","🤪"],["smile","웃다","😄"],["lonely","외로운","🧍"],["mind","마음","🧠"],
-  ["wish","바라다","🌠"],["shock","충격","😱"],["wonderful","아주 멋진","🤩"],["nervous","긴장되는","😰"]]},
+  ["want","원하다","img/wu/want.jpg"],["sick","아픈","img/wu/sick.jpg"],["fine","좋은, 괜찮은","img/wu/fine.jpg"],["hate","싫어하다","img/wu/hate.jpg"],
+  ["glad","기쁜","img/wu/glad.jpg"],["sad","슬픈","img/wu/sad.jpg"],["angry","화가 난","img/wu/angry.jpg"],["gift","선물","img/wu/gift.jpg"],
+  ["fight","싸우다","img/wu/fight.jpg"],["worry","걱정하다","img/wu/worry.jpg"],["enjoy","즐기다","img/wu/enjoy.jpg"],["cry","울다","img/wu/cry.jpg"],
+  ["silly","바보 같은","img/wu/silly.jpg"],["smile","웃다","img/wu/smile.jpg"],["lonely","외로운","img/milo/15_lonely.jpg"],["mind","마음","img/wu/mind.jpg"],
+  ["wish","바라다","img/wu/wish.jpg"],["shock","충격","img/wu/shock.jpg"],["wonderful","아주 멋진","img/wu/wonderful.jpg"],["nervous","긴장되는","img/wu/nervous.jpg"]]},
  "15":{topic:"운동 ⚽",words:[
-  ["game","게임, 경기","🎮"],["win","이기다","🏆"],["sport","운동","🏅"],["hit","치다","👊"],
-  ["tennis","테니스","🎾"],["ready","준비된","🚦"],["swim","수영하다","🏊"],["kick","차다","🦵"],
-  ["soccer","축구","⚽"],["bat","방망이","🏏"],["pool","수영장","💦"],["coach","코치","🧑‍🏫"],
-  ["shout","소리치다","📢"],["race","경주","🏃"],["skate","스케이트를 타다","⛸️"],["watch","보다","👀"],
-  ["pass","건네주다, 패스하다","🤝"],["baseball","야구","⚾"],["throw","던지다","🤾"],["cheer","응원하다","📣"]]},
+  ["game","게임, 경기","img/wu/game.jpg"],["win","이기다","img/wu/win.jpg"],["sport","운동","img/wu/sport.jpg"],["hit","치다","img/wu/hit.jpg"],
+  ["tennis","테니스","img/wu/tennis.jpg"],["ready","준비된","img/wu/ready.jpg"],["swim","수영하다","img/wu/swim.jpg"],["kick","차다","img/wu/kick.jpg"],
+  ["soccer","축구","img/wu/soccer.jpg"],["bat","방망이","img/wu/bat.jpg"],["pool","수영장","img/jason7/06_swimming_pool.jpg"],["coach","코치","img/wu/coach.jpg"],
+  ["shout","소리치다","img/wu/shout.jpg"],["race","경주","img/wu/race.jpg"],["skate","스케이트를 타다","img/wu/skate.jpg"],["watch","보다","img/wu/watch.jpg"],
+  ["pass","건네주다, 패스하다","img/wu/pass.jpg"],["baseball","야구","img/wu/baseball.jpg"],["throw","던지다","img/wu/throw.jpg"],["cheer","응원하다","img/wu/cheer.jpg"]]},
  "16":{topic:"미래 🤖",words:[
-  ["robot","로봇","🤖"],["human","인간","🧑"],["perfect","완벽한","💯"],["computer","컴퓨터","💻"],
-  ["fix","고치다","🔧"],["scientist","과학자","🧑‍🔬"],["already","이미, 벌써","⏰"],["show","보여주다","📺"],
-  ["copy","복사하다","📋"],["system","시스템","⚙️"],["future","미래","🔮"],["argue","다투다","💢"],
-  ["research","연구, 조사","🔬"],["fact","사실","📰"],["understand","이해하다","🙆"],["process","과정","🔄"],
-  ["allow","허용하다","🆗"],["challenge","도전","🧗"],["invent","발명하다","🛠️"],["sure","확실한","✅"]]},
+  ["robot","로봇","img/wu/robot.jpg"],["human","인간","img/wu/human.jpg"],["perfect","완벽한","img/wu/perfect.jpg"],["computer","컴퓨터","img/wu/computer.jpg"],
+  ["fix","고치다","img/wu/fix.jpg"],["scientist","과학자","img/wu/scientist.jpg"],["already","이미, 벌써","img/milo/17_already.jpg"],["show","보여주다","img/wu/show.jpg"],
+  ["copy","복사하다","img/wu/copy.jpg"],["system","시스템","img/wu/system.jpg"],["future","미래","img/wu/future.jpg"],["argue","다투다","img/wu/argue.jpg"],
+  ["research","연구, 조사","img/wu/research.jpg"],["fact","사실","img/wu/fact.jpg"],["understand","이해하다","img/wu/understand.jpg"],["process","과정","img/wu/process.jpg"],
+  ["allow","허용하다","img/wu/allow.jpg"],["challenge","도전","img/wu/challenge.jpg"],["invent","발명하다","img/wu/invent.jpg"],["sure","확실한","img/wu/sure.jpg"]]},
  "17":{topic:"보물지도 🗺️",label:"Reading 보물지도",words:[
-  ["treasure","보물","💰"],["north","북쪽","⬆️"],["striped","줄무늬가 있는","🦓"],["east","동쪽","➡️"],
-  ["patch","안대","🩹"],["south","남쪽","⬇️"],["pirate","해적","🏴‍☠️"],["west","서쪽","⬅️"],
-  ["return","돌아오다","🔙"],["yell","소리치다","📢"]]},
+  ["treasure","보물","img/wu/treasure.jpg"],["north","북쪽","img/wu/north.jpg"],["striped","줄무늬가 있는","img/wu/striped.jpg"],["east","동쪽","img/wu/east.jpg"],
+  ["patch","안대","img/wu/patch.jpg"],["south","남쪽","img/wu/south.jpg"],["pirate","해적","img/wu/pirate.jpg"],["west","서쪽","img/wu/west.jpg"],
+  ["return","돌아오다","img/wu/return.jpg"],["yell","소리치다","img/wu/yell.jpg"]]},
  "18":{topic:"동네 🏘️",label:"Look Unit 7",words:[
-  ["library","도서관","📚"],["park","공원","🏞️"],["playground","놀이터","🛝"],["store","가게","🏪"],
-  ["street","길","🛣️"],["swimming pool","수영장","🏊"],["town center","도심지, 시내","🏙️"],["zoo","동물원","🦁"],
-  ["model","모델, 모형","🧸"],["tiny","아주 작은","🤏"]]},
+  ["library","도서관","img/jason7/01_library.jpg"],["park","공원","img/jason7/02_park.jpg"],["playground","놀이터","img/jason7/03_playground.jpg"],["store","가게","img/jason7/04_store.jpg"],
+  ["street","길","img/jason7/05_street.jpg"],["swimming pool","수영장","img/jason7/06_swimming_pool.jpg"],["town center","도심지, 시내","img/jason7/07_town_center.jpg"],["zoo","동물원","img/jason7/08_zoo.jpg"],
+  ["model","모델, 모형","img/wu/model.jpg"],["tiny","아주 작은","img/wu/tiny.jpg"]]},
  "19":{topic:"농장동물 🐮",label:"Look Unit 8",words:[
-  ["bee","벌","🐝"],["bird","새","🐦"],["chicken","닭","🐔"],["cow","암소, 젖소","🐄"],
-  ["dog","개","🐶"],["donkey","당나귀","🫏"],["duck","오리","🦆"],["sheep","양","🐑"],
-  ["pen","(가축의) 우리","🚧"],["farmer","농부","👨‍🌾"]]},
+  ["bee","벌","img/wu/bee.jpg"],["bird","새","img/wu/bird.jpg"],["chicken","닭","img/wu/chicken.jpg"],["cow","암소, 젖소","img/wu/cow.jpg"],
+  ["dog","개","img/wu/dog.jpg"],["donkey","당나귀","img/wu/donkey.jpg"],["duck","오리","img/wu/duck.jpg"],["sheep","양","img/wu/sheep.jpg"],
+  ["pen","(가축의) 우리","img/wu/pen.jpg"],["farmer","농부","img/milo/12_farmer.jpg"]]},
  "20":{topic:"옷차림 🧥",label:"Look Unit 9",words:[
-  ["dress","원피스","👗"],["jeans","청바지","👖"],["pants","바지","👖"],["shirt","셔츠","👕"],
-  ["shoes","신발","👟"],["skirt","치마","👗"],["socks","양말","🧦"],["T-shirt","티셔츠","👕"],
-  ["boots","부츠","👢"],["gloves","장갑","🧤"]]},
+  ["dress","원피스","img/js910/01_dress.jpg"],["jeans","청바지","img/js910/02_jeans.jpg"],["pants","바지","img/js910/03_pants.jpg"],["shirt","셔츠","img/js910/04_shirt.jpg"],
+  ["shoes","신발","img/js910/05_shoes.jpg"],["skirt","치마","img/js910/06_skirt.jpg"],["socks","양말","img/js910/07_socks.jpg"],["T-shirt","티셔츠","img/js910/08_tshirt.jpg"],
+  ["boots","부츠","img/wu/boots.jpg"],["gloves","장갑","img/wu/gloves.jpg"]]},
  "21":{topic:"음식 🍽️",label:"Look Unit 10",words:[
-  ["banana","바나나","🍌"],["bread","빵","🍞"],["candy","캔디","🍬"],["lemon","레몬","🍋"],
-  ["milk","우유","🥛"],["potato","감자","🥔"],["rice","쌀밥","🍚"],["tomato","토마토","🍅"],
-  ["water","물","💧"],["lunch","점심","🍱"]]},
+  ["banana","바나나","img/js910/09_banana.jpg"],["bread","빵","img/js910/10_bread.jpg"],["candy","캔디","img/js910/11_candy.jpg"],["lemon","레몬","img/js910/12_lemon.jpg"],
+  ["milk","우유","img/js910/13_milk.jpg"],["potato","감자","img/js910/14_potato.jpg"],["rice","쌀밥","img/js910/15_rice.jpg"],["tomato","토마토","img/js910/16_tomato.jpg"],
+  ["water","물","img/js910/17_water.jpg"],["lunch","점심","img/wu/lunch.jpg"]]},
  "22":{topic:"바다 🏖️",label:"Look Unit 11",words:[
-  ["beach","해변","🏖️"],["beach ball","비치 볼","🏐"],["boat","배","⛵"],["ice cream","아이스크림","🍦"],
-  ["ocean","바다","🌊"],["sand","모래","🏖️"],["sandcastle","모래성","🏰"],["sun hat","햇빛 차단용 모자","👒"],
-  ["shell","(조개) 껍질","🐚"],["snorkel","스노클","🤿"]]},
+  ["beach","해변","img/wu/beach.jpg"],["beach ball","비치 볼","img/wu/beach_ball.jpg"],["boat","배","img/wu/boat.jpg"],["ice cream","아이스크림","img/wu/ice_cream.jpg"],
+  ["ocean","바다","img/wu/ocean.jpg"],["sand","모래","img/wu/sand.jpg"],["sandcastle","모래성","img/wu/sandcastle.jpg"],["sun hat","햇빛 차단용 모자","img/wu/sun_hat.jpg"],
+  ["shell","(조개) 껍질","img/wu/shell.jpg"],["snorkel","스노클","img/wu/snorkel.jpg"]]},
  "23":{topic:"활동 🎯",label:"Look Unit 12",words:[
-  ["fly a kite","연을 날리다","🪁"],["make a cake","케이크를 만들다","🎂"],["paint a picture","그림을 그리다","🎨"],["play a game","게임을 하다","🎮"],
-  ["play soccer","축구를 하다","⚽"],["read a book","책을 읽다","📖"],["sing a song","노래를 부르다","🎤"],["write a story","이야기를 쓰다","✍️"],
-  ["swing","흔들다","🛝"],["go to the park","공원에 가다","🏞️"]]},
+  ["fly a kite","연을 날리다","img/wu/fly_a_kite.jpg"],["make a cake","케이크를 만들다","img/wu/make_a_cake.jpg"],["paint a picture","그림을 그리다","img/wu/paint_a_picture.jpg"],["play a game","게임을 하다","img/wu/play_a_game.jpg"],
+  ["play soccer","축구를 하다","img/wu/play_soccer.jpg"],["read a book","책을 읽다","img/wu/read_a_book.jpg"],["sing a song","노래를 부르다","img/wu/sing_a_song.jpg"],["write a story","이야기를 쓰다","img/wu/write_a_story.jpg"],
+  ["swing","흔들다","img/wu/swing.jpg"],["go to the park","공원에 가다","img/wu/go_to_the_park.jpg"]]},
  "24":{topic:"마을 🏘️",label:"학원 유닛 7-1",words:[
   ["library","도서관","img/jason7/01_library.jpg"],["park","공원","img/jason7/02_park.jpg"],
   ["playground","놀이터","img/jason7/03_playground.jpg"],["store","가게","img/jason7/04_store.jpg"],
@@ -451,10 +525,10 @@ const BUILTIN = {
   ["milk","우유","img/js910/13_milk.jpg"],["potato","감자","img/js910/14_potato.jpg"],["rice","밥","img/js910/15_rice.jpg"],
   ["tomato","토마토","img/js910/16_tomato.jpg"],["water","물","img/js910/17_water.jpg"]]},
  "27":{topic:"겨울잠 🐢",label:"A Loud Winter's Nap",words:[
-  ["snuggle","파묻다, 바싹 달라붙다","🤗"],["chirp","짹짹거리다, 재잘거리다","🐦"],["grumble","투덜거리다, 우르르 울리다","😒"],
-  ["trudge","터벅터벅 걷다, 느릿느릿 걷다","🚶"],["disturb","방해하다","🚫"],["tortoise","육지 거북","🐢"],
-  ["sculpture","조각품, 조각","🗿"],["groan","끙끙거리다, 신음하다","😩"],["giggle","킥킥거리다, 낄낄거리다","🤭"],
-  ["realize","깨닫다, 알아차리다","💡"]]},
+  ["snuggle","파묻다, 바싹 달라붙다","img/wu/snuggle.jpg"],["chirp","짹짹거리다, 재잘거리다","img/wu/chirp.jpg"],["grumble","투덜거리다, 우르르 울리다","img/wu/grumble.jpg"],
+  ["trudge","터벅터벅 걷다, 느릿느릿 걷다","img/wu/trudge.jpg"],["disturb","방해하다","img/wu/disturb.jpg"],["tortoise","육지 거북","img/wu/tortoise.jpg"],
+  ["sculpture","조각품, 조각","img/wu/sculpture.jpg"],["groan","끙끙거리다, 신음하다","img/wu/groan.jpg"],["giggle","킥킥거리다, 낄낄거리다","img/wu/giggle.jpg"],
+  ["realize","깨닫다, 알아차리다","img/wu/realize.jpg"]]},
  "28":{topic:"농장 모험 🐄",label:"Milo's Wild Farm Adventure",words:[
   ["pasture","목초지, 방목장","img/milo/01_pasture.jpg"],["trot","(말이) 빠른 걸음으로 걷다","img/milo/02_trot.jpg"],["scare","겁주다, 겁먹다","img/milo/03_scare.jpg"],
   ["farmhand","농장 일꾼","img/milo/04_farmhand.jpg"],["barn","외양간, 헛간","img/milo/05_barn.jpg"],["mud","진흙, 진창","img/milo/06_mud.jpg"],
@@ -464,6 +538,27 @@ const BUILTIN = {
   ["keep company","함께 있어 주다","img/milo/16_keep_company.jpg"],["already","이미","img/milo/17_already.jpg"],["pet","쓰다듬다","img/milo/18_pet.jpg"],
   ["follow","따라가다","img/milo/19_follow.jpg"],["point","가리키다","img/milo/20_point.jpg"]]}
 };
+
+// ─── 교재: 첫 화면에서 교재를 고르면 그 안의 유닛이 보인다 ───
+// 새 유닛을 BUILTIN에 넣으면 여기 units에도 번호를 넣어준다 (안 넣으면 '그 밖의 단어'에 모인다).
+const BOOKS = [
+  {id:"wu",    name:"워드업 400", emoji:"📘", units:["9","10","11","12","13","14","15","16"]},
+  {id:"look",  name:"Look",       emoji:"🔍", units:["18","19","20","21","22","23"]},
+  {id:"hagwon",name:"학원 단어",  emoji:"🏫", units:["24","25","26"]},
+  {id:"story", name:"이야기책",   emoji:"📖", units:["17","27","28"]}
+];
+(function(){
+  const used = new Set(BOOKS.flatMap(b=>b.units));
+  const rest = Object.keys(BUILTIN).filter(u=>!used.has(u));
+  if(rest.length) BOOKS.push({id:"etc", name:"그 밖의 단어", emoji:"📚", units:rest});
+})();
+const MINE = {id:"mine", name:"내가 만든 유닛", emoji:"📗"};
+let curBook = "wu";
+function bookOf(unitId){
+  if(!BUILTIN[unitId]) return MINE;
+  return BOOKS.find(b=>b.units.includes(unitId)) || BOOKS[0];
+}
+function bookUnits(b){ return b.units.filter(u=>BUILTIN[u] && !HIDDEN.has(u)); }
 
 // ─── 내가 만든 유닛 (이 기기에 저장) ───
 let CUSTOM = JSON.parse(localStorage.getItem("wordup_custom_v1") || "{}");
@@ -685,12 +780,15 @@ function suggestEmoji(word){
 // ─── 화면 전환 ───
 function show(id){
   stopLearn();
+  qToken++;   // 화면이 바뀌면 퀴즈의 '잠시 뒤 다음 문제' 예약을 취소
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   document.getElementById(id).classList.add("on");
 }
 function goHome(){ renderHome(); show("scr-home"); }
 function openUnit(u){
   curUnit = String(u);
+  curBook = bookOf(curUnit).id;
+  document.getElementById("mode-book").textContent = bookOf(curUnit).emoji + " " + bookOf(curUnit).name;
   document.getElementById("mode-title").textContent = unitTitle(curUnit);
   const info = U();
   document.getElementById("mode-topic").textContent =
@@ -749,31 +847,55 @@ function importUnit(){
     }
     if(!n) throw 0;
     saveCustom();
-    renderHome();
+    openBook("mine");
     alert(`유닛 ${n}개를 받았어요! 🎉`);
   }catch(e){
     alert("코드를 읽지 못했어요. 복사가 잘 됐는지 확인하고 다시 붙여넣어 주세요.");
   }
 }
 
-// ─── 홈 화면 그리기 ───
+// ─── 홈 화면(교재 고르기) 그리기 ───
 function renderHome(){
+  const grid = document.getElementById("book-grid");
+  grid.innerHTML = "";
+  const card = (emo, name, sub, fn, cls)=>{
+    const d = document.createElement("div");
+    d.className = "unit-card " + cls;
+    d.innerHTML = `<div class="emo">${emo}</div><div class="name">${escapeHtml(name)}</div>` + (sub ? `<div class="topic">${escapeHtml(sub)}</div>` : "");
+    d.onclick = fn;
+    grid.appendChild(d);
+  };
+  for(const b of BOOKS){
+    const n = bookUnits(b).length;
+    if(n) card(b.emoji, b.name, "유닛 " + n + "개", ()=>openBook(b.id), "book-card");
+  }
+  const mine = Object.keys(CUSTOM).length;
+  if(mine) card(MINE.emoji, MINE.name, "유닛 " + mine + "개", ()=>openBook("mine"), "book-card");
+  card("➕", "새 유닛 만들기", "", openAdd, "add-card");
+  document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
+}
+// ─── 교재 안의 유닛 목록 ───
+function openBook(id){
   const grid = document.getElementById("unit-grid");
   grid.innerHTML = "";
-  // 만들기 버튼 → 내가 만든 유닛(최신순) → 기본 유닛 순서
-  const add = document.createElement("div");
-  add.className = "unit-card add-card";
-  add.innerHTML = `<div class="emo">➕</div><div class="name">새 유닛 만들기</div>`;
-  add.onclick = openAdd;
-  grid.appendChild(add);
-  for(const id of Object.keys(CUSTOM).sort().reverse()){
-    grid.appendChild(unitCard(id, CUSTOM[id].emoji||"📗", CUSTOM[id].name, "단어 "+CUSTOM[id].words.length+"개"));
+  let name, n = 0;
+  if(id === "mine"){
+    name = MINE.emoji + " " + MINE.name;
+    for(const cid of Object.keys(CUSTOM).sort().reverse()){
+      grid.appendChild(unitCard(cid, CUSTOM[cid].emoji||"📗", CUSTOM[cid].name, "단어 "+CUSTOM[cid].words.length+"개")); n++;
+    }
+  } else {
+    const b = BOOKS.find(x=>x.id===id) || BOOKS[0];
+    id = b.id; name = b.emoji + " " + b.name;
+    for(const u of bookUnits(b)){
+      grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0])); n++;
+    }
   }
-  for(const u of Object.keys(BUILTIN)){
-    if(HIDDEN.has(u)) continue;
-    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0]));
-  }
-  document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
+  if(!n){ goHome(); return; }   // 교재 안의 유닛을 다 지웠으면 첫 화면으로
+  curBook = id;
+  document.getElementById("units-title").textContent = name;
+  document.getElementById("units-count").textContent = "유닛 " + n + "개";
+  show("scr-units");
 }
 function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
@@ -787,7 +909,7 @@ function unitCard(id, emo, name, topic){
     if(!confirm(`"${name}" 유닛을 삭제할까요?`)) return;
     if(BUILTIN[id]){ HIDDEN.add(id); saveHidden(); }
     else { delete CUSTOM[id]; saveCustom(); }
-    renderHome();
+    openBook(curBook);
   };
   d.appendChild(del);
   return d;
@@ -883,7 +1005,7 @@ function saveNewUnit(){
   const id = "c" + Date.now();
   CUSTOM[id] = { name, emoji: "📗", words: pendingWords };
   saveCustom();
-  goHome();
+  openBook("mine");
 }
 
 // ─── 말하기 (TTS) ───
@@ -999,7 +1121,7 @@ function playCurrent(){
         ...[...w[0]].filter(c=>/[a-zA-Z]/.test(c)).map(c=>{
           const lc = c.toLowerCase();
           return {fn: cb=>{
-            curAudio.playbackRate = 4;   // 브라우저가 소리를 내주는 최대 속도(4배 초과는 무음)
+            curAudio.playbackRate = 2;   // 알파벳은 2배속. 알파벳 소리 파일은 앞뒤 무음을 잘라 둬서 글자가 바로바로 이어진다
             playOne("letter:"+lc, "en", lc.toUpperCase()+".", 0.9, ()=>{ curAudio.playbackRate = 1; cb(); });
           }, gap:60};
         }),
@@ -1046,20 +1168,94 @@ function learnNext(){
   else finishLearn();
 }
 
-// ─── 퀴즈 모드 (글자 배열) ───
+// ─── 퀴즈 ───
+// qKind: spell(스펠링) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기) / mix(뜻+영단어 섞어서)
+// qList: 이번에 풀 단어 번호들, qRetry: 한 번에 못 맞힌 단어 번호들
 let qIdx=0, qTiles=[], qSlots=[], qClean=true, qCorrect=0, qRetry=[], qAnswer="";
+let qKind="spell", qList=[], qPos=0, qToken=0, cLocked=false;
 function shuffle(a){
   const b=[...a];
   for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; }
   return b;
 }
-function startQuiz(){
-  qIdx=0; qCorrect=0; qRetry=[];
-  show("scr-quiz");
-  loadQuizWord();
+function startQuiz(kind, list){
+  qKind = kind || "spell";
+  const all = U().words.map((_,i)=>i);
+  const pick = (list && list.length) ? [...list] : all;
+  qList = qKind === "spell" ? pick.sort((a,b)=>a-b) : shuffle(pick);
+  qPos=0; qCorrect=0; qRetry=[];
+  if(qKind === "spell"){ show("scr-quiz"); loadQuizWord(); }
+  else { show("scr-choice"); loadChoice(); }
+}
+function quizProg(){ return "문제 " + (qPos+1) + " / " + qList.length + " · ⭐ 맞힌 개수 " + qCorrect; }
+function quizNext(){
+  if(qPos < qList.length-1){ qPos++; if(qKind === "spell") loadQuizWord(); else loadChoice(); }
+  else showResult();
+}
+// 고르기 퀴즈 한 문제
+function loadChoice(){
+  stopAudio();
+  qIdx = qList[qPos];
+  const words = U().words, w = words[qIdx];
+  qClean = true; cLocked = false;
+  const pic = qKind === "mix";                 // 뜻+영단어 퀴즈: 그림만 보고 고르기
+  const dir = pic ? (Math.random() < .5 ? "mean" : "word") : qKind;
+  const key = dir === "mean" ? 1 : 0;          // 보기로 보여줄 칸: 뜻(1) 또는 영어(0)
+  const emo = document.getElementById("c-emoji"), txt = document.getElementById("c-text");
+  document.getElementById("c-speak").style.display = "none";
+  if(pic){                       // 그림만 보고 뜻 또는 영어 고르기
+    setIcon(emo, w[2]);
+    txt.textContent = dir === "mean" ? "뜻을 골라요" : "영어를 골라요"; txt.className = "c-text ask";
+  } else if(dir === "mean"){     // 영어를 보고(듣고) 뜻 고르기 — 그림은 맞힌 뒤에 보여준다
+    setIcon(emo, "❓");
+    txt.textContent = w[0]; txt.className = "c-text en";
+    document.getElementById("c-speak").style.display = "";
+    playOne("en:"+w[0], "en", w[0], 0.8);
+  } else {                       // 뜻을 보고 영어 고르기 — 그림은 맞힌 뒤에 보여준다
+    setIcon(emo, "❓");
+    txt.textContent = w[1]; txt.className = "c-text ko";
+  }
+  document.getElementById("choice-prog").textContent = quizProg();
+  const fb = document.getElementById("c-fb"); fb.textContent = ""; fb.className = "fb";
+  // 보기: 같은 유닛에서 3개. 영어나 뜻이 정답과 같은 단어, 서로 겹치는 보기는 뺀다.
+  const seen = new Set([w[key]]), others = [];
+  for(const o of shuffle(words)){
+    if(others.length === 3) break;
+    if(o[0].toLowerCase() === w[0].toLowerCase() || o[1] === w[1] || seen.has(o[key])) continue;
+    if(pic && o[2] === w[2]) continue;         // 그림이 같은 단어(바지/청바지 등)는 보기에서 뺀다
+    seen.add(o[key]); others.push(o);
+  }
+  const box = document.getElementById("c-opts");
+  box.innerHTML = "";
+  for(const o of shuffle([w, ...others])){
+    const b = document.createElement("button");
+    b.textContent = o[key];
+    b.onclick = ()=>{
+      if(cLocked || b.classList.contains("no")) return;
+      if(o === w){
+        cLocked = true;
+        b.classList.add("ok");
+        if(qClean) qCorrect++; else qRetry.push(qIdx);
+        dingSound();
+        fb.textContent = "딩동댕! " + w[0] + " = " + w[1] + " 🎉"; fb.className = "fb good";
+        setIcon(emo, w[2]); emo.classList.add("pop");
+        document.getElementById("choice-prog").textContent = quizProg();
+        playOne("en:"+w[0], "en", w[0], 0.9);
+        const t = qToken;
+        setTimeout(()=>{ emo.classList.remove("pop"); if(t === qToken) quizNext(); }, 1600);
+      } else {
+        b.classList.add("no");
+        qClean = false;
+        buzzSound();
+        fb.textContent = "앗, 다시 한번! 💪"; fb.className = "fb bad";
+      }
+    };
+    box.appendChild(b);
+  }
 }
 function loadQuizWord(){
   stopAudio();
+  qIdx = qList[qPos];
   const w = U().words[qIdx];
   qClean = true;
   qAnswer = w[0].replace(/\s+/g,"");  // 띄어쓰기는 퀴즈에서 뺌
@@ -1070,7 +1266,7 @@ function loadQuizWord(){
   qSlots = new Array(letters.length).fill(null);
   setIcon(document.getElementById("q-emoji"), w[2]);
   document.getElementById("q-meaning").textContent = w[1];
-  document.getElementById("quiz-prog").textContent = (qIdx+1)+" / "+U().words.length;
+  document.getElementById("quiz-prog").textContent = quizProg();
   setFb("","");
   renderQuiz();
   speakCurrentQuizWord();
@@ -1109,15 +1305,16 @@ function checkAnswer(){
   const w = U().words[qIdx];
   const made = qSlots.map(ti=>qTiles[ti].ch).join("");
   if(made === qAnswer){
-    if(qClean) qCorrect++; else qRetry.push(w[0]);
+    if(qClean) qCorrect++; else qRetry.push(qIdx);
     dingSound();
     setFb("딩동댕! " + w[0] + " 🎉", "good");
+    document.getElementById("quiz-prog").textContent = quizProg();
     document.getElementById("q-emoji").classList.add("pop");
     playOne("en:"+w[0], "en", w[0], 0.9);
+    const t = qToken;
     setTimeout(()=>{
       document.getElementById("q-emoji").classList.remove("pop");
-      if(qIdx < U().words.length-1){ qIdx++; loadQuizWord(); }
-      else showResult();
+      if(t === qToken) quizNext();
     }, 1400);
   } else {
     qClean = false;
@@ -1125,8 +1322,10 @@ function checkAnswer(){
     setFb("앗, 다시 한번! 💪", "bad");
     const st = document.getElementById("quiz-stage");
     st.classList.add("shake");
+    const t = qToken;
     setTimeout(()=>{
       st.classList.remove("shake");
+      if(t !== qToken) return;
       qSlots.forEach(ti=>{ if(ti!==null) qTiles[ti].used=false; });
       qSlots.fill(null);
       renderQuiz();
@@ -1158,7 +1357,7 @@ function speakCurrentQuizWord(){
   playOne("en:"+w[0], "en", w[0], 0.8);
 }
 function showResult(){
-  const total = U().words.length;
+  const total = qList.length;
   winSound();
   show("scr-result");
   const ratio = qCorrect/total;
@@ -1167,7 +1366,8 @@ function showResult(){
   document.getElementById("r-stars").textContent = ratio>=0.9 ? "⭐⭐⭐" : ratio>=0.6 ? "⭐⭐" : "⭐";
   document.getElementById("r-score").textContent = `${total}개 중 ${qCorrect}개를 한 번에 맞혔어요!`;
   document.getElementById("r-retry").textContent =
-    qRetry.length ? "다시 연습하면 좋은 단어: " + qRetry.join(", ") : "";
+    qRetry.length ? "다시 연습하면 좋은 단어: " + qRetry.map(i=>U().words[i][0]).join(", ") : "";
+  document.getElementById("r-wrong-btn").style.display = qRetry.length ? "" : "none";
 }
 
 // ─── 카드 인쇄 ───
@@ -1217,9 +1417,9 @@ renderHome();
 <!--HELP_MODAL_START-->
 <style>
 .hlp-btn{font-family:'Jua','Gaegu',system-ui,sans-serif;font-size:14px;
-  background:#f4869f;color:#fff;border:none;border-radius:999px;
-  padding:8px 14px;box-shadow:0 4px 10px rgba(232,105,143,.4);cursor:pointer}
-.hlp-btn:hover{background:#e8698f}
+  background:#111;color:#fff;border:none;border-radius:999px;
+  padding:8px 14px;box-shadow:none;cursor:pointer}
+.hlp-btn:hover{background:#333}
 .hlp-ov{position:fixed;inset:0;z-index:99999;background:rgba(60,40,55,.55);
   display:none;align-items:center;justify-content:center;padding:16px}
 .hlp-ov.on{display:flex}
@@ -1259,14 +1459,20 @@ renderHome();
 
 <h3>2. 단어 배우기 (틀어놓기만 하면 돼요)</h3>
 <ul>
-  <li>공부할 상자(유닛)를 누르고 <b>“단어 배우기”</b>를 눌러요.</li>
+  <li>첫 화면에서 <b>교재</b>를 고르고, 공부할 상자(유닛)를 누른 다음 <b>“단어 배우기”</b>를 눌러요.</li>
   <li>그림과 단어가 크게 나오고 원어민 발음이 나와요.</li>
   <li>영어 두 번 → 한국어 뜻 한 번 → 다음 단어로 저절로 넘어가요.</li>
   <li>아래 동그란 단추 : ◀◀ 앞으로 · ⏸ 잠깐 멈춤 · ▶▶ 다음으로</li>
 </ul>
 
-<h3>3. 글자 맞추기 퀴즈</h3>
+<h3>3. 퀴즈 네 가지</h3>
 <ul>
+  <li><b>뜻 퀴즈</b> : 영어를 보고 듣고, 맞는 뜻을 골라요.</li>
+  <li><b>영단어 퀴즈</b> : 뜻을 보고, 맞는 영어를 골라요.</li>
+  <li>이 두 퀴즈는 그림이 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
+  <li><b>뜻 + 영단어 퀴즈</b> : <b>그림만</b> 보고, 맞는 뜻이나 영어를 골라요.</li>
+  <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
+  <li><b>스펠링 퀴즈</b>는 아래처럼 해요.</li>
   <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
   <li>잘못 놓았으면 그 글자를 <b>다시 누르면</b> 빠져요.</li>
   <li><b>발음 듣기</b>로 다시 듣고, 막히면 <b>힌트</b>로 한 글자씩 봐요.</li>
@@ -1275,7 +1481,7 @@ renderHome();
 
 <h3>4. 우리 아이 단어 직접 넣기</h3>
 <ul>
-  <li>첫 화면 맨 위 <b>“+ 새 유닛 만들기”</b>를 눌러요.</li>
+  <li>첫 화면의 <b>“+ 새 유닛 만들기”</b>를 눌러요. 만든 유닛은 <b>“내가 만든 유닛”</b> 교재에 모여요.</li>
   <li>이름을 짓고, 단어를 한 줄에 하나씩 써요. 예) <b>apple 사과</b></li>
   <li>엑셀이 있으면 <b>“엑셀 파일 불러오기”</b>로 한 번에 넣을 수 있어요.</li>
   <li>“다음”을 누르면 그림을 자동으로 골라 줘요. 마음에 안 들면 그림 칸을 눌러 바꾸면 돼요.</li>
@@ -1309,11 +1515,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 
 <!-- VISITOR_VERSION_START -->
 <style>
-#site-meta{text-align:center;padding:18px 10px;margin-top:10px;font-family:'Jua','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#7d8a68;line-height:1.6;}
-#site-meta b{color:#ff8bbd;font-weight:normal;}
+#site-meta{text-align:center;padding:18px 10px;margin-top:10px;font-family:'Jua','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#999;line-height:1.6;}
+#site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.11 &nbsp;·&nbsp; 2026-11-08</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.12 &nbsp;·&nbsp; 2026-11-10</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
