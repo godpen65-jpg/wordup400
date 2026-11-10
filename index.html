@@ -72,6 +72,18 @@
   .btn-home  { background:#cddcc4; }
   .btn-green { background:#c9e6bd; }
 
+  /* 유닛 화면 버튼: 넓은 화면에서는 두 줄로 */
+  @media (min-width:700px) {
+    .mode-btns.grid2 { display:grid; grid-template-columns:1fr 1fr; }
+    .mode-btns.grid2 .wide { grid-column:1 / -1; }
+  }
+  .mode-btns .grp { grid-column:1 / -1; text-align:left; font-weight:bold; color:#2e6b8a; font-size:1.05rem; margin-bottom:-8px; }
+  .btn-mean { background:#cfe6ee; }
+  .btn-word { background:#f3d9c4; }
+  .btn-mix  { background:#e3d6ee; }
+  .book-card .emo { font-size:clamp(2.8rem,6vw,4rem); }
+  .book-card { padding:26px 12px; }
+
   .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
   .topbar .small-btn {
     font-family:inherit; background:#ffffffcc; border:none; border-radius:14px;
@@ -150,6 +162,26 @@
   @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
   .pop { animation:pop .5s; }
 
+  /* 고르기 퀴즈 (뜻 / 영단어 / 섞어서) */
+  #scr-choice { padding-top:12px; padding-bottom:12px; }
+  #scr-choice .topbar { margin-bottom:10px; }
+  #scr-choice .stage { min-height:0; padding:16px 20px 12px; }
+  #scr-choice .stage .emoji { font-size:min(clamp(5rem,11vw,8rem), 20vh); }
+  #scr-choice img.photo-icon { width:min(clamp(11rem,26vw,20rem), 28vh); height:min(clamp(11rem,26vw,20rem), 28vh); }
+  .c-text { font-weight:bold; overflow-wrap:anywhere; margin-top:4px; }
+  .c-text.en { font-size:min(3.2rem, 9vh); color:#222; letter-spacing:2px; }
+  .c-text.ko { font-size:min(2rem, 6vh); color:#4a8f7d; }
+  #scr-choice .fb { margin-top:8px; font-size:1.25rem; min-height:30px; }
+  .c-opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  .c-opts button {
+    font-family:inherit; font-size:clamp(1.2rem,2.6vw,1.8rem); font-weight:bold; color:#333;
+    background:#fff; border:3px solid #d6e9b4; border-radius:20px; padding:12px 8px; min-height:74px;
+    cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.12); overflow-wrap:anywhere;
+  }
+  .c-opts button:active { transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.12); }
+  .c-opts button.ok { background:#c8f2d4; border-color:#6fd28c; }
+  .c-opts button.no { background:#ffd6d6; border-color:#ff8f8f; color:#999; }
+
   /* 검은 선 그림 */
   img.licon { width:1em; height:1em; vertical-align:-0.12em; object-fit:cover; border-radius:12%; }
   img.photo-icon { width:clamp(11rem,26vw,20rem); height:clamp(11rem,26vw,20rem); }
@@ -220,14 +252,14 @@
 </head>
 <body>
 
-<!-- 홈: 유닛 선택 -->
+<!-- 홈: 교재 선택 -->
 <div class="screen on" id="scr-home">
   <div class="home-title-row">
     <h1>🌟 우리집 단어공부 🌟</h1>
     <button class="hlp-btn" type="button" onclick="hlpOpen()">❓ 사용법</button>
   </div>
-  <div class="sub">공부할 유닛을 골라보세요!</div>
-  <div class="unit-grid" id="unit-grid"></div>
+  <div class="sub">공부할 교재를 골라보세요!</div>
+  <div class="unit-grid" id="book-grid"></div>
   <div class="home-actions">
     <button onclick="openPrint()">🖨️ 단어 카드 인쇄</button>
     <button onclick="importUnit()">📥 공유 코드 입력</button>
@@ -237,16 +269,36 @@
   <div class="credit">단어 그림: OpenMoji (CC BY-SA 4.0)</div>
 </div>
 
+<!-- 교재 안의 유닛 선택 -->
+<div class="screen" id="scr-units">
+  <div class="topbar">
+    <button class="small-btn" onclick="goHome()">◀ 교재 고르기</button>
+    <div class="progress-txt" id="units-count"></div>
+  </div>
+  <h1 id="units-title">워드업 400</h1>
+  <div class="sub">공부할 유닛을 골라보세요!</div>
+  <div class="unit-grid" id="unit-grid"></div>
+</div>
+
 <!-- 모드 선택 -->
 <div class="screen" id="scr-mode">
+  <div class="topbar">
+    <button class="small-btn" onclick="openBook(curBook)">◀ 유닛 고르기</button>
+    <div class="progress-txt" id="mode-book"></div>
+  </div>
   <h1 id="mode-title">Unit 9</h1>
   <div class="sub" id="mode-topic"></div>
-  <div class="mode-btns">
+  <div class="mode-btns grid2">
+    <div class="grp">📖 외우기</div>
     <button class="big btn-learn" onclick="startLearn('read')">📺 단어 배우기 (자동 재생)</button>
     <button class="big btn-spell" onclick="startLearn('spell')">🔤 스펠링 배우기 (철자 읽기)</button>
-    <button class="big btn-quiz" onclick="startQuiz()">🧩 글자 맞추기 퀴즈</button>
-    <button class="big btn-green" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
-    <button class="big btn-home" onclick="goHome()">🏠 처음으로</button>
+    <div class="grp">✏️ 퀴즈</div>
+    <button class="big btn-quiz" onclick="startQuiz('spell')">🧩 스펠링 퀴즈</button>
+    <button class="big btn-mean" onclick="startQuiz('mean')">💬 뜻 퀴즈</button>
+    <button class="big btn-word" onclick="startQuiz('word')">🔠 영단어 퀴즈</button>
+    <button class="big btn-mix" onclick="startQuiz('mix')">🎲 뜻 + 영단어 퀴즈</button>
+    <button class="big btn-green wide" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
+    <button class="big btn-home wide" onclick="goHome()">🏠 처음으로</button>
   </div>
 </div>
 
@@ -290,6 +342,21 @@
   </div>
 </div>
 
+<!-- 고르기 퀴즈: 뜻 / 영단어 / 섞어서 -->
+<div class="screen" id="scr-choice">
+  <div class="topbar">
+    <button class="small-btn" onclick="show('scr-mode')">◀ 나가기</button>
+    <div class="progress-txt" id="choice-prog">1 / 20</div>
+  </div>
+  <div class="stage" id="choice-stage">
+    <div class="emoji" id="c-emoji">❓</div>
+    <div class="c-text en" id="c-text">apple</div>
+    <button class="speak-btn" id="c-speak" onclick="speakCurrentQuizWord()">🔊 발음 듣기</button>
+    <div class="fb" id="c-fb"></div>
+  </div>
+  <div class="c-opts" id="c-opts"></div>
+</div>
+
 <!-- 결과 -->
 <div class="screen" id="scr-result">
   <div class="stage">
@@ -298,7 +365,8 @@
     <div class="score-line" id="r-score"></div>
     <div class="retry-list" id="r-retry"></div>
     <div class="mode-btns" style="width:100%">
-      <button class="big btn-quiz" onclick="startQuiz()">🔁 다시 풀기</button>
+      <button class="big btn-word" id="r-wrong-btn" onclick="startQuiz(qKind, qRetry)">📒 틀린 단어만 다시 풀기</button>
+      <button class="big btn-quiz" onclick="startQuiz(qKind)">🔁 처음부터 다시 풀기</button>
       <button class="big btn-green" onclick="show('scr-mode')">✅ 유닛 화면으로</button>
     </div>
   </div>
@@ -464,6 +532,27 @@ const BUILTIN = {
   ["keep company","함께 있어 주다","img/milo/16_keep_company.jpg"],["already","이미","img/milo/17_already.jpg"],["pet","쓰다듬다","img/milo/18_pet.jpg"],
   ["follow","따라가다","img/milo/19_follow.jpg"],["point","가리키다","img/milo/20_point.jpg"]]}
 };
+
+// ─── 교재: 첫 화면에서 교재를 고르면 그 안의 유닛이 보인다 ───
+// 새 유닛을 BUILTIN에 넣으면 여기 units에도 번호를 넣어준다 (안 넣으면 '그 밖의 단어'에 모인다).
+const BOOKS = [
+  {id:"wu",    name:"워드업 400", emoji:"📘", units:["9","10","11","12","13","14","15","16"]},
+  {id:"look",  name:"Look",       emoji:"🔍", units:["18","19","20","21","22","23"]},
+  {id:"hagwon",name:"학원 단어",  emoji:"🏫", units:["24","25","26"]},
+  {id:"story", name:"이야기책",   emoji:"📖", units:["17","27","28"]}
+];
+(function(){
+  const used = new Set(BOOKS.flatMap(b=>b.units));
+  const rest = Object.keys(BUILTIN).filter(u=>!used.has(u));
+  if(rest.length) BOOKS.push({id:"etc", name:"그 밖의 단어", emoji:"📚", units:rest});
+})();
+const MINE = {id:"mine", name:"내가 만든 유닛", emoji:"📗"};
+let curBook = "wu";
+function bookOf(unitId){
+  if(!BUILTIN[unitId]) return MINE;
+  return BOOKS.find(b=>b.units.includes(unitId)) || BOOKS[0];
+}
+function bookUnits(b){ return b.units.filter(u=>BUILTIN[u] && !HIDDEN.has(u)); }
 
 // ─── 내가 만든 유닛 (이 기기에 저장) ───
 let CUSTOM = JSON.parse(localStorage.getItem("wordup_custom_v1") || "{}");
@@ -685,12 +774,15 @@ function suggestEmoji(word){
 // ─── 화면 전환 ───
 function show(id){
   stopLearn();
+  qToken++;   // 화면이 바뀌면 퀴즈의 '잠시 뒤 다음 문제' 예약을 취소
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   document.getElementById(id).classList.add("on");
 }
 function goHome(){ renderHome(); show("scr-home"); }
 function openUnit(u){
   curUnit = String(u);
+  curBook = bookOf(curUnit).id;
+  document.getElementById("mode-book").textContent = bookOf(curUnit).emoji + " " + bookOf(curUnit).name;
   document.getElementById("mode-title").textContent = unitTitle(curUnit);
   const info = U();
   document.getElementById("mode-topic").textContent =
@@ -749,31 +841,55 @@ function importUnit(){
     }
     if(!n) throw 0;
     saveCustom();
-    renderHome();
+    openBook("mine");
     alert(`유닛 ${n}개를 받았어요! 🎉`);
   }catch(e){
     alert("코드를 읽지 못했어요. 복사가 잘 됐는지 확인하고 다시 붙여넣어 주세요.");
   }
 }
 
-// ─── 홈 화면 그리기 ───
+// ─── 홈 화면(교재 고르기) 그리기 ───
 function renderHome(){
+  const grid = document.getElementById("book-grid");
+  grid.innerHTML = "";
+  const card = (emo, name, sub, fn, cls)=>{
+    const d = document.createElement("div");
+    d.className = "unit-card " + cls;
+    d.innerHTML = `<div class="emo">${emo}</div><div class="name">${escapeHtml(name)}</div>` + (sub ? `<div class="topic">${escapeHtml(sub)}</div>` : "");
+    d.onclick = fn;
+    grid.appendChild(d);
+  };
+  for(const b of BOOKS){
+    const n = bookUnits(b).length;
+    if(n) card(b.emoji, b.name, "유닛 " + n + "개", ()=>openBook(b.id), "book-card");
+  }
+  const mine = Object.keys(CUSTOM).length;
+  if(mine) card(MINE.emoji, MINE.name, "유닛 " + mine + "개", ()=>openBook("mine"), "book-card");
+  card("➕", "새 유닛 만들기", "", openAdd, "add-card");
+  document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
+}
+// ─── 교재 안의 유닛 목록 ───
+function openBook(id){
   const grid = document.getElementById("unit-grid");
   grid.innerHTML = "";
-  // 만들기 버튼 → 내가 만든 유닛(최신순) → 기본 유닛 순서
-  const add = document.createElement("div");
-  add.className = "unit-card add-card";
-  add.innerHTML = `<div class="emo">➕</div><div class="name">새 유닛 만들기</div>`;
-  add.onclick = openAdd;
-  grid.appendChild(add);
-  for(const id of Object.keys(CUSTOM).sort().reverse()){
-    grid.appendChild(unitCard(id, CUSTOM[id].emoji||"📗", CUSTOM[id].name, "단어 "+CUSTOM[id].words.length+"개"));
+  let name, n = 0;
+  if(id === "mine"){
+    name = MINE.emoji + " " + MINE.name;
+    for(const cid of Object.keys(CUSTOM).sort().reverse()){
+      grid.appendChild(unitCard(cid, CUSTOM[cid].emoji||"📗", CUSTOM[cid].name, "단어 "+CUSTOM[cid].words.length+"개")); n++;
+    }
+  } else {
+    const b = BOOKS.find(x=>x.id===id) || BOOKS[0];
+    id = b.id; name = b.emoji + " " + b.name;
+    for(const u of bookUnits(b)){
+      grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0])); n++;
+    }
   }
-  for(const u of Object.keys(BUILTIN)){
-    if(HIDDEN.has(u)) continue;
-    grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0]));
-  }
-  document.getElementById("restore-btn").style.display = HIDDEN.size ? "inline-block" : "none";
+  if(!n){ goHome(); return; }   // 교재 안의 유닛을 다 지웠으면 첫 화면으로
+  curBook = id;
+  document.getElementById("units-title").textContent = name;
+  document.getElementById("units-count").textContent = "유닛 " + n + "개";
+  show("scr-units");
 }
 function unitCard(id, emo, name, topic){
   const d = document.createElement("div");
@@ -787,7 +903,7 @@ function unitCard(id, emo, name, topic){
     if(!confirm(`"${name}" 유닛을 삭제할까요?`)) return;
     if(BUILTIN[id]){ HIDDEN.add(id); saveHidden(); }
     else { delete CUSTOM[id]; saveCustom(); }
-    renderHome();
+    openBook(curBook);
   };
   d.appendChild(del);
   return d;
@@ -883,7 +999,7 @@ function saveNewUnit(){
   const id = "c" + Date.now();
   CUSTOM[id] = { name, emoji: "📗", words: pendingWords };
   saveCustom();
-  goHome();
+  openBook("mine");
 }
 
 // ─── 말하기 (TTS) ───
@@ -1046,20 +1162,89 @@ function learnNext(){
   else finishLearn();
 }
 
-// ─── 퀴즈 모드 (글자 배열) ───
+// ─── 퀴즈 ───
+// qKind: spell(스펠링) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기) / mix(뜻+영단어 섞어서)
+// qList: 이번에 풀 단어 번호들, qRetry: 한 번에 못 맞힌 단어 번호들
 let qIdx=0, qTiles=[], qSlots=[], qClean=true, qCorrect=0, qRetry=[], qAnswer="";
+let qKind="spell", qList=[], qPos=0, qToken=0, cLocked=false;
 function shuffle(a){
   const b=[...a];
   for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; }
   return b;
 }
-function startQuiz(){
-  qIdx=0; qCorrect=0; qRetry=[];
-  show("scr-quiz");
-  loadQuizWord();
+function startQuiz(kind, list){
+  qKind = kind || "spell";
+  const all = U().words.map((_,i)=>i);
+  const pick = (list && list.length) ? [...list] : all;
+  qList = qKind === "spell" ? pick.sort((a,b)=>a-b) : shuffle(pick);
+  qPos=0; qCorrect=0; qRetry=[];
+  if(qKind === "spell"){ show("scr-quiz"); loadQuizWord(); }
+  else { show("scr-choice"); loadChoice(); }
+}
+function quizProg(){ return "문제 " + (qPos+1) + " / " + qList.length + " · ⭐ 맞힌 개수 " + qCorrect; }
+function quizNext(){
+  if(qPos < qList.length-1){ qPos++; if(qKind === "spell") loadQuizWord(); else loadChoice(); }
+  else showResult();
+}
+// 고르기 퀴즈 한 문제
+function loadChoice(){
+  stopAudio();
+  qIdx = qList[qPos];
+  const words = U().words, w = words[qIdx];
+  qClean = true; cLocked = false;
+  const dir = qKind === "mix" ? (Math.random() < .5 ? "mean" : "word") : qKind;
+  const key = dir === "mean" ? 1 : 0;          // 보기로 보여줄 칸: 뜻(1) 또는 영어(0)
+  const emo = document.getElementById("c-emoji"), txt = document.getElementById("c-text");
+  if(dir === "mean"){            // 영어를 보고(듣고) 뜻 고르기 — 그림은 맞힌 뒤에 보여준다
+    setIcon(emo, "❓");
+    txt.textContent = w[0]; txt.className = "c-text en";
+    document.getElementById("c-speak").style.display = "";
+    playOne("en:"+w[0], "en", w[0], 0.8);
+  } else {                       // 그림과 뜻을 보고 영어 고르기
+    setIcon(emo, w[2]);
+    txt.textContent = w[1]; txt.className = "c-text ko";
+    document.getElementById("c-speak").style.display = "none";
+  }
+  document.getElementById("choice-prog").textContent = quizProg();
+  const fb = document.getElementById("c-fb"); fb.textContent = ""; fb.className = "fb";
+  // 보기: 같은 유닛에서 3개. 영어나 뜻이 정답과 같은 단어, 서로 겹치는 보기는 뺀다.
+  const seen = new Set([w[key]]), others = [];
+  for(const o of shuffle(words)){
+    if(others.length === 3) break;
+    if(o[0].toLowerCase() === w[0].toLowerCase() || o[1] === w[1] || seen.has(o[key])) continue;
+    seen.add(o[key]); others.push(o);
+  }
+  const box = document.getElementById("c-opts");
+  box.innerHTML = "";
+  for(const o of shuffle([w, ...others])){
+    const b = document.createElement("button");
+    b.textContent = o[key];
+    b.onclick = ()=>{
+      if(cLocked || b.classList.contains("no")) return;
+      if(o === w){
+        cLocked = true;
+        b.classList.add("ok");
+        if(qClean) qCorrect++; else qRetry.push(qIdx);
+        dingSound();
+        fb.textContent = "딩동댕! " + w[0] + " = " + w[1] + " 🎉"; fb.className = "fb good";
+        setIcon(emo, w[2]); emo.classList.add("pop");
+        document.getElementById("choice-prog").textContent = quizProg();
+        playOne("en:"+w[0], "en", w[0], 0.9);
+        const t = qToken;
+        setTimeout(()=>{ emo.classList.remove("pop"); if(t === qToken) quizNext(); }, 1600);
+      } else {
+        b.classList.add("no");
+        qClean = false;
+        buzzSound();
+        fb.textContent = "앗, 다시 한번! 💪"; fb.className = "fb bad";
+      }
+    };
+    box.appendChild(b);
+  }
 }
 function loadQuizWord(){
   stopAudio();
+  qIdx = qList[qPos];
   const w = U().words[qIdx];
   qClean = true;
   qAnswer = w[0].replace(/\s+/g,"");  // 띄어쓰기는 퀴즈에서 뺌
@@ -1070,7 +1255,7 @@ function loadQuizWord(){
   qSlots = new Array(letters.length).fill(null);
   setIcon(document.getElementById("q-emoji"), w[2]);
   document.getElementById("q-meaning").textContent = w[1];
-  document.getElementById("quiz-prog").textContent = (qIdx+1)+" / "+U().words.length;
+  document.getElementById("quiz-prog").textContent = quizProg();
   setFb("","");
   renderQuiz();
   speakCurrentQuizWord();
@@ -1109,15 +1294,16 @@ function checkAnswer(){
   const w = U().words[qIdx];
   const made = qSlots.map(ti=>qTiles[ti].ch).join("");
   if(made === qAnswer){
-    if(qClean) qCorrect++; else qRetry.push(w[0]);
+    if(qClean) qCorrect++; else qRetry.push(qIdx);
     dingSound();
     setFb("딩동댕! " + w[0] + " 🎉", "good");
+    document.getElementById("quiz-prog").textContent = quizProg();
     document.getElementById("q-emoji").classList.add("pop");
     playOne("en:"+w[0], "en", w[0], 0.9);
+    const t = qToken;
     setTimeout(()=>{
       document.getElementById("q-emoji").classList.remove("pop");
-      if(qIdx < U().words.length-1){ qIdx++; loadQuizWord(); }
-      else showResult();
+      if(t === qToken) quizNext();
     }, 1400);
   } else {
     qClean = false;
@@ -1125,8 +1311,10 @@ function checkAnswer(){
     setFb("앗, 다시 한번! 💪", "bad");
     const st = document.getElementById("quiz-stage");
     st.classList.add("shake");
+    const t = qToken;
     setTimeout(()=>{
       st.classList.remove("shake");
+      if(t !== qToken) return;
       qSlots.forEach(ti=>{ if(ti!==null) qTiles[ti].used=false; });
       qSlots.fill(null);
       renderQuiz();
@@ -1158,7 +1346,7 @@ function speakCurrentQuizWord(){
   playOne("en:"+w[0], "en", w[0], 0.8);
 }
 function showResult(){
-  const total = U().words.length;
+  const total = qList.length;
   winSound();
   show("scr-result");
   const ratio = qCorrect/total;
@@ -1167,7 +1355,8 @@ function showResult(){
   document.getElementById("r-stars").textContent = ratio>=0.9 ? "⭐⭐⭐" : ratio>=0.6 ? "⭐⭐" : "⭐";
   document.getElementById("r-score").textContent = `${total}개 중 ${qCorrect}개를 한 번에 맞혔어요!`;
   document.getElementById("r-retry").textContent =
-    qRetry.length ? "다시 연습하면 좋은 단어: " + qRetry.join(", ") : "";
+    qRetry.length ? "다시 연습하면 좋은 단어: " + qRetry.map(i=>U().words[i][0]).join(", ") : "";
+  document.getElementById("r-wrong-btn").style.display = qRetry.length ? "" : "none";
 }
 
 // ─── 카드 인쇄 ───
@@ -1259,14 +1448,19 @@ renderHome();
 
 <h3>2. 단어 배우기 (틀어놓기만 하면 돼요)</h3>
 <ul>
-  <li>공부할 상자(유닛)를 누르고 <b>“단어 배우기”</b>를 눌러요.</li>
+  <li>첫 화면에서 <b>교재</b>를 고르고, 공부할 상자(유닛)를 누른 다음 <b>“단어 배우기”</b>를 눌러요.</li>
   <li>그림과 단어가 크게 나오고 원어민 발음이 나와요.</li>
   <li>영어 두 번 → 한국어 뜻 한 번 → 다음 단어로 저절로 넘어가요.</li>
   <li>아래 동그란 단추 : ◀◀ 앞으로 · ⏸ 잠깐 멈춤 · ▶▶ 다음으로</li>
 </ul>
 
-<h3>3. 글자 맞추기 퀴즈</h3>
+<h3>3. 퀴즈 네 가지</h3>
 <ul>
+  <li><b>뜻 퀴즈</b> : 영어를 보고 듣고, 맞는 뜻을 골라요.</li>
+  <li><b>영단어 퀴즈</b> : 그림과 뜻을 보고, 맞는 영어를 골라요.</li>
+  <li><b>뜻 + 영단어 퀴즈</b> : 두 가지가 섞여서 나와요.</li>
+  <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
+  <li><b>스펠링 퀴즈</b>는 아래처럼 해요.</li>
   <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
   <li>잘못 놓았으면 그 글자를 <b>다시 누르면</b> 빠져요.</li>
   <li><b>발음 듣기</b>로 다시 듣고, 막히면 <b>힌트</b>로 한 글자씩 봐요.</li>
@@ -1275,7 +1469,7 @@ renderHome();
 
 <h3>4. 우리 아이 단어 직접 넣기</h3>
 <ul>
-  <li>첫 화면 맨 위 <b>“+ 새 유닛 만들기”</b>를 눌러요.</li>
+  <li>첫 화면의 <b>“+ 새 유닛 만들기”</b>를 눌러요. 만든 유닛은 <b>“내가 만든 유닛”</b> 교재에 모여요.</li>
   <li>이름을 짓고, 단어를 한 줄에 하나씩 써요. 예) <b>apple 사과</b></li>
   <li>엑셀이 있으면 <b>“엑셀 파일 불러오기”</b>로 한 번에 넣을 수 있어요.</li>
   <li>“다음”을 누르면 그림을 자동으로 골라 줘요. 마음에 안 들면 그림 칸을 눌러 바꾸면 돼요.</li>
@@ -1313,7 +1507,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#ff8bbd;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.11 &nbsp;·&nbsp; 2026-11-08</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.12 &nbsp;·&nbsp; 2026-11-10</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
