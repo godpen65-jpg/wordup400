@@ -119,7 +119,7 @@
   }
   /* 그림 없이 외우기: 그림을 숨기고 영어·뜻을 크게 */
   #scr-learn.textonly .stage .emoji { display:none; }
-  /* 스펠링 퀴즈 (글씨만 보고): 그림을 숨기고 뜻을 크게 */
+  /* 스펠링 퀴즈 (그림 없이): 그림을 숨기고 뜻을 크게 */
   #scr-quiz.textonly .q-prompt .emoji { display:none; }
   #scr-quiz.textonly .q-prompt .meaning { font-size:min(2.6rem, 8vh); margin:10px 0 4px; }
   #scr-learn.textonly .stage .word { font-size:min(5rem, 14vh); margin-top:0; }
@@ -313,7 +313,7 @@
     </div>
     <div class="grp">✏️ 퀴즈</div>
     <button class="big btn-quiz" onclick="startQuiz('spell')">🧩 스펠링 퀴즈 (그림 보고)</button>
-    <button class="big" onclick="startQuiz('spelltext')">🔤 스펠링 퀴즈 (글씨만 보고)</button>
+    <button class="big" onclick="startQuiz('spelltext')">🔤 스펠링 퀴즈 (그림 없이)</button>
     <button class="big btn-mean" onclick="startQuiz('mean')">💬 뜻 퀴즈</button>
     <button class="big btn-word" onclick="startQuiz('word')">🔠 영단어 퀴즈</button>
     <button class="big btn-green wide" id="share-btn" style="display:none" onclick="shareUnit()">📤 친구에게 공유 (코드 복사)</button>
@@ -1187,7 +1187,7 @@ function learnNext(){
 }
 
 // ─── 퀴즈 ───
-// qKind: spell(스펠링, 그림 보고) / spelltext(스펠링, 글씨만 보고) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기)
+// qKind: spell(스펠링, 그림 보고) / spelltext(스펠링, 그림 없이) / mean(영어 보고 뜻 고르기) / word(뜻 보고 영어 고르기)
 // qList: 이번에 풀 단어 번호들, qRetry: 한 번에 못 맞힌 단어 번호들
 let qIdx=0, qTiles=[], qSlots=[], qClean=true, qCorrect=0, qRetry=[], qAnswer="";
 let qKind="spell", qList=[], qPos=0, qToken=0, cLocked=false;
@@ -1280,7 +1280,7 @@ function loadQuizWord(){
   qTiles = sh.map(ch=>({ch, used:false}));
   qSlots = new Array(letters.length).fill(null);
   setIcon(document.getElementById("q-emoji"), w[2]);
-  document.getElementById("scr-quiz").classList.toggle("textonly", qKind === "spelltext");   // 글씨만 보고: 그림 숨김
+  document.getElementById("scr-quiz").classList.toggle("textonly", qKind === "spelltext");   // 그림 없이: 그림 숨김
   document.getElementById("q-meaning").textContent = w[1];
   document.getElementById("quiz-prog").textContent = quizProg();
   setFb("","");
@@ -1489,7 +1489,7 @@ renderHome();
   <li><b>영단어 퀴즈</b> : 뜻을 보고, 맞는 영어를 골라요.</li>
   <li>이 두 퀴즈는 그림이 <b>맞힌 뒤에</b> 짠! 하고 나와요.</li>
   <li>다 풀면 <b>“틀린 단어만 다시 풀기”</b>로 틀린 것만 또 풀 수 있어요.</li>
-  <li><b>스펠링 퀴즈</b>는 두 가지예요. <b>그림 보고</b>는 그림과 뜻을, <b>글씨만 보고</b>는 뜻 글씨만 보고 맞혀요. 푸는 방법은 아래처럼 해요.</li>
+  <li><b>스펠링 퀴즈</b>는 두 가지예요. <b>그림 보고</b>는 그림과 뜻을, <b>그림 없이</b>는 그림 없이 뜻 글씨만 보고 맞혀요. 푸는 방법은 아래처럼 해요.</li>
   <li>그림과 뜻을 보고, 흩어진 글자를 순서대로 눌러 단어를 완성해요.</li>
   <li>잘못 놓았으면 그 글자를 <b>다시 누르면</b> 빠져요.</li>
   <li><b>발음 듣기</b>로 다시 듣고, 막히면 <b>힌트</b>로 한 글자씩 봐요.</li>
