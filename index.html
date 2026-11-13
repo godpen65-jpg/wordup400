@@ -545,13 +545,18 @@ const BUILTIN = {
   ["sculpture","조각품, 조각","img/wu/sculpture.jpg"],["groan","끙끙거리다, 신음하다","img/wu/groan.jpg"],["giggle","킥킥거리다, 낄낄거리다","img/wu/giggle.jpg"],
   ["realize","깨닫다, 알아차리다","img/wu/realize.jpg"]]},
  "28":{topic:"농장 모험 🐄",label:"Milo's Wild Farm Adventure",words:[
-  ["pasture","목초지, 방목장","img/milo/01_pasture.jpg"],["trot","(말이) 빠른 걸음으로 걷다","img/milo/02_trot.jpg"],["scare","겁주다, 겁먹다","img/milo/03_scare.jpg"],
-  ["farmhand","농장 일꾼","img/milo/04_farmhand.jpg"],["barn","외양간, 헛간","img/milo/05_barn.jpg"],["mud","진흙, 진창","img/milo/06_mud.jpg"],
-  ["pigpen","돼지우리","img/milo/07_pigpen.jpg"],["frown","얼굴을 찌푸리다, 찡그림","img/milo/08_frown.jpg"],["thirsty","목이 마른, 갈증이 나는","img/milo/09_thirsty.jpg"],
-  ["Creole cream cheese","크리올 크림치즈","img/milo/10_cream_cheese.jpg"],["gate","문, 울타리문","img/milo/11_gate.jpg"],["farmer","농부","img/milo/12_farmer.jpg"],
-  ["rule","규칙","img/milo/13_rule.jpg"],["path","길, 오솔길","img/milo/14_path.jpg"],["lonely","외로운","img/milo/15_lonely.jpg"],
-  ["keep company","함께 있어 주다","img/milo/16_keep_company.jpg"],["already","이미","img/milo/17_already.jpg"],["pet","쓰다듬다","img/milo/18_pet.jpg"],
-  ["follow","따라가다","img/milo/19_follow.jpg"],["point","가리키다","img/milo/20_point.jpg"]]}
+  ["pasture","목초지, 방목장","img/milo/01_pasture.jpg"],["gate","문, 울타리문","img/milo/11_gate.jpg"],["farmhand","농장 일꾼","img/milo/04_farmhand.jpg"],
+  ["farmer","농부","img/milo/12_farmer.jpg"],["rule","규칙","img/milo/13_rule.jpg"],["path","길, 오솔길","img/milo/14_path.jpg"],
+  ["lonely","외로운","img/milo/15_lonely.jpg"],["keep company","함께 있어 주다","img/milo/16_keep_company.jpg"],["already","이미","img/milo/17_already.jpg"],
+  ["pet","쓰다듬다","img/milo/18_pet.jpg"],["follow","따라가다","img/milo/19_follow.jpg"],["point","가리키다","img/milo/20_point.jpg"],
+  ["missing","없어진, 사라진","img/milo/21_missing.jpg"],["trot","종종걸음치다","img/milo/02_trot.jpg"],["thirsty","목마른","img/milo/09_thirsty.jpg"],
+  ["well","우물","img/milo/22_well.jpg"],["cheer","기뻐 외치다, 환호하다","img/wu/cheer.jpg"],["scare away","겁주어 쫓아버리다","img/milo/03_scare.jpg"],
+  ["mud","진흙","img/milo/06_mud.jpg"],["noise","소리, 소음","img/milo/23_noise.jpg"],["grin","활짝 웃다","img/milo/24_grin.jpg"],
+  ["pigpen","돼지우리","img/milo/07_pigpen.jpg"],["roll","구르다, 뒹굴다","img/milo/25_roll.jpg"],["spot","발견하다","img/milo/26_spot.jpg"],
+  ["barn","헛간","img/milo/05_barn.jpg"],["roof","지붕","img/milo/27_roof.jpg"],["idea","생각, 아이디어","img/wu/idea.jpg"],
+  ["snack","간식","img/milo/28_snack.jpg"],["jump off","뛰어내리다","img/milo/29_jump_off.jpg"],["land","착지하다, 내려앉다","img/milo/30_land.jpg"],
+  ["frown","얼굴을 찌푸리다","img/milo/08_frown.jpg"],["pass","건네주다","img/wu/pass.jpg"],["sigh","한숨 쉬다","img/milo/31_sigh.jpg"],
+  ["shook his head","고개를 저었다","img/milo/32_shook_his_head.jpg"],["Creole","크리올식의, 크리올풍의","img/milo/10_cream_cheese.jpg"]]}
 };
 
 // ─── 영영 뜻 (Word Up 400 교재) : 영영 퀴즈에 쓴다. 소리는 audio.js의 "def:단어" ───
@@ -1568,7 +1573,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.15 &nbsp;·&nbsp; 2026-11-11</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.16 &nbsp;·&nbsp; 2026-11-13</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
