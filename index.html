@@ -801,7 +801,13 @@ function suggestEmoji(word){
     if(k.endsWith("ies")) keys.push(k.slice(0,-3)+"y");
     else if(k.endsWith("es")) keys.push(k.slice(0,-2));
     if(k.endsWith("s")) keys.push(k.slice(0,-1));
-    if(k.endsWith("ing")) keys.push(k.slice(0,-3));
+    // running→run, making→make, played→play, stopped→stop
+    for(const suf of ["ing","ed"]){
+      if(!k.endsWith(suf) || k.length < suf.length+2) continue;
+      const st = k.slice(0,-suf.length);
+      keys.push(st, st+"e");
+      if(st.length > 2 && st[st.length-1] === st[st.length-2]) keys.push(st.slice(0,-1));
+    }
   }
   const hexToEmoji = h => h.split("-").map(x=>String.fromCodePoint(parseInt(x,16))).join("");
   const lookup = k => {
@@ -811,6 +817,8 @@ function suggestEmoji(word){
     if(typeof EMOJI_INDEX !== "undefined" && EMOJI_INDEX[k]) return hexToEmoji(EMOJI_INDEX[k]);
     return null;
   };
+  // 1) 모든 변형에서 그림을 먼저 찾고  2) 없으면 이모지
+  for(const k of keys){ const pic = k && picFor(k); if(pic) return pic; }
   for(const k of keys){
     const hit = k && lookup(k);
     if(hit) return hit;
@@ -1594,7 +1602,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.16 &nbsp;·&nbsp; 2026-11-24</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.17 &nbsp;·&nbsp; 2026-11-24</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
