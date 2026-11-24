@@ -227,6 +227,8 @@
     width:58px; font-size:1.6rem; text-align:center; border:2px solid #111;
     border-radius:10px; background:#fff; padding:4px; font-family:inherit;
   }
+  .preview-row input.emo-in::placeholder { font-size:.8rem; color:#999; }
+  .preview-row .pv-pic img.photo-icon { width:52px; height:52px; border-radius:10px; vertical-align:middle; }
   .preview-row .pw { font-weight:bold; font-size:1.1rem; color:#111; }
   .preview-row .pm { color:#555; font-size:1rem; margin-left:auto; }
   .add-actions { display:flex; gap:12px; margin-top:18px; }
@@ -439,6 +441,7 @@
 <script src="audio.js"></script>
 <script src="xlsx.full.min.js"></script>
 <script src="emoji-index.js"></script>
+<script src="piclib.js"></script>
 <script>
 // ─── 기본 제공 단어 데이터: [영어, 뜻, 그림] ───
 const BUILTIN = {
@@ -775,6 +778,17 @@ const EMOJI_EXTRA = {
 const EMOJI_MAP = {};
 for(const u of Object.values(BUILTIN)) for(const [w,,e] of u.words) EMOJI_MAP[w] = e;
 Object.assign(EMOJI_MAP, EMOJI_EXTRA);
+// ─── 그림 사전: 단어를 적으면 준비된 그림을 찾아 준다 ───
+// 1) piclib.js 의 PICLIB (초등 필수 영단어 그림, img/lib/)  2) 기본 유닛에 이미 있는 그림
+const PICMAP = {};
+for(const u of Object.keys(BUILTIN)) for(const w of BUILTIN[u].words){
+  const k = w[0].toLowerCase().replace(/[^a-z]/g,"");
+  if(/^img\//.test(w[2]) && !PICMAP[k]) PICMAP[k] = w[2];
+}
+function picFor(k){
+  if(typeof PICLIB !== "undefined" && PICLIB[k]) return PICLIB[k];
+  return PICMAP[k] || null;
+}
 function suggestEmoji(word){
   // 붙인 것("citycenter") → 마지막 낱말부터 앞으로("center","city") 순서로 찾기
   const toks = word.toLowerCase().split(/\s+/).map(t=>t.replace(/[^a-z]/g,"")).filter(Boolean);
@@ -791,6 +805,8 @@ function suggestEmoji(word){
   }
   const hexToEmoji = h => h.split("-").map(x=>String.fromCodePoint(parseInt(x,16))).join("");
   const lookup = k => {
+    const pic = picFor(k);                // 준비된 그림이 있으면 그림을 먼저 쓴다
+    if(pic) return pic;
     if(EMOJI_MAP[k]) return EMOJI_MAP[k];
     if(typeof EMOJI_INDEX !== "undefined" && EMOJI_INDEX[k]) return hexToEmoji(EMOJI_INDEX[k]);
     return null;
@@ -990,8 +1006,13 @@ function previewNewUnit(){
   words.forEach((w,i)=>{
     const row = document.createElement("div");
     row.className = "preview-row";
-    row.innerHTML = `<input class="emo-in" data-i="${i}" value="${w[2]}" maxlength="8">
+    const isPic = /^img\//.test(w[2]);
+    // 그림이 있으면 작은 그림을 보여주고, 칸에 이모지를 적으면 그 이모지로 바뀐다
+    row.innerHTML = `<span class="pv-pic"></span><input class="emo-in" data-i="${i}" value="${isPic ? "" : w[2]}" maxlength="8" placeholder="${isPic ? "바꾸기" : ""}">
                      <span class="pw">${escapeHtml(w[0])}</span><span class="pm">${escapeHtml(w[1])}</span>`;
+    const pv = row.querySelector(".pv-pic");
+    if(isPic){ setIcon(pv, w[2]); row.querySelector(".emo-in").oninput = e=>{ pv.style.display = e.target.value.trim() ? "none" : ""; }; }
+    else pv.style.display = "none";
     list.appendChild(row);
   });
   document.getElementById("add-step1").style.display = "none";
@@ -1538,7 +1559,7 @@ renderHome();
   <li>첫 화면의 <b>“+ 새 유닛 만들기”</b>를 눌러요. 만든 유닛은 <b>“내가 만든 유닛”</b> 교재에 모여요.</li>
   <li>이름을 짓고, 단어를 한 줄에 하나씩 써요. 예) <b>apple 사과</b></li>
   <li>엑셀이 있으면 <b>“엑셀 파일 불러오기”</b>로 한 번에 넣을 수 있어요.</li>
-  <li>“다음”을 누르면 그림을 자동으로 골라 줘요. 마음에 안 들면 그림 칸을 눌러 바꾸면 돼요.</li>
+  <li>“다음”을 누르면 그림을 자동으로 골라 줘요. 준비된 그림이 있는 단어는 그림이, 없으면 이모지가 들어가요. 바꾸고 싶으면 칸에 이모지를 적으면 돼요.</li>
   <li><b>“저장하기”</b>를 누르면 완성!</li>
 </ul>
 
