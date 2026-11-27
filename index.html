@@ -559,7 +559,13 @@ const BUILTIN = {
   ["barn","헛간","img/milo/05_barn.jpg"],["roof","지붕","img/milo/27_roof.jpg"],["idea","생각, 아이디어","img/wu/idea.jpg"],
   ["snack","간식","img/milo/28_snack.jpg"],["jump off","뛰어내리다","img/milo/29_jump_off.jpg"],["land","착지하다, 내려앉다","img/milo/30_land.jpg"],
   ["frown","얼굴을 찌푸리다","img/milo/08_frown.jpg"],["pass","건네주다","img/wu/pass.jpg"],["sigh","한숨 쉬다","img/milo/31_sigh.jpg"],
-  ["shook his head","고개를 저었다","img/milo/32_shook_his_head.jpg"],["Creole","크리올식의, 크리올풍의","img/milo/10_cream_cheese.jpg"]]}
+  ["shook his head","고개를 저었다","img/milo/32_shook_his_head.jpg"],["Creole","크리올식의, 크리올풍의","img/milo/10_cream_cheese.jpg"]]},
+ "29":{topic:"라푼젤 👸",label:"Rapunzel: A retelling",words:[
+  ["sneaked into","~에 몰래 들어갔다","img/rapunzel/01_sneaked_into.jpg"],["cabbage","양배추","img/rapunzel/02_cabbage.jpg"],
+  ["make a deal","거래하다, 합의하다","img/rapunzel/03_make_a_deal.jpg"],["jealous","질투하는","img/rapunzel/04_jealous.jpg"],
+  ["ladder","사다리","img/rapunzel/05_ladder.jpg"],["trick","속임수, 속임수를 쓰다","img/rapunzel/06_trick.jpg"],
+  ["sight","보기, 봄","img/rapunzel/07_sight.jpg"],["scratch","긁다, 긁힌 자국","img/rapunzel/08_scratch.jpg"],
+  ["search","찾아보다","img/rapunzel/09_search.jpg"],["swore","맹세했다, 굳게 약속했다","img/rapunzel/10_swore.jpg"]]}
 };
 
 // ─── 영영 뜻 (Word Up 400 교재) : 영영 퀴즈에 쓴다. 소리는 audio.js의 "def:단어" ───
@@ -581,7 +587,7 @@ const BOOKS = [
   {id:"wu",    name:"워드업 400", emoji:"📘", units:["9","10","11","12","13","14","15","16"]},
   {id:"look",  name:"Look",       emoji:"🔍", units:["18","19","20","21","22","23"]},
   {id:"hagwon",name:"학원 단어",  emoji:"🏫", units:["24","25","26"]},
-  {id:"story", name:"이야기책",   emoji:"📖", units:["17","27","28"]}
+  {id:"story", name:"이야기책",   emoji:"📖", units:["17","27","28","29"]}
 ];
 (function(){
   const used = new Set(BOOKS.flatMap(b=>b.units));
@@ -946,7 +952,9 @@ function openBook(id){
     const b = BOOKS.find(x=>x.id===id) || BOOKS[0];
     id = b.id; name = b.emoji + " " + b.name;
     for(const u of bookUnits(b)){
-      grid.appendChild(unitCard(u, BUILTIN[u].topic.split(" ")[1]||"📘", unitTitle(u), BUILTIN[u].topic.split(" ")[0])); n++;
+      // topic 은 "주제 이모지" 모양 — 주제가 두 낱말이어도(농장 모험 🐄) 마지막이 이모지
+      const tp = BUILTIN[u].topic.split(" ");
+      grid.appendChild(unitCard(u, tp.length > 1 ? tp[tp.length-1] : "📘", unitTitle(u), tp.length > 1 ? tp.slice(0,-1).join(" ") : tp[0])); n++;
     }
   }
   if(!n){ goHome(); return; }   // 교재 안의 유닛을 다 지웠으면 첫 화면으로
@@ -1602,7 +1610,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape') hlpClose();
 #site-meta b{color:#555;font-weight:normal;}
 @media print{#site-meta{display:none !important;}}
 </style>
-<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.17 &nbsp;·&nbsp; 2026-11-24</div>
+<div id="site-meta">💝 방문 <b><span id="visit-count">…</span></b>회 &nbsp;·&nbsp; v1.18 &nbsp;·&nbsp; 2026-11-27</div>
 <script>
 (function(){
   var el=document.getElementById('visit-count');
